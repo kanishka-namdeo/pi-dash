@@ -18,7 +18,7 @@ export function ActivityFeed({ activities, agents }: ActivityFeedProps) {
   const getAgent = (agentId: string) => agents.find((a) => a.id === agentId);
 
   return (
-    <aside className="w-[320px] bg-[#0a0a0a] flex flex-col">
+    <aside className="w-full lg:w-[320px] bg-[#0a0a0a] flex flex-col">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a]">
         <span className="text-sm text-[#e5e5e5] font-medium">Activity</span>
         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
