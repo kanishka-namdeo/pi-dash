@@ -4,9 +4,10 @@ type AgentCardProps = {
   agent: Agent;
   isSelected: boolean;
   onClick: () => void;
+  onViewDetails: () => void;
 };
 
-export function AgentCard({ agent, isSelected, onClick }: AgentCardProps) {
+export function AgentCard({ agent, isSelected, onClick, onViewDetails }: AgentCardProps) {
   const statusColor =
     agent.status === 'active'
       ? 'bg-emerald-500'
@@ -35,7 +36,6 @@ export function AgentCard({ agent, isSelected, onClick }: AgentCardProps) {
         </div>
         <div className={`w-2 h-2 rounded-full ${statusColor} ${agent.status === 'active' ? 'animate-pulse' : ''}`} />
       </div>
-
       <div className="text-xs font-mono text-[#737373] truncate mb-2">{agent.task}</div>
 
       {agent.progress > 0 && (
@@ -46,6 +46,12 @@ export function AgentCard({ agent, isSelected, onClick }: AgentCardProps) {
           />
         </div>
       )}
+      <button
+        onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
+        className="mt-3 text-xs text-blue-500 hover:text-blue-400 transition-colors"
+      >
+        View Terminal →
+      </button>
     </div>
   );
 }

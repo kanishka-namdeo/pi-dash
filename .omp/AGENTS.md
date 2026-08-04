@@ -113,8 +113,17 @@ Default section order:
 When the user requests a durable behavior change, record it here or in the relevant child [AGENTS.md](http://AGENTS.md)
 - Always invoke the `design-taste-frontend` skill (at `.omp/skills/design-taste-frontend/SKILL.md`) before any UI-related work.
 
+## Dev Commands
+
+- Package manager: **pnpm**
+- `pnpm dev` — start dev server (TypeScript watch + Vite + Electron)
+- `pnpm start` — compile and run Electron (no hot reload)
+- `pnpm build` — full production build (TS + Vite + electron-builder, all platforms)
+- `pnpm build:win` / `pnpm build:mac` / `pnpm build:linux` — platform-specific builds, output in `release/`
+
 ## Child DOX Index
 
-- No child [AGENTS.md](http://AGENTS.md) files are needed for the current repository structure.
+- [src/AGENTS.md](http://src/AGENTS.md) — Electron main process (lifecycle, window management, preload bridge)
+- [renderer/src/AGENTS.md](http://renderer/src/AGENTS.md) — React renderer (UI, hooks, components, types, data)
 
-- Root-owned files: [`README.md`](http://README.md), `LICENSE`, `banner.jpg`, `video-thumbnail.jpg`, and root-level project documentation.
+Root-owned files: [`README.md`](http://README.md), `LICENSE`, `banner.jpg`, `video-thumbnail.jpg`, `package.json`, `vite.config.ts`, `tsconfig.json`, and root-level project documentation.
