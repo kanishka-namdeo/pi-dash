@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PiDash — Onboarding Flow Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-2: #1a1a26;
+    --surface-3: #222233;
+    --border: #2a2a3d;
+    --border-active: #4a4a6d;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --text-muted: #555570;
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.15);
+    --green: #22c55e;
+    --green-glow: rgba(34, 197, 94, 0.15);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245, 158, 11, 0.15);
+    --radius: 10px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+  }
+  .flow-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .flow-nav button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .flow-nav button:hover { color: var(--text); background: var(--surface-2); }
+  .flow-nav button.active { color: var(--text); background: var(--accent); }
+  .flow-nav button .step {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--surface-3);
+    font-size: 10px;
+    margin-right: 6px;
+  }
+  .flow-nav button.active .step { background: rgba(255,255,255,0.2); }
+
+  .screen-container { width: 100%; max-width: 680px; }
+  .screen {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .screen.active { display: block; }
+
+  .window-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .window-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .window-dot.r { background: #ff5f57; }
+  .window-dot.y { background: #febc2e; }
+  .window-dot.g { background: #28c840; }
+  .window-title {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+
+  .screen-body { padding: 40px; }
+
+  .welcome-logo {
+    width: 64px; height: 64px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px; font-size: 28px;
+    box-shadow: 0 0 40px var(--accent-glow);
+  }
+  .welcome-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+  .welcome-sub { font-size: 14px; color: var(--text-dim); text-align: center; margin-bottom: 32px; line-height: 1.5; }
+  .welcome-features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .welcome-feature {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .welcome-feature .icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .welcome-feature .icon.purple { background: var(--accent-glow); }
+  .welcome-feature .icon.green { background: var(--green-glow); }
+  .welcome-feature .icon.amber { background: var(--amber-glow); }
+  .welcome-feature .text { font-size: 13px; color: var(--text-dim); }
+  .welcome-feature .text strong { color: var(--text); font-weight: 600; }
+
+  .btn-primary {
+    display: block; width: 100%; padding: 12px;
+    background: var(--accent); color: white; border: none;
+    border-radius: var(--radius); font-family: var(--sans);
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-secondary {
+    display: block; width: 100%; padding: 12px;
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: var(--sans); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; margin-top: 8px;
+  }
+  .btn-secondary:hover { border-color: var(--border-active); }
+
+  .scan-header { text-align: center; margin-bottom: 32px; }
+  .scan-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .scan-header p { font-size: 13px; color: var(--text-dim); }
+  .scan-ring {
+    width: 80px; height: 80px; margin: 0 auto 24px;
+    border-radius: 50%; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-right-color: var(--accent);
+    animation: spin 1.2s linear infinite;
+    position: relative;
+  }
+  .scan-ring::after {
+    content: '⚡'; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .scan-locations { display: flex; flex-direction: column; gap: 8px; }
+  .scan-loc {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 12px; font-family: var(--mono); color: var(--text-dim);
+  }
+  .scan-loc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .scan-loc .dot.done { background: var(--green); }
+  .scan-loc .dot.scanning { background: var(--amber); animation: pulse 0.8s infinite; }
+  .scan-loc .dot.pending { background: var(--text-muted); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .results-header { text-align: center; margin-bottom: 24px; }
+  .results-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .results-header p { font-size: 13px; color: var(--text-dim); }
+  .results-count {
+    display: inline-block; background: var(--green-glow); color: var(--green);
+    font-size: 12px; font-weight: 600; padding: 2px 8px;
+    border-radius: 4px; margin-left: 6px;
+  }
+  .agent-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .agent-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .agent-card:hover { border-color: var(--border-active); }
+  .agent-card.selected { border-color: var(--accent); background: var(--accent-glow); }
+  .agent-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; flex-shrink: 0;
+  }
+  .agent-icon.omp { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+  .agent-icon.cursor { background: linear-gradient(135deg, #1e1e2e, #333); color: #89b4fa; }
+  .agent-icon.aider { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+  .agent-icon.codex { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+  .agent-info { flex: 1; }
+  .agent-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .agent-path { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+  .agent-check {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 2px solid var(--border); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 12px; transition: all 0.15s;
+  }
+  .agent-card.selected .agent-check {
+    background: var(--accent); border-color: var(--accent); color: white;
+  }
+
+  .manual-header { text-align: center; margin-bottom: 24px; }
+  .manual-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .manual-header p { font-size: 13px; color: var(--text-dim); }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%; padding: 10px 14px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-family: var(--mono); font-size: 13px;
+    outline: none; transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--text-muted); }
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+  .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .icon-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+  .icon-option {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 2px solid var(--border); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; transition: all 0.15s;
+  }
+  .icon-option:hover { border-color: var(--border-active); }
+  .icon-option.selected { border-color: var(--accent); background: var(--accent-glow); }
+  .browse-btn {
+    padding: 10px 16px; background: var(--surface-3);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-size: 12px; cursor: pointer;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .browse-btn:hover { border-color: var(--border-active); }
+  .path-row { display: flex; gap: 8px; }
+  .path-row .form-input { flex: 1; }
+
+  .ready-header { text-align: center; margin-bottom: 28px; }
+  .ready-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--green-glow); display: flex;
+    align-items: center; justify-content: center;
+    margin: 0 auto 16px; font-size: 24px; color: var(--green);
+  }
+  .ready-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .ready-header p { font-size: 13px; color: var(--text-dim); }
+  .ready-agents { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .ready-agent {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .ready-agent .status {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); flex-shrink: 0;
+  }
+  .ready-agent .name { font-size: 14px; font-weight: 500; flex: 1; }
+  .ready-agent .launch-btn {
+    padding: 5px 14px; background: var(--surface-3);
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .ready-agent .launch-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+  .skip-text { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+  .skip-text a { color: var(--text-dim); text-decoration: underline; cursor: pointer; }
+  .skip-text a:hover { color: var(--text); }
+
+  .no-agents-header { text-align: center; margin-bottom: 28px; }
+  .no-agents-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--amber-glow); display: flex;
+    align-items: center; justify-content: center;
+    margin: 0 auto 16px; font-size: 24px;
+  }
+  .no-agents-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .no-agents-header p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .suggestion-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .suggestion-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .suggestion-info { flex: 1; }
+  .suggestion-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .suggestion-desc { font-size: 12px; color: var(--text-dim); }
+  .suggestion-btn {
+    padding: 6px 14px; background: var(--surface-3);
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+  }
+  .suggestion-btn:hover { background: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="flow-nav">
+  <button class="active" onclick="showScreen(0)"><span class="step">1</span>Welcome</button>
+  <button onclick="showScreen(1)"><span class="step">2</span>Scanning</button>
+  <button onclick="showScreen(2)"><span class="step">3</span>Results</button>
+  <button onclick="showScreen(3)"><span class="step">4</span>Manual Add</button>
+  <button onclick="showScreen(4)"><span class="step">5</span>Ready</button>
+  <button onclick="showScreen(5)"><span class="step">6</span>No Agents</button>
+</nav>
+
+<div class="screen-container">
+
+  <!-- Screen 1: Welcome -->
+  <div class="screen active" id="screen-0">
+    <div class="window-bar">
+      <div class="window-dot r"></div>
+      <div class="window-dot y"></div>
+      <div class="window-dot g"></div>
+      <div class="window-title">PiDash</div>
+    </div>
+    <div class="screen-body">
+      <div class="welcome-logo">π</div>
+      <h1 class="welcome-title">Welcome to PiDash</h1>
+      <p class="welcome-sub">Your unified dashboard for AI coding agents.<br>Launch, monitor, and switch between tools — all in one place.</p>
+      <div class="welcome-features">
+        <div class="welcome-feature">
+          <div class="icon purple">🔍</div>
+          <div class="text"><strong>Auto-detect</strong> — finds agents already installed on your system</div>
+        </div>
+        <div class="welcome-feature">
+          <div class="icon green">🚀</div>
+          <div class="text"><strong>One-click launch</strong> — start any agent from the dashboard</div>
+        </div>
+        <div class="welcome-feature">
+          <div class="icon amber">📊</div>
+          <div class="text"><strong>Live activity</strong> — see what your agents are doing in real-time</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showScreen(1)">Get Started</button>
+      <p class="skip-text"><a onclick="showScreen(4)">Skip setup — I'll add agents manually</a></p>
+    </div>
+  </div>
+
+  <!-- Screen 2: Scanning -->
+  <div class="screen" id="screen-1">
+    <div class="window-bar">
+      <div class="window-dot r"></div>
+      <div class="window-dot y"></div>
+      <div class="window-dot g"></div>
+      <div class="window-title">PiDash — Scanning...</div>
+    </div>
+    <div class="screen-body">
+      <div class="scan-ring"></div>
+      <div class="scan-header">
+        <h2>Scanning your system</h2>
+        <p>Looking for installed AI coding agents...</p>
+      </div>
+      <div class="scan-locations">
+        <div class="scan-loc"><div class="dot done"></div>~/AppData/Local/Programs — 2 found</div>
+        <div class="scan-loc"><div class="dot done"></div>~/AppData/Roaming/npm — 0 found</div>
+        <div class="scan-loc"><div class="dot scanning"></div>~/scoop/shims — checking...</div>
+        <div class="scan-loc"><div class="dot pending"></div>System PATH — pending</div>
+        <div class="scan-loc"><div class="dot pending"></div>~/.local/bin — pending</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Results -->
+  <div class="screen" id="screen-2">
+    <div class="window-bar">
+      <div class="window-dot r"></div>
+      <div class="window-dot y"></div>
+      <div class="window-dot g"></div>
+      <div class="window-title">PiDash — Found Agents</div>
+    </div>
+    <div class="screen-body">
+      <div class="results-header">
+        <h2>Found agents <span class="results-count">3</span></h2>
+        <p>Select the ones you want in your dashboard</p>
+      </div>
+      <div class="agent-list">
+        <div class="agent-card selected" onclick="toggleAgent(this)">
+          <div class="agent-icon omp">π</div>
+          <div class="agent-info">
+            <div class="agent-name">Oh My Pi</div>
+            <div class="agent-path">C:\Users\kanis\.omp\bin\omp.exe</div>
+          </div>
+          <div class="agent-check">✓</div>
+        </div>
+        <div class="agent-card selected" onclick="toggleAgent(this)">
+          <div class="agent-icon cursor">▶</div>
+          <div class="agent-info">
+            <div class="agent-name">Cursor</div>
+            <div class="agent-path">C:\Users\kanis\AppData\Local\Programs\Cursor\cursor.exe</div>
+          </div>
+          <div class="agent-check">✓</div>
+        </div>
+        <div class="agent-card selected" onclick="toggleAgent(this)">
+          <div class="agent-icon aider">◆</div>
+          <div class="agent-info">
+            <div class="agent-name">Aider</div>
+            <div class="agent-path">C:\Users\kanis\AppData\Local\Programs\Python\Python312\Scripts\aider.exe</div>
+          </div>
+          <div class="agent-check">✓</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showScreen(4)">Continue</button>
+      <button class="btn-secondary" onclick="showScreen(3)">+ Add agent manually</button>
+    </div>
+  </div>
+
+  <!-- Screen 4: Manual Add -->
+  <div class="screen" id="screen-3">
+    <div class="window-bar">
+      <div class="window-dot r"></div>
+      <div class="window-dot y"></div>
+      <div class="window-dot g"></div>
+      <div class="window-title">PiDash — Add Agent</div>
+    </div>
+    <div class="screen-body">
+      <div class="manual-header">
+        <h2>Add an agent</h2>
+        <p>Point to the executable — we'll handle the rest</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Executable path</label>
+        <div class="path-row">
+          <input class="form-input" placeholder="C:\path\to\agent.exe" value="C:\Users\kanis\AppData\Local\Programs\Codex\codex.exe">
+          <button class="browse-btn">Browse...</button>
+        </div>
+        <div class="form-hint">We'll auto-detect the name and icon from the executable</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Display name</label>
+          <input class="form-input" value="Codex" style="font-family: var(--sans);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon</label>
+          <div class="icon-picker">
+            <div class="icon-option selected" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white;">⬡</div>
+            <div class="icon-option">⬡</div>
+            <div class="icon-option">◈</div>
+            <div class="icon-option">△</div>
+            <div class="icon-option">◎</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showScreen(4)">Add to dashboard</button>
+      <button class="btn-secondary" onclick="showScreen(2)">← Back to results</button>
+    </div>
+  </div>
+
+  <!-- Screen 5: Ready -->
+  <div class="screen" id="screen-4">
+    <div class="window-bar">
+      <div class="window-dot r"></div>
+      <div class="window-dot y"></div>
+      <div class="window-dot g"></div>
+      <div class="window-title">PiDash</div>
+    </div>
+    <div class="screen-body">
+      <div class="ready-header">
+        <div class="ready-icon">✓</div>
+        <h2>You're all set!</h2>
+        <p>Your agents are ready. Launch any of them from the dashboard.</p>
+      </div>
+      <div class="ready-agents">
+        <div class="ready-agent">
+          <div class="status"></div>
+          <div class="agent-icon omp" style="width:32px;height:32px;font-size:14px;border-radius:8px;">π</div>
+          <div class="name">Oh My Pi</div>
+          <button class="launch-btn">Launch</button>
+        </div>
+        <div class="ready-agent">
+          <div class="status"></div>
+          <div class="agent-icon cursor" style="width:32px;height:32px;font-size:14px;border-radius:8px;">▶</div>
+          <div class="name">Cursor</div>
+          <button class="launch-btn">Launch</button>
+        </div>
+        <div class="ready-agent">
+          <div class="status"></div>
+          <div class="agent-icon aider" style="width:32px;height:32px;font-size:14px;border-radius:8px;">◆</div>
+          <div class="name">Aider</div>
+          <button class="launch-btn">Launch</button>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showScreen(0)">Open Dashboard</button>
+      <button class="btn-secondary" onclick="showScreen(3)">+ Add another agent</button>
+    </div>
+  </div>
+
+  <!-- Screen 6: No Agents Found -->
+  <div class="screen" id="screen-5">
+    <div class="window-bar">
+      <div class="window-dot r"></div>
+      <div class="window-dot y"></div>
+      <div class="window-dot g"></div>
+      <div class="window-title">PiDash — No Agents Found</div>
+    </div>
+    <div class="screen-body">
+      <div class="no-agents-header">
+        <div class="no-agents-icon">⚠</div>
+        <h2>No agents found</h2>
+        <p>We didn't find any AI coding agents installed on your system.<br>Here are some popular options to get you started:</p>
+      </div>
+      <div class="suggestion-list">
+        <div class="suggestion-card">
+          <div class="agent-icon omp">π</div>
+          <div class="suggestion-info">
+            <div class="suggestion-name">Oh My Pi</div>
+            <div class="suggestion-desc">Advanced AI coding assistant with multi-agent orchestration</div>
+          </div>
+          <a href="https://ohmypile.com" target="_blank" class="suggestion-btn">Download</a>
+        </div>
+        <div class="suggestion-card">
+          <div class="agent-icon cursor">▶</div>
+          <div class="suggestion-info">
+            <div class="suggestion-name">Cursor</div>
+            <div class="suggestion-desc">AI-first code editor built for pair programming with AI</div>
+          </div>
+          <a href="https://cursor.sh" target="_blank" class="suggestion-btn">Download</a>
+        </div>
+        <div class="suggestion-card">
+          <div class="agent-icon aider">◆</div>
+          <div class="suggestion-info">
+            <div class="suggestion-name">Aider</div>
+            <div class="suggestion-desc">AI pair programming in your terminal</div>
+          </div>
+          <a href="https://aider.chat" target="_blank" class="suggestion-btn">Download</a>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showScreen(3)">Add agent manually</button>
+      <button class="btn-secondary" onclick="showScreen(1)">← Scan again</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showScreen(index) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + index).classList.add('active');
+    document.querySelectorAll('.flow-nav button').forEach((btn, i) => {
+      btn.classList.toggle('active', i === index);
+    });
+  }
+  function toggleAgent(card) {
+    card.classList.toggle('selected');
+  }
+</script>
+</body>
+</html>

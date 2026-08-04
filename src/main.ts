@@ -1,5 +1,6 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import path from 'path'
+import { registerIpcHandlers } from './main/ipc-handlers'
 
 const isDev = !app.isPackaged
 
@@ -23,8 +24,10 @@ function createWindow(): void {
     win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
   }
 }
-
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  registerIpcHandlers()
+  createWindow()
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()

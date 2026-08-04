@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
+const ipc_handlers_1 = require("./main/ipc-handlers");
 const isDev = !electron_1.app.isPackaged;
 electron_1.Menu.setApplicationMenu(null);
 function createWindow() {
@@ -25,7 +26,10 @@ function createWindow() {
         win.loadFile(path_1.default.join(__dirname, 'renderer', 'index.html'));
     }
 }
-electron_1.app.whenReady().then(createWindow);
+electron_1.app.whenReady().then(() => {
+    (0, ipc_handlers_1.registerIpcHandlers)();
+    createWindow();
+});
 electron_1.app.on('window-all-closed', () => {
     if (process.platform !== 'darwin')
         electron_1.app.quit();
