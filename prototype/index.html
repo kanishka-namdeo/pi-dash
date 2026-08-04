@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pi Orchestrator - Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <span>Pi Orchestrator</span>
+    </div>
+    <div class="project-name mono">pi-dash</div>
+    <div class="mode-selector">
+      <div class="mode-btn">auto</div>
+      <div class="mode-btn active">supervised</div>
+      <div class="mode-btn">manual</div>
+    </div>
+    <div class="controls">
+      <button class="ctrl-btn" title="Pause">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <rect x="2" y="1" width="3" height="10" rx="1"/>
+          <rect x="7" y="1" width="3" height="10" rx="1"/>
+        </svg>
+      </button>
+      <button class="ctrl-btn danger" title="Stop">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <rect x="2" y="2" width="8" height="8" rx="1.5"/>
+        </svg>
+      </button>
+      <button class="ctrl-btn" title="New Task">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="6" y1="2" x2="6" y2="10"/>
+          <line x1="2" y1="6" x2="10" y2="6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="fleet">
+      <div class="panel-header">
+        <span>Fleet</span>
+        <span class="count">5</span>
+      </div>
+      <div class="agent-list" id="agentList"></div>
+    </aside>
+
+    <section class="plan">
+      <div class="panel-header">
+        <span>Active Plan</span>
+        <span class="count">4 steps</span>
+      </div>
+      <div class="plan-content"></div>
+    </section>
+
+    <aside class="activity">
+      <div class="activity-header">
+        <span>Activity</span>
+        <div class="live-dot"></div>
+      </div>
+      <div class="activity-list" id="activityList"></div>
+    </aside>
+  </div>
+
+  <footer class="metrics"></footer>
+
+  <script src="js/agents.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/orchestrator.js"></script>
+  <script src="js/swarm.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

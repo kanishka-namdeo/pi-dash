@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pi Orchestrator - Clickable Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="flow.css">
+</head>
+<body>
+  <!-- Screen 1: Goal Input -->
+  <div id="screen-goal" class="screen active">
+    <header class="topbar">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>Pi Orchestrator</span>
+      </div>
+      <div class="project-name mono">pi-dash</div>
+    </header>
+    
+    <main class="goal-container">
+      <div class="goal-card">
+        <h1 class="goal-title">What do you want to build?</h1>
+        <p class="goal-subtitle">Describe your objective and the orchestrator will create a plan with the right agent team.</p>
+        
+        <div class="goal-input-wrapper">
+          <textarea 
+            id="goalInput" 
+            class="goal-textarea" 
+            placeholder="e.g., Implement user authentication with JWT tokens, including login, logout, and session management..."
+            rows="5"
+          ></textarea>
+        </div>
+        
+        <div class="mode-selector">
+          <label class="mode-label">Execution mode</label>
+          <div class="mode-options">
+            <label class="mode-option">
+              <input type="radio" name="mode" value="auto">
+              <div class="mode-card">
+                <div class="mode-name">Auto</div>
+                <div class="mode-desc">Fully autonomous execution</div>
+              </div>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="mode" value="supervised" checked>
+              <div class="mode-card">
+                <div class="mode-name">Supervised</div>
+                <div class="mode-desc">Approve each step before execution</div>
+              </div>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="mode" value="manual">
+              <div class="mode-card">
+                <div class="mode-name">Manual</div>
+                <div class="mode-desc">Execute only when you command</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <button id="generatePlanBtn" class="btn-primary">
+          <span>Generate Plan</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="8" x2="13" y2="8"/>
+            <polyline points="9,4 13,8 9,12"/>
+          </svg>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Screen 2: Plan Review -->
+  <div id="screen-plan" class="screen">
+    <header class="topbar">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>Pi Orchestrator</span>
+      </div>
+      <div class="project-name mono">pi-dash</div>
+      <button id="backToGoalBtn" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="11" y1="7" x2="3" y2="7"/>
+          <polyline points="7,3 3,7 7,11"/>
+        </svg>
+        <span>Back</span>
+      </button>
+    </header>
+    
+    <main class="plan-container">
+      <div class="plan-header">
+        <div>
+          <h1 class="plan-title" id="planTitle">Implement user authentication</h1>
+          <p class="plan-meta">4 steps · Estimated 12 min · 3 agents</p>
+        </div>
+        <div class="plan-actions">
+          <button class="btn-secondary" id="editPlanBtn">Edit Plan</button>
+          <button class="btn-primary" id="approvePlanBtn">
+            <span>Approve & Execute</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="plan-layout">
+        <div class="plan-graph">
+          <svg id="planGraph" width="100%" height="200" viewBox="0 0 800 200"></svg>
+        </div>
+        
+        <div class="plan-steps">
+          <div class="step-card" data-step="1">
+            <div class="step-header">
+              <div class="step-number">1</div>
+              <div class="step-info">
+                <div class="step-name">Research existing auth patterns</div>
+                <div class="step-agent">
+                  <span class="agent-badge scout">Scout</span>
+                  <span class="step-duration">~2 min</span>
+                </div>
+              </div>
+              <div class="step-controls">
+                <button class="step-btn" title="Edit step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M10 2l2 2-7 7H3v-2l7-7z"/>
+                  </svg>
+                </button>
+                <button class="step-btn" title="Remove step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="3" y1="3" x2="11" y2="11"/>
+                    <line x1="11" y1="3" x2="3" y2="11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="step-description">Analyze current codebase for existing authentication patterns and dependencies</div>
+          </div>
+          
+          <div class="step-card" data-step="2">
+            <div class="step-header">
+              <div class="step-number">2</div>
+              <div class="step-info">
+                <div class="step-name">Implement JWT middleware</div>
+                <div class="step-agent">
+                  <span class="agent-badge worker">Worker</span>
+                  <span class="step-duration">~4 min</span>
+                </div>
+              </div>
+              <div class="step-controls">
+                <button class="step-btn" title="Edit step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M10 2l2 2-7 7H3v-2l7-7z"/>
+                  </svg>
+                </button>
+                <button class="step-btn" title="Remove step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="3" y1="3" x2="11" y2="11"/>
+                    <line x1="11" y1="3" x2="3" y2="11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="step-description">Create JWT token generation, validation, and refresh logic</div>
+          </div>
+          
+          <div class="step-card" data-step="3">
+            <div class="step-header">
+              <div class="step-number">3</div>
+              <div class="step-info">
+                <div class="step-name">Build login/logout endpoints</div>
+                <div class="step-agent">
+                  <span class="agent-badge worker">Worker</span>
+                  <span class="step-duration">~4 min</span>
+                </div>
+              </div>
+              <div class="step-controls">
+                <button class="step-btn" title="Edit step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M10 2l2 2-7 7H3v-2l7-7z"/>
+                  </svg>
+                </button>
+                <button class="step-btn" title="Remove step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="3" y1="3" x2="11" y2="11"/>
+                    <line x1="11" y1="3" x2="3" y2="11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="step-description">Create REST API endpoints for authentication flows</div>
+          </div>
+          
+          <div class="step-card" data-step="4">
+            <div class="step-header">
+              <div class="step-number">4</div>
+              <div class="step-info">
+                <div class="step-name">Review and test</div>
+                <div class="step-agent">
+                  <span class="agent-badge reviewer">Reviewer</span>
+                  <span class="step-duration">~2 min</span>
+                </div>
+              </div>
+              <div class="step-controls">
+                <button class="step-btn" title="Edit step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M10 2l2 2-7 7H3v-2l7-7z"/>
+                  </svg>
+                </button>
+                <button class="step-btn" title="Remove step">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="3" y1="3" x2="11" y2="11"/>
+                    <line x1="11" y1="3" x2="3" y2="11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="step-description">Code review, write tests, verify security best practices</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Screen 3: Live Execution -->
+  <div id="screen-execution" class="screen">
+    <header class="topbar">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>Pi Orchestrator</span>
+      </div>
+      <div class="project-name mono">pi-dash</div>
+      <div class="mode-indicator">
+        <div class="mode-dot supervised"></div>
+        <span>Supervised</span>
+      </div>
+      <div class="execution-controls">
+        <button id="pauseBtn" class="ctrl-btn" title="Pause execution">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <rect x="2" y="1" width="3" height="10" rx="1"/>
+            <rect x="7" y="1" width="3" height="10" rx="1"/>
+          </svg>
+        </button>
+        <button id="stopBtn" class="ctrl-btn danger" title="Stop execution">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <rect x="2" y="2" width="8" height="8" rx="1.5"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="main">
+      <aside class="fleet">
+        <div class="panel-header">
+          <span>Fleet</span>
+          <span class="count">4</span>
+        </div>
+        <div class="agent-list" id="agentList"></div>
+      </aside>
+
+      <section class="plan">
+        <div class="panel-header">
+          <span>Active Plan</span>
+          <span class="count" id="stepCount">4 steps</span>
+        </div>
+        <div class="plan-content" id="executionPlan"></div>
+      </section>
+
+      <aside class="activity">
+        <div class="activity-header">
+          <span>Activity</span>
+          <div class="live-dot"></div>
+        </div>
+        <div class="activity-list" id="activityList"></div>
+      </aside>
+    </div>
+
+    <footer class="metrics">
+      <div class="metric">
+        <span class="metric-label">Progress</span>
+        <span class="metric-value mono" id="progressPct">0%</span>
+      </div>
+      <div class="metric-sep"></div>
+      <div class="metric">
+        <span class="metric-label">Elapsed</span>
+        <span class="metric-value mono" id="elapsed">0:00</span>
+      </div>
+      <div class="metric-sep"></div>
+      <div class="metric">
+        <span class="metric-label">Active</span>
+        <span class="metric-value mono" id="activeAgents">0</span>
+      </div>
+      <div class="metric-sep"></div>
+      <div class="metric">
+        <span class="metric-label">Tokens</span>
+        <span class="metric-value warn mono" id="tokens">0</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Screen 4: Completion -->
+  <div id="screen-complete" class="screen">
+    <header class="topbar">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>Pi Orchestrator</span>
+      </div>
+      <div class="project-name mono">pi-dash</div>
+    </header>
+    
+    <main class="complete-container">
+      <div class="complete-card">
+        <div class="complete-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" stroke="var(--emerald)" stroke-width="2"/>
+            <path d="M14 24l7 7 13-13" stroke="var(--emerald)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="complete-title">Plan completed successfully</h1>
+        <p class="complete-subtitle">All 4 steps executed in 11m 42s</p>
+        
+        <div class="complete-stats">
+          <div class="stat">
+            <div class="stat-value mono">4</div>
+            <div class="stat-label">Steps completed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value mono">12</div>
+            <div class="stat-label">Files changed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value mono">3</div>
+            <div class="stat-label">Agents used</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value mono good">94%</div>
+            <div class="stat-label">Test pass rate</div>
+          </div>
+        </div>
+        
+        <div class="complete-files">
+          <h3 class="files-title">Files changed</h3>
+          <div class="file-list">
+            <div class="file-item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 1H3a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V5L8 1z"/>
+                <polyline points="8,1 8,5 12,5"/>
+              </svg>
+              <span class="file-name mono">src/auth/jwt.ts</span>
+              <span class="file-status added">added</span>
+            </div>
+            <div class="file-item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 1H3a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V5L8 1z"/>
+                <polyline points="8,1 8,5 12,5"/>
+              </svg>
+              <span class="file-name mono">src/routes/auth.ts</span>
+              <span class="file-status added">added</span>
+            </div>
+            <div class="file-item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 1H3a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V5L8 1z"/>
+                <polyline points="8,1 8,5 12,5"/>
+              </svg>
+              <span class="file-name mono">src/middleware/auth.ts</span>
+              <span class="file-status modified">modified</span>
+            </div>
+            <div class="file-item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 1H3a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V5L8 1z"/>
+                <polyline points="8,1 8,5 12,5"/>
+              </svg>
+              <span class="file-name mono">tests/auth.test.ts</span>
+              <span class="file-status added">added</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="complete-actions">
+          <button class="btn-secondary" id="viewDiffBtn">View Changes</button>
+          <button class="btn-primary" id="newTaskBtn">Start New Task</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Agent Detail Slide-in Panel -->
+  <div id="agentPanel" class="agent-panel">
+    <div class="agent-panel-header">
+      <div class="agent-panel-icon" id="panelAgentIcon">S</div>
+      <div>
+        <div class="agent-panel-name" id="panelAgentName">Scout</div>
+        <div class="agent-panel-role" id="panelAgentRole">Code analysis specialist</div>
+      </div>
+      <button id="closePanelBtn" class="panel-close">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="4" x2="12" y2="12"/>
+          <line x1="12" y1="4" x2="4" y2="12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="agent-panel-content">
+      <div class="panel-section">
+        <div class="panel-label">Current task</div>
+        <div class="panel-value" id="panelAgentTask">Analyzing JWT token structure</div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">Progress</div>
+        <div class="panel-progress">
+          <div class="panel-progress-bar" id="panelAgentProgress" style="width: 72%"></div>
+        </div>
+        <div class="panel-progress-text mono" id="panelAgentProgressText">72%</div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">Files touched</div>
+        <div class="panel-files" id="panelAgentFiles">
+          <span class="panel-file mono">src/auth/jwt.ts</span>
+          <span class="panel-file mono">src/models/user.ts</span>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">Messages</div>
+        <div class="panel-messages" id="panelAgentMessages">
+          <div class="panel-message">
+            <div class="message-time mono">14:02</div>
+            <div class="message-text">Found existing session pattern in src/utils/session.ts</div>
+          </div>
+          <div class="panel-message">
+            <div class="message-time mono">14:01</div>
+            <div class="message-text">Starting JWT structure analysis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="flow.js"></script>
+</body>
+</html>
