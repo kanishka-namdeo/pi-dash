@@ -1,7 +1,7 @@
 # Onboarding Flow Design Spec
 
-**Date:** 2026-08-04  
-**Status:** Draft  
+**Date:** 2026-08-04
+**Status:** Approved
 **Author:** PiDash Team
 
 ---
@@ -67,6 +67,95 @@ The Electron main process handles all agent scanning using Node.js APIs. Detecte
 - **Security** — renderer never touches filesystem directly
 - **Standard Electron pattern** — main process handles system-level work
 
+### File Structure
+
+```
+src/
+├── main/
+│   ├── agent-scanner.ts      # Detection logic
+│   ├── agent-store.ts         # Persistence
+│   └── ipc-handlers.ts        # IPC channel registration
+├── preload/
+│   └── index.ts               # contextBridge API
+└── renderer/
+    └── src/
+        ├── components/
+        │   └── onboarding/
+        │       ├── OnboardingFlow.tsx
+        │       ├── WelcomeScreen.tsx
+        │       ├── ScanningScreen.tsx
+        │       ├── ResultsScreen.tsx
+        │       ├── ManualAddScreen.tsx
+        │       ├── ReadyScreen.tsx
+        │       └── NoAgentsScreen.tsx
+        └── hooks/
+            └── useOnboardingState.ts
+```
+
+---
+
+## IPC API Contract
+
+### Channels
+
+| Channel | Direction | Args | Returns |
+|---|---|---|---|
+| `scan-agents` | renderer → main | none | `ScanResult` |
+| `validate-agent` | renderer → main | `{ path: string }` | `ValidationResult` |
+| `identify-agent` | renderer → main | `{ path: string }` | `IdentificationResult` |
+| `get-agents` | renderer → main | none | `AgentConfig[]` |
+| `save-agents` | renderer → main | `{ agents: AgentConfig[] }` | `void` |
+| `complete-onboarding` | renderer → main | none | `void` |
+| `launch-agent` | renderer → main | `{ id: string }` | `{ pid: number }` |
+| `scan-progress` | main → renderer | — | `ScanProgress` (event) |
+
+### Types
+
+```ts
+type ScanResult = {
+  agents: AgentConfig[];
+  warnings: string[];        // e.g. "Couldn't read ~/scoop/shims — permission denied"
+  locationsScanned: number;
+  duration: number;          // ms
+};
+
+type ScanProgress = {
+  location: string;          // current location being scanned
+  status: 'scanning' | 'done';
+  found: number;             // agents found so far
+};
+
+type ValidationResult = {
+  valid: boolean;
+  error?: string;            // human-readable error if invalid
+  executable: boolean;
+  isDirectory: boolean;
+};
+
+type IdentificationResult = {
+  knownAgentId?: string;     // matches a KNOWN_AGENTS entry
+  suggestedName: string;     // auto-detected display name
+  suggestedIcon: string;     // auto-detected icon key
+  confidence: 'high' | 'medium' | 'low';
+};
+```
+
+### Preload Bridge
+
+```ts
+// preload/index.ts — exposed via contextBridge
+interface PiDashAPI {
+  scanAgents(): Promise<ScanResult>;
+  validateAgent(path: string): Promise<ValidationResult>;
+  identifyAgent(path: string): Promise<IdentificationResult>;
+  getAgents(): Promise<AgentConfig[]>;
+  saveAgents(agents: AgentConfig[]): Promise<void>;
+  completeOnboarding(): Promise<void>;
+  launchAgent(id: string): Promise<{ pid: number }>;
+  onScanProgress(callback: (progress: ScanProgress) => void): () => void;
+}
+```
+
 ---
 
 ## Detection Strategy
@@ -75,22 +164,81 @@ The Electron main process handles all agent scanning using Node.js APIs. Detecte
 
 | Platform | Locations |
 |---|---|
-| **Windows** | `%LOCALAPPDATA%\Programs`, `%APPDATA%\npm`, `scoop\shims`, `chocolatey\bin`, system PATH |
-| **macOS** | `/Applications`, `/usr/local/bin`, `~/Applications`, Homebrew `/opt/homebrew/bin` |
+| **Windows** | `%LOCALAPPDATA%\Programs`, `%APPDATA%\npm`, `scoop\shims`, `chocolatey\bin`, system PATH, registry `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*` + `HKCU\...\Uninstall\*` |
+| **macOS** | `/Applications`, `/usr/local/bin`, `~/Applications`, Homebrew `/opt/homebrew/bin`, system PATH |
 | **Linux** | `/usr/bin`, `/usr/local/bin`, `~/.local/bin`, `~/bin`, system PATH |
 
 ### Known Agent Registry
 
-Built into the scanner:
+Built into the scanner. Each entry defines detection patterns and UI metadata:
 
 ```ts
-const KNOWN_AGENTS = [
-  { id: 'omp',      name: 'Oh My Pi',    binaries: ['omp', 'omp.exe'],       icon: 'omp'      },
-  { id: 'cursor',   name: 'Cursor',      binaries: ['cursor', 'cursor.exe'], icon: 'cursor'   },
-  { id: 'aider',    name: 'Aider',       binaries: ['aider', 'aider.exe'],   icon: 'aider'    },
-  { id: 'codex',    name: 'Codex CLI',   binaries: ['codex', 'codex.exe'],   icon: 'codex'    },
-  { id: 'continue', name: 'Continue',    binaries: ['continue'],             icon: 'continue' },
+const KNOWN_AGENTS: KnownAgent[] = [
+  {
+    id: 'omp',
+    name: 'Oh My Pi',
+    binaries: ['omp', 'omp.exe'],
+    icon: 'omp',
+    configPaths: ['~/.omp/config.json'],
+    versionFlag: '--version',
+  },
+  {
+    id: 'cursor',
+    name: 'Cursor',
+    binaries: ['cursor', 'cursor.exe'],
+    icon: 'cursor',
+    configPaths: ['~/.cursor/config.json', '~/AppData/Roaming/Cursor/User/settings.json'],
+    versionFlag: '--version',
+  },
+  {
+    id: 'aider',
+    name: 'Aider',
+    binaries: ['aider', 'aider.exe'],
+    icon: 'aider',
+    configPaths: ['~/.aider/config.yml'],
+    versionFlag: '--version',
+  },
+  {
+    id: 'codex',
+    name: 'Codex CLI',
+    binaries: ['codex', 'codex.exe'],
+    icon: 'codex',
+    configPaths: ['~/.codex/config.json'],
+    versionFlag: '--version',
+  },
+  {
+    id: 'continue',
+    name: 'Continue',
+    binaries: ['continue'],
+    icon: 'continue',
+    configPaths: ['~/.continue/config.json'],
+    versionFlag: '--version',
+  },
 ];
+
+type KnownAgent = {
+  id: string;
+  name: string;
+  binaries: string[];
+  icon: string;
+  configPaths?: string[];  // for smart defaults detection
+  versionFlag?: string;    // defaults to '--version'
+};
+```
+
+### Icon Registry
+
+Each icon key maps to a gradient + symbol, used throughout the UI:
+
+```ts
+const ICON_REGISTRY: Record<string, { gradient: string; symbol: string }> = {
+  omp:      { gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)', symbol: 'π' },
+  cursor:   { gradient: 'linear-gradient(135deg, #1e1e2e, #333)',    symbol: '▶' },
+  aider:    { gradient: 'linear-gradient(135deg, #f59e0b, #d97706)', symbol: '◆' },
+  codex:    { gradient: 'linear-gradient(135deg, #22c55e, #16a34a)', symbol: '⬡' },
+  continue: { gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)', symbol: '◎' },
+  generic:  { gradient: 'linear-gradient(135deg, #6b7280, #4b5563)', symbol: '◈' },
+};
 ```
 
 ### Detection Algorithm
@@ -186,6 +334,8 @@ OnboardingFlow.tsx
 ### Props Interface
 
 ```ts
+type ScreenName = 'welcome' | 'scanning' | 'results' | 'manual-add' | 'ready' | 'no-agents';
+
 type OnboardingScreenProps = {
   onNavigate: (screen: ScreenName) => void;
   agents: AgentConfig[];
@@ -205,10 +355,11 @@ type OnboardingScreenProps = {
 type AgentConfig = {
   id: string;           // unique (uuid for manual, known id for detected)
   name: string;         // display name
-  icon: string;         // icon key → maps to color/gradient
+  icon: string;         // icon key → maps to color/gradient via ICON_REGISTRY
   path: string;         // absolute path to executable
   source: 'detected' | 'manual';
   fingerprint?: string; // binary name + version hash for deduplication
+  pid?: number;         // running process ID, set after launch
 };
 ```
 
@@ -322,6 +473,17 @@ When user clicks "Launch" on an agent:
 
 ---
 
+## Accessibility
+
+- All buttons are focusable and activatable via keyboard (Enter/Space)
+- Color is not the only indicator — status dots paired with text labels
+- Sufficient contrast ratios (WCAG AA minimum)
+- ARIA labels for icon-only buttons (close, browse, toggle)
+- Screen reader announcements for state transitions (scanning complete, agent added)
+- Focus management: when transitioning between screens, focus moves to the primary action button
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
@@ -402,26 +564,26 @@ The onboarding flow is successful if:
 
 ## Open Questions
 
-1. **Should we offer to install agents from the NoAgents screen?**  
-   - Pro: Reduces friction, keeps users in the app  
-   - Con: Adds complexity, potential security concerns with auto-installers  
+1. **Should we offer to install agents from the NoAgents screen?**
+   - Pro: Reduces friction, keeps users in the app
+   - Con: Adds complexity, potential security concerns with auto-installers
    - **Decision:** Out of scope for v1. Revisit based on user feedback.
 
-2. **Should we support agent profiles (work vs personal)?**  
-   - Pro: Useful for users with multiple setups  
-   - Con: Adds UI complexity, most users won't need it  
+2. **Should we support agent profiles (work vs personal)?**
+   - Pro: Useful for users with multiple setups
+   - Con: Adds UI complexity, most users won't need it
    - **Decision:** Out of scope for v1. Can be added as a "Manage Agents" feature later.
 
-3. **Should we validate agents by running them?**  
-   - Pro: Catches broken installs, confirms agent type  
-   - Con: Slows down scanning, potential side effects  
+3. **Should we validate agents by running them?**
+   - Pro: Catches broken installs, confirms agent type
+   - Con: Slows down scanning, potential side effects
    - **Decision:** Yes, but with a 3-second timeout and graceful fallback.
 
 ---
 
 ## Appendix: Mockup
 
-A clickable HTML mockup demonstrating the full onboarding flow is available at:  
+A clickable HTML mockup demonstrating the full onboarding flow is available at:
 `D:/test_misc/pi-dash/onboarding-mockup.html`
 
 Open in any browser to walk through all 6 screens.
