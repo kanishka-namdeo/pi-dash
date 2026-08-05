@@ -21,6 +21,8 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
   const fitAddonRef = useRef<FitAddon | null>(null);
   const [contentMode, setContentMode] = useState<OverlayContentMode>('preview');
   const [isDragging, setIsDragging] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -33,6 +35,20 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!overlayRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(overlayRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const { state: sessionState, spawn, write, resize } = useSession(overlay.agentId);
@@ -59,7 +75,7 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
 
   // Initialize terminal
   useEffect(() => {
-    if (!terminalRef.current || (contentMode !== 'preview' && contentMode !== 'rich')) return;
+    if (!terminalRef.current || !isVisible || (contentMode !== 'preview' && contentMode !== 'rich')) return;
 
     const term = new Terminal({
       cursorBlink: false,
@@ -110,7 +126,7 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
       termRef.current = null;
       fitAddonRef.current = null;
     };
-  }, [overlay.agentId, contentMode]);
+  }, [overlay.agentId, contentMode, isVisible]);
 
   // Fit terminal on resize
   useEffect(() => {
@@ -194,6 +210,7 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
       style={{
         zIndex: overlay.zIndex,
         transition: isDragging ? 'none' : 'transform 0.1s ease',
+        willChange: isDragging ? 'transform' : 'auto',
       }}
       className={`group ${isDragging && !prefersReducedMotion ? 'scale-[0.98]' : ''}`}
       onDragStart={() => setIsDragging(true)}
@@ -202,8 +219,8 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
       onClick={() => actions.bringOverlayToFront(overlay.agentId)}
     >
       <div
+        ref={overlayRef}
         tabIndex={0}
-        onKeyDown={handleKeyDown}
         className="h-full flex flex-col bg-[#1a1a1a] border border-[#2a2a2a] rounded-[6px] overflow-hidden focus-within:outline focus-within:outline-2 focus-within:outline-[#3b82f6]"
       >
         {/* Header */}
