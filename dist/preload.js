@@ -12,6 +12,7 @@ electron_1.contextBridge.exposeInMainWorld('api', {
     getAgents: () => electron_1.ipcRenderer.invoke('get-agents'),
     saveAgents: (agents) => electron_1.ipcRenderer.invoke('save-agents', agents),
     completeOnboarding: () => electron_1.ipcRenderer.invoke('complete-onboarding'),
+    getOnboardingStatus: () => electron_1.ipcRenderer.invoke('get-onboarding-status'),
     launchAgent: (id) => electron_1.ipcRenderer.invoke('launch-agent', id),
 });
 //# sourceMappingURL=preload.js.map

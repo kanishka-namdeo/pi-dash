@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import * as React from 'react';
+import type { ScreenName, AgentConfig } from '../../types';
 
 vi.mock('./WelcomeScreen', () => ({ WelcomeScreen: () => <div data-testid="welcome">WelcomeScreen</div> }));
 vi.mock('./ScanningScreen', () => ({ ScanningScreen: () => <div data-testid="scanning">ScanningScreen</div> }));
@@ -10,8 +11,18 @@ vi.mock('./ManualAddScreen', () => ({ ManualAddScreen: () => <div data-testid="m
 vi.mock('./NoAgentsScreen', () => ({ NoAgentsScreen: () => <div data-testid="no-agents">NoAgentsScreen</div> }));
 vi.mock('./ReadyScreen', () => ({ ReadyScreen: () => <div data-testid="ready">ReadyScreen</div> }));
 
-const mockState = {
-  currentScreen: 'welcome' as const,
+const mockState: {
+  currentScreen: ScreenName;
+  agents: AgentConfig[];
+  selectedAgents: string[];
+  navigateTo: Mock;
+  setAgents: Mock;
+  addAgent: Mock;
+  toggleAgent: Mock;
+  selectAll: Mock;
+  deselectAll: Mock;
+} = {
+  currentScreen: 'welcome',
   agents: [],
   selectedAgents: [],
   navigateTo: vi.fn(),

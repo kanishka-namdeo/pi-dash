@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import type { Agent, ScreenName } from '../types';
+import type { AgentConfig, ScreenName } from '../../../src/shared/types';
 
 export function useOnboardingState() {
   const [currentScreen, setCurrentScreen] = useState<ScreenName>('welcome');
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const [agents, setAgents] = useState<AgentConfig[]>([]);
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
 
   const navigateTo = (screen: ScreenName) => {
     setCurrentScreen(screen);
   };
 
-  const addAgent = (agent: Agent) => {
+  const addAgent = (agent: AgentConfig) => {
     setAgents(prev => [...prev, agent]);
     setSelectedAgents(prev => [...prev, agent.id]);
   };
