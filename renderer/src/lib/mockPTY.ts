@@ -22,6 +22,7 @@ export type MockPTY = {
 
 export function createMockPTY(agentId: string, config: AgentConfig): MockPTY {
   let state: SessionState = 'idle';
+  let pendingTimer: number | undefined;
   const history: CommandBlock[] = [];
   const dataCallbacks: ((data: string) => void)[] = [];
   const stateCallbacks: ((state: SessionState) => void)[] = [];
@@ -52,7 +53,7 @@ export function createMockPTY(agentId: string, config: AgentConfig): MockPTY {
       const { response, delay } = getMockResponse(agentId, input);
       const delayMs = delay.min + Math.random() * (delay.max - delay.min);
       
-      setTimeout(() => {
+      pendingTimer = setTimeout(() => {
         emitData(response + '\n');
         
         const block: CommandBlock = {
@@ -64,8 +65,8 @@ export function createMockPTY(agentId: string, config: AgentConfig): MockPTY {
           isCollapsed: false,
         };
         
+        pendingTimer = undefined;
         history.push(block);
-        setState('waiting');
       }, delayMs);
     },
     
@@ -94,10 +95,18 @@ export function createMockPTY(agentId: string, config: AgentConfig): MockPTY {
     },
     
     kill() {
+      if (pendingTimer !== undefined) {
+        clearTimeout(pendingTimer);
+        pendingTimer = undefined;
+      }
       setState('killed');
     },
     
     restart() {
+      if (pendingTimer !== undefined) {
+        clearTimeout(pendingTimer);
+        pendingTimer = undefined;
+      }
       history.length = 0;
       setState('idle');
     },
