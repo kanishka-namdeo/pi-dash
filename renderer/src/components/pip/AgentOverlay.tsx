@@ -11,10 +11,9 @@ import type { Overlay, OverlayContentMode } from '../../types/pip';
 type AgentOverlayProps = {
   overlay: Overlay;
   agentName: string;
-  agentStatus: 'idle' | 'running' | 'exited';
 };
 
-export function AgentOverlay({ overlay, agentName, agentStatus }: AgentOverlayProps) {
+export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
   const { actions } = usePiPContext();
   const terminalRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
@@ -133,8 +132,16 @@ export function AgentOverlay({ overlay, agentName, agentStatus }: AgentOverlayPr
     const nextIndex = (currentIndex + 1) % modes.length;
     setContentMode(modes[nextIndex]);
   };
-
-  const statusColor = agentStatus === 'running' ? '#3b82f6' : agentStatus === 'exited' ? '#dc2626' : '#737373';
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      actions.promoteToMain(overlay.agentId);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      actions.removeOverlay(overlay.agentId);
+    }
+  };
+  const statusColor = sessionState === 'running' ? '#3b82f6' : sessionState === 'exited' ? '#dc2626' : '#737373';
 
   return (
     <Rnd
@@ -160,7 +167,11 @@ export function AgentOverlay({ overlay, agentName, agentStatus }: AgentOverlayPr
       onResizeStop={handleResizeStop}
       onClick={() => actions.bringOverlayToFront(overlay.agentId)}
     >
-      <div className="h-full flex flex-col bg-[#1a1a1a] border border-[#2a2a2a] rounded-[6px] overflow-hidden focus-within:outline focus-within:outline-2 focus-within:outline-[#3b82f6]">
+      <div
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        className="h-full flex flex-col bg-[#1a1a1a] border border-[#2a2a2a] rounded-[6px] overflow-hidden focus-within:outline focus-within:outline-2 focus-within:outline-[#3b82f6]"
+      >
         {/* Header */}
         <div
           className="overlay-header flex items-center gap-2 px-3 py-2 bg-[#0a0a0a] border-b border-[#2a2a2a] cursor-move select-none"
@@ -199,7 +210,7 @@ export function AgentOverlay({ overlay, agentName, agentStatus }: AgentOverlayPr
                   style={{ backgroundColor: statusColor }}
                 />
                 <p className="text-[10px] uppercase tracking-wide text-[#737373]">
-                  {agentStatus}
+                  {sessionState}
                 </p>
               </div>
             </div>
