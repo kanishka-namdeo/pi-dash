@@ -14,7 +14,7 @@ declare global {
       saveAgents: (agents: AgentConfig[]) => Promise<void>;
       completeOnboarding: () => Promise<void>;
       getOnboardingStatus: () => Promise<boolean>;
-      launchAgent: (id: string) => Promise<void>;
+      launchAgent: (id: string) => Promise<{ pid: number }>;
       openExternal: (url: string) => void;
     };
   }
