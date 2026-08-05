@@ -7,6 +7,7 @@ export type Agent = {
   status: 'active' | 'idle' | 'paused';
   task: string;
   progress: number;
+  path?: string;
   files?: string[];
   messages?: { time: string; text: string }[];
 };

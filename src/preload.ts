@@ -56,4 +56,7 @@ contextBridge.exposeInMainWorld('api', {
       return () => ipcRenderer.removeListener('session:exit', listener);
     },
   } satisfies SessionAPI,
+
+  // Dialog
+  openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
 });

@@ -50,4 +50,12 @@ export function registerIpcHandlers(): void {
     child.unref();
     return { pid: child.pid };
   });
+  ipcMain.handle('dialog:openDirectory', async (_event) => {
+    const { dialog } = await import('electron');
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory'],
+    });
+    if (result.canceled) return null;
+    return result.filePaths[0];
+  });
 }

@@ -42,6 +42,13 @@ export function Dashboard() {
     navigate(`/agent/${agentId}`);
   };
 
+  const handleLaunch = async (agentId: string) => {
+    const cwd = await window.api.openDirectory();
+    if (cwd) {
+      navigate(`/agent/${agentId}?cwd=${encodeURIComponent(cwd)}`);
+    }
+  };
+
   const handleViewCompletedWork = (agentId: string) => {
     navigate(`/completed/${agentId}`);
   };
@@ -95,14 +102,13 @@ export function Dashboard() {
         </button>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* Fleet Panel */}
         <div className={`${activeTab === 'fleet' ? 'block' : 'hidden'} md:block w-full md:w-80 border-r border-[#2a2a2a]`}>
           <FleetPanel
             agents={agents}
             selectedAgentId={selectedAgentId}
             onSelectAgent={setSelectedAgentId}
             onAgentClick={handleAgentClick}
+            onLaunch={handleLaunch}
           />
         </div>
 

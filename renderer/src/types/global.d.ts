@@ -1,6 +1,7 @@
 // TypeScript declarations for Electron preload API exposed via contextBridge
 
 import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult } from './index';
+import type { SessionAPI } from './session';
 
 declare global {
   interface Window {
@@ -16,6 +17,8 @@ declare global {
       getOnboardingStatus: () => Promise<boolean>;
       launchAgent: (id: string) => Promise<{ pid: number }>;
       openExternal: (url: string) => void;
+      openDirectory: () => Promise<string | null>;
+      session: SessionAPI;
     };
   }
 }

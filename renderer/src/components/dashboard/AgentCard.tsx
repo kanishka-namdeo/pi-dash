@@ -5,9 +5,10 @@ type AgentCardProps = {
   isSelected: boolean;
   onClick: () => void;
   onViewDetails: () => void;
+  onLaunch: (agentId: string) => void;
 };
 
-export function AgentCard({ agent, isSelected, onClick, onViewDetails }: AgentCardProps) {
+export function AgentCard({ agent, isSelected, onClick, onViewDetails, onLaunch }: AgentCardProps) {
   const statusColor =
     agent.status === 'active'
       ? 'bg-emerald-500'
@@ -16,6 +17,10 @@ export function AgentCard({ agent, isSelected, onClick, onViewDetails }: AgentCa
         : 'bg-gray-500';
 
   const barColor = agent.status === 'active' ? agent.textColor : '#f59e0b';
+
+  const displayPath = agent.path
+    ? agent.path.length > 50 ? `...${agent.path.slice(-47)}` : agent.path
+    : undefined;
 
   return (
     <div
@@ -36,7 +41,9 @@ export function AgentCard({ agent, isSelected, onClick, onViewDetails }: AgentCa
         </div>
         <div className={`w-2 h-2 rounded-full ${statusColor} ${agent.status === 'active' ? 'animate-pulse' : ''}`} />
       </div>
-      <div className="text-xs font-mono text-[#737373] truncate mb-2">{agent.task}</div>
+      {displayPath && (
+        <div className="text-xs font-mono text-[#737373] truncate mb-2" title={agent.path}>{displayPath}</div>
+      )}
 
       {agent.progress > 0 && (
         <div className="h-1 bg-[#2a2a2a] rounded-full overflow-hidden">
@@ -46,12 +53,20 @@ export function AgentCard({ agent, isSelected, onClick, onViewDetails }: AgentCa
           />
         </div>
       )}
-      <button
-        onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
-        className="mt-3 text-xs text-blue-500 hover:text-blue-400 transition-colors"
-      >
-        View Terminal →
-      </button>
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={(e) => { e.stopPropagation(); onLaunch(agent.id); }}
+          className="launch-button flex-1"
+        >
+          Launch
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
+          className="px-2 py-1 text-xs text-blue-500 hover:text-blue-400 transition-colors"
+        >
+          View Terminal →
+        </button>
+      </div>
     </div>
   );
 }

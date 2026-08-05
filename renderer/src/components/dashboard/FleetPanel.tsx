@@ -6,9 +6,10 @@ type FleetPanelProps = {
   selectedAgentId?: string;
   onSelectAgent: (id: string) => void;
   onAgentClick: (id: string) => void;
+  onLaunch: (id: string) => void;
 };
 
-export function FleetPanel({ agents, selectedAgentId, onSelectAgent, onAgentClick }: FleetPanelProps) {
+export function FleetPanel({ agents, selectedAgentId, onSelectAgent, onAgentClick, onLaunch }: FleetPanelProps) {
   return (
     <aside className="w-full md:w-[240px] lg:w-[280px] md:border-r border-[#2a2a2a] bg-[#0a0a0a] flex flex-col">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a]">
@@ -25,6 +26,7 @@ export function FleetPanel({ agents, selectedAgentId, onSelectAgent, onAgentClic
             isSelected={agent.id === selectedAgentId}
             onClick={() => onSelectAgent(agent.id)}
             onViewDetails={() => onAgentClick(agent.id)}
+            onLaunch={() => onLaunch(agent.id)}
           />
         ))}
       </div>

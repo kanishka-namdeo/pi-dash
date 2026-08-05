@@ -190,3 +190,24 @@
   height: 100%;
   background: #1e1e1e;
 }
+
+/* Agent Cards */
+.launch-button {
+  padding: 0.5rem 1rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 150ms ease;
+}
+
+.launch-button:hover {
+  background: #0052a3;
+}
+
+.launch-button:active {
+  background: #003d7a;
+}
