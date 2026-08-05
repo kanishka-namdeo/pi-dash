@@ -7,6 +7,9 @@ import { WorktreeView } from './components/views/WorktreeView';
 import { CompletedWorkView } from './components/views/CompletedWorkView';
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
 import { PiPProvider } from './context/PiPContext';
+import { PiPContainer } from './components/pip/PiPContainer';
+import { MainTerminal } from './components/pip/MainTerminal';
+import { OverlayManager } from './components/pip/OverlayManager';
 
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
@@ -35,7 +38,15 @@ function App() {
     <PiPProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/"
+            element={
+              <PiPContainer>
+                <MainTerminal />
+                <OverlayManager />
+              </PiPContainer>
+            }
+          />
           <Route path="/agent/:agentId" element={<TerminalView />} />
           <Route path="/worktrees" element={<WorktreeView />} />
           <Route path="/completed/:agentId" element={<CompletedWorkView />} />
