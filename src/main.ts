@@ -1,8 +1,12 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import path from 'path'
 import { registerIpcHandlers } from './main/ipc-handlers'
+import { SessionManager } from './main/session/session-manager'
+import { registerSessionHandlers } from './main/ipc/session-handlers'
 
 const isDev = !app.isPackaged
+
+const sessionManager = new SessionManager()
 
 Menu.setApplicationMenu(null)
 
@@ -26,7 +30,12 @@ function createWindow(): void {
 }
 app.whenReady().then(() => {
   registerIpcHandlers()
+  registerSessionHandlers(sessionManager)
   createWindow()
+})
+
+app.on('before-quit', () => {
+  sessionManager.destroyAll()
 })
 
 app.on('window-all-closed', () => {
