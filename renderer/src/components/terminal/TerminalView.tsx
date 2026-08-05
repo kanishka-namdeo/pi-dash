@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { useSession } from '../../hooks/useSession';
 
-interface TerminalViewProps {
-  agentId: string;
-  cwd: string;
-}
+export function TerminalView() {
+  const { agentId } = useParams<{ agentId: string }>();
+  const [searchParams] = useSearchParams();
+  const cwd = searchParams.get('cwd') || process.cwd();
 
-export function TerminalView({ agentId, cwd }: TerminalViewProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const { state, spawn, write, resize, destroy } = useSession(agentId);
 
@@ -27,26 +27,22 @@ export function TerminalView({ agentId, cwd }: TerminalViewProps) {
     term.open(terminalRef.current);
     fitAddon.fit();
 
-    // Forward terminal input to session
     const onDataDisposable = term.onData((data) => {
       write(data);
     });
 
-    // Forward session output to terminal
     const unsubData = window.api.session.onData((evtAgentId, data) => {
       if (evtAgentId === agentId) {
         term.write(data);
       }
     });
 
-    // Handle session exit
     const unsubExit = window.api.session.onExit((evtAgentId) => {
       if (evtAgentId === agentId) {
         term.writeln('\r\n[Session ended]');
       }
     });
 
-    // Resize observer for responsive sizing
     const resizeObserver = new ResizeObserver(() => {
       fitAddon.fit();
       const { cols, rows } = term;
@@ -54,7 +50,6 @@ export function TerminalView({ agentId, cwd }: TerminalViewProps) {
     });
     resizeObserver.observe(terminalRef.current);
 
-    // Spawn session
     spawn(cwd).catch((err) => {
       term.writeln(`\r\nFailed to start session: ${err.message}`);
     });
