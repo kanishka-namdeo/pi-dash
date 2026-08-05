@@ -67,6 +67,7 @@ export function createMockPTY(agentId: string, config: AgentConfig): MockPTY {
         
         pendingTimer = undefined;
         history.push(block);
+        setState('waiting');
       }, delayMs);
     },
     
