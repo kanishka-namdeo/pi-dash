@@ -13,5 +13,6 @@ contextBridge.exposeInMainWorld('api', {
   getAgents: () => ipcRenderer.invoke('get-agents'),
   saveAgents: (agents: AgentConfig[]) => ipcRenderer.invoke('save-agents', agents),
   completeOnboarding: () => ipcRenderer.invoke('complete-onboarding'),
+  getOnboardingStatus: () => ipcRenderer.invoke('get-onboarding-status'),
   launchAgent: (id: string) => ipcRenderer.invoke('launch-agent', id),
 });

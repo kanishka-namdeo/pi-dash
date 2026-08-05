@@ -30,6 +30,11 @@ export function registerIpcHandlers(): void {
     await completeOnboarding();
   });
 
+  ipcMain.handle('get-onboarding-status', async () => {
+    const store = await loadAgents();
+    return store.onboardingCompleted;
+  });
+
   ipcMain.handle('launch-agent', async (_event, id: string) => {
     const store = await loadAgents();
     const agent = store.agents.find(a => a.id === id);

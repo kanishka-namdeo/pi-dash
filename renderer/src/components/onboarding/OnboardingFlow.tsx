@@ -16,7 +16,7 @@ const SCREEN_COMPONENTS: Record<ScreenName, React.ComponentType<any>> = {
   ready: ReadyScreen,
 };
 
-export function OnboardingFlow() {
+export function OnboardingFlow({ onComplete }: { onComplete?: () => void }) {
   const state = useOnboardingState();
   const Screen = SCREEN_COMPONENTS[state.currentScreen];
 
@@ -24,5 +24,5 @@ export function OnboardingFlow() {
     return null;
   }
 
-  return <Screen {...state} onNavigate={state.navigateTo} />;
+  return <Screen {...state} onNavigate={state.navigateTo} onComplete={onComplete} />;
 }

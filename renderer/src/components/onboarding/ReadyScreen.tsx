@@ -32,9 +32,10 @@ interface ReadyScreenProps {
   onNavigate: (screen: ScreenName) => void;
   agents: AgentConfig[];
   selectedAgents: string[];
+  onComplete?: () => void;
 }
 
-export function ReadyScreen({ onNavigate, agents, selectedAgents }: ReadyScreenProps) {
+export function ReadyScreen({ onNavigate, agents, selectedAgents, onComplete }: ReadyScreenProps) {
   const [isComplete, setIsComplete] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -47,6 +48,7 @@ export function ReadyScreen({ onNavigate, agents, selectedAgents }: ReadyScreenP
       const selected = agents.filter((a) => selectedAgents.includes(a.id));
       await window.api.saveAgents(selected);
       await window.api.completeOnboarding();
+      onComplete?.();
       setIsComplete(true);
     } catch {
       // ponytail: surface a minimal error; full error boundary when one exists
@@ -54,7 +56,7 @@ export function ReadyScreen({ onNavigate, agents, selectedAgents }: ReadyScreenP
     } finally {
       setIsSaving(false);
     }
-  }, [agents, selectedAgents, isSaving]);
+  }, [agents, selectedAgents, isSaving, onComplete]);
 
   if (isComplete) {
     return (
