@@ -20,6 +20,19 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
   const fitAddonRef = useRef<FitAddon | null>(null);
   const [contentMode, setContentMode] = useState<OverlayContentMode>('preview');
   const [isDragging, setIsDragging] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const { state: sessionState, spawn, write, resize } = useSession(overlay.agentId);
 
@@ -161,7 +174,7 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
         zIndex: overlay.zIndex,
         transition: isDragging ? 'none' : 'transform 0.1s ease',
       }}
-      className={`group ${isDragging ? 'scale-[0.98]' : ''}`}
+      className={`group ${isDragging && !prefersReducedMotion ? 'scale-[0.98]' : ''}`}
       onDragStart={() => setIsDragging(true)}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
