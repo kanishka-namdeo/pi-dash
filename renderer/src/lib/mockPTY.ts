@@ -22,7 +22,7 @@ export type MockPTY = {
 
 export function createMockPTY(agentId: string, config: AgentConfig): MockPTY {
   let state: SessionState = 'idle';
-  let pendingTimer: number | undefined;
+  let pendingTimer: ReturnType<typeof setTimeout> | undefined;
   const history: CommandBlock[] = [];
   const dataCallbacks: ((data: string) => void)[] = [];
   const stateCallbacks: ((state: SessionState) => void)[] = [];

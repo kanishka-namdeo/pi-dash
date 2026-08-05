@@ -1,2 +1,4 @@
 allowBuilds:
   electron-winstaller: false
+  lzma-native: set this to true or false
+  node-pty: true

@@ -12,8 +12,9 @@
 
 - Use `AgentConfig.path` from onboarding to spawn agent binary
 - Windows requires `electron-rebuild` for node-pty native module
-- One session per agent enforced in SessionManager
-- Agent dies on app close (Option B from design)
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "postinstall": "electron-rebuild -f -w node-pty"
 - Native Electron dialog for directory picker (no custom UI)
 - Singleton IPC dispatcher pattern (matches Orca)
 

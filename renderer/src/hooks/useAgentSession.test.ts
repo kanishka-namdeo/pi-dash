@@ -156,7 +156,7 @@ describe('useAgentSession', () => {
 
     expect(result.current.blocks.length).toBe(2);
 
-    let cmd: string | null;
+    let cmd: string | null = null;
     act(() => {
       cmd = result.current.historyBack();
     });
@@ -195,7 +195,7 @@ describe('useAgentSession', () => {
     });
     // At cmd1 now
 
-    let cmd: string | null;
+    let cmd: string | null = null;
     act(() => {
       cmd = result.current.historyForward();
     });

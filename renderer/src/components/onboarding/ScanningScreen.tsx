@@ -12,6 +12,13 @@ export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string>('');
   const navigateCalledRef = useRef(false);
+  const onNavigateRef = useRef(onNavigate);
+  const setAgentsRef = useRef(setAgents);
+
+  useEffect(() => {
+    onNavigateRef.current = onNavigate;
+    setAgentsRef.current = setAgents;
+  }, [onNavigate, setAgents]);
 
   useEffect(() => {
     const timeoutMs = 15_000;
@@ -35,14 +42,14 @@ export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
         if (controller.signal.aborted) return;
 
         setResult(result);
-        setAgents(result.agents);
+        setAgentsRef.current(result.agents);
         setStatus('complete');
 
         // Auto-navigate after 1.5s
         setTimeout(() => {
           if (!navigateCalledRef.current) {
             navigateCalledRef.current = true;
-            onNavigate(result.agents.length > 0 ? 'results' : 'no-agents');
+            onNavigateRef.current(result.agents.length > 0 ? 'results' : 'no-agents');
           }
         }, 1500);
       } catch (err: unknown) {
@@ -59,9 +66,8 @@ export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
 
     return () => {
       controller.abort();
-      navigateCalledRef.current = true;
     };
-  }, [onNavigate, setAgents]);
+  }, []);
 
   if (status === 'error') {
     return (
