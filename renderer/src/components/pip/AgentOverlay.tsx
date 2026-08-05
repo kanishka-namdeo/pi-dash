@@ -6,6 +6,7 @@ import { X, Maximize2, Minimize2 } from 'lucide-react';
 import '@xterm/xterm/css/xterm.css';
 import { usePiPContext } from '../../context/PiPContext';
 import { useSession } from '../../hooks/useSession';
+import { useElapsedTimer } from '../../hooks/useElapsedTimer';
 import type { Overlay, OverlayContentMode } from '../../types/pip';
 
 type AgentOverlayProps = {
@@ -35,6 +36,26 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
   }, []);
 
   const { state: sessionState, spawn, write, resize } = useSession(overlay.agentId);
+  const { elapsed, start, stop } = useElapsedTimer();
+
+  // Sync timer with session state
+  useEffect(() => {
+    if (sessionState === 'running') {
+      start();
+    } else {
+      stop();
+    }
+  }, [sessionState, start, stop]);
+
+  const formatElapsed = (seconds: number): string => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Initialize terminal
   useEffect(() => {
@@ -227,8 +248,23 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
                 </p>
               </div>
             </div>
-          ) : (
+          ) : contentMode === 'preview' ? (
             <div ref={terminalRef} className="w-full h-full" />
+          ) : (
+            // Rich mode: terminal + metrics
+            <div className="h-full flex flex-col">
+              <div ref={terminalRef} className="flex-1 min-h-0" />
+              <div className="flex items-center gap-3 px-3 py-1.5 bg-[#0a0a0a] border-t border-[#2a2a2a] text-[10px] text-[#737373]">
+                <span className="uppercase tracking-wide">
+                  {sessionState}
+                </span>
+                {sessionState === 'running' && (
+                  <span className="font-mono">
+                    {formatElapsed(elapsed)}
+                  </span>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
