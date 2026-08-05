@@ -222,6 +222,89 @@ function usePiP() {
 - "Minimal" mode = hide terminal, show status only
 - Size presets (S/M/L) control how much terminal is visible
 
+## Visual Design
+
+### Design Read
+**Reading this as:** Developer productivity tool for technical users orchestrating AI agents, with a dark tech / terminal aesthetic, leaning toward cockpit-style high-density UI with functional motion.
+
+### Design Dials
+- **DESIGN_VARIANCE: 6** — Structured but allows offset layouts for visual interest
+- **MOTION_INTENSITY: 4** — Functional motion only (drag physics, state transitions), no decorative animation
+- **VISUAL_DENSITY: 7** — Cockpit density, tight paddings, data-focused
+
+### Overlay Visual Language
+
+**Materiality:**
+- Overlays use existing design tokens: `--dashboard-surface` (#1a1a1a), `--dashboard-border` (#2a2a2a)
+- 1px border for elevation, no drop shadows (shadows kill terminal aesthetic)
+- Overlay header: slightly darker background (--dashboard-bg) to create subtle hierarchy
+- Corner radius: 6px (consistent with existing terminal controls)
+
+**Status Indicators:**
+- Active agents: `--dashboard-accent` (#3b82f6) — consistent with existing launch buttons
+- Idle agents: `--dashboard-text-secondary` (#737373)
+- Error/exited: `--color-destructive` (red from shadcn tokens)
+- Use 8px circular indicators, no glow effects (glow is an AI tell)
+
+**Interactive States:**
+- **Hover:** Overlay header background shifts to #2a2a2a (subtle lift)
+- **Active/Dragging:** `scale-[0.98]` on overlay container (tactile feedback)
+- **Focus:** 2px outline using `--dashboard-accent` for keyboard navigation
+- **Close button:** Red tint on hover (#dc2626), no animation
+
+**Typography:**
+- Overlay headers: 12px, font-weight 500, `--dashboard-text-primary`
+- Terminal content: 13px monospace (existing `.terminal-pane` styles)
+- Status text: 10px uppercase, tracking-wide, `--dashboard-text-secondary`
+
+**Z-Index Scale (documented):**
+```css
+/* Z-index scale for PiP layout */
+--z-main-terminal: 1;
+--z-overlay-base: 10;
+--z-overlay-active: 20;
+--z-overlay-dragging: 30;
+--z-overlay-manager: 40;
+```
+- Main terminal: z-1
+- Overlays: z-10 base, incrementing by 10 for stacking
+- Active/dragging overlay: z-30 (always on top during interaction)
+- Overlay manager container: z-40
+
+### Accessibility
+
+**Reduced Motion:**
+- Drag physics still work (functional motion)
+- Disable scale transform on drag if `prefers-reduced-motion: reduce`
+- No infinite animations on status indicators
+
+**Keyboard Navigation:**
+- Tab order: Main terminal → Overlay 1 → Overlay 2 → ... → Dashboard
+- Each overlay is focusable (tabIndex=0)
+- Enter/Space on focused overlay promotes to main
+- Escape closes focused overlay
+
+**Contrast:**
+- All text meets WCAG AA (4.5:1 for body, 3:1 for large text)
+- Status indicators have sufficient contrast against surface
+- Overlay borders provide clear separation from main terminal
+
+### Performance
+
+**Rendering:**
+- Overlays use `will-change: transform` only during drag
+- Remove `will-change` after drag completes (prevent GPU memory leak)
+- Lazy-render overlay terminal content only when visible (IntersectionObserver)
+
+**Multiple xterm.js Instances:**
+- Each overlay creates its own Terminal instance
+- Overlays use smaller scrollback (100 lines vs 1000 for main)
+- Consider virtualization if >5 overlays (future enhancement)
+
+### Dark Mode
+
+The app is dark-mode only (terminal aesthetic). No light mode needed. All colors use the existing dark theme tokens from `index.css`.
+
 ## Implementation Considerations
 
 ### Dependencies
