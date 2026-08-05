@@ -54,3 +54,19 @@ export type KnownAgent = {
 };
 
 export type ScreenName = 'welcome' | 'scanning' | 'results' | 'manual-add' | 'ready' | 'no-agents';
+
+
+export type SessionState = 'idle' | 'running' | 'exited';
+
+export type SessionInfo = {
+  agentId: string;
+  cwd: string;
+  pid: number;
+  state: SessionState;
+  exitCode?: number;
+};
+
+export type SpawnParams = {
+  agentId: string;
+  cwd: string;
+};
