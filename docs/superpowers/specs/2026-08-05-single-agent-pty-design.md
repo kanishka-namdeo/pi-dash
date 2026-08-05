@@ -10,6 +10,38 @@ Replace the mocked terminal UI with a real PTY-backed agent session. Launch `pi`
 
 **Scope**: Single agent, real PTY, user-selectable working directory, one session per agent, agent dies on app close.
 
+## Agent Binary Resolution
+
+We use the `AgentConfig.path` saved during onboarding to know which binary to spawn. For example:
+- Windows: `C:\Users\kanis\AppData\Roaming\npm\pi.cmd`
+- macOS/Linux: `/usr/local/bin/pi` or `~/.npm-global/bin/pi`
+
+The SessionManager receives `agentId`, looks up the agent config, and spawns `agentConfig.path` in the selected working directory.
+
+```typescript
+// SessionManager.createSession
+const agent = await getAgent(agentId);
+const pty = spawn(agent.path, [], { cwd, name: 'xterm-256color' });
+```
+
+## Platform Considerations
+
+**Windows native module rebuild**: node-pty is a native C++ module that must be rebuilt for Electron's Node.js version. After `pnpm install node-pty`, run:
+```bash
+npx electron-rebuild -f -w node-pty
+```
+
+Or add to `package.json`:
+```json
+{
+  "scripts": {
+    "postinstall": "electron-rebuild -f -w node-pty"
+  }
+}
+```
+
+This ensures node-pty is compiled against Electron's headers, not Node's.
+
 ## Architecture
 
 ```
@@ -41,6 +73,7 @@ Replace the mocked terminal UI with a real PTY-backed agent session. Launch `pi`
 │  │  - session:write(agentId, data) → void                │  │
 │  │  - session:resize(agentId, cols, rows) → void         │  │
 │  │  - session:destroy(agentId) → void                    │  │
+│  │  - dialog:openDirectory() → string | null             │  │
 │  │  - Events: session:data, session:exit                 │  │
 │  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
@@ -66,8 +99,8 @@ Replace the mocked terminal UI with a real PTY-backed agent session. Launch `pi`
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │  Dashboard                                             │  │
 │  │  - Agent cards with "Launch" button                   │  │
-│  │  - Click → DirectoryPicker dialog                     │  │
-│  │  - Pick → navigate to /agent/:agentId                 │  │
+│  │  - Click → window.api.openDirectory()                 │  │
+│  │  - Pick → navigate to /agent/:agentId?cwd=<path>      │  │
 │  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -84,12 +117,14 @@ Replace the mocked terminal UI with a real PTY-backed agent session. Launch `pi`
 **Launch flow**:
 ```
 User clicks "Launch" on agent card
-  → Dashboard shows DirectoryPicker dialog (native Electron dialog)
+  → Dashboard calls window.api.openDirectory()
+  → Main process: dialog.showOpenDialog({ properties: ['openDirectory'] })
   → User picks folder (e.g., C:\Users\kanis\projects\my-app)
+  → Returns selected path
   → Navigate to /agent/:agentId?cwd=C:\Users\kanis\projects\my-app
   → TerminalView mounts, calls useSession(agentId)
   → useSession.invoke('session:spawn', { agentId, cwd })
-  → SessionManager spawns node-pty: pi, cwd: picked folder
+  → SessionManager looks up agent config, spawns node-pty: agent.path, cwd: picked folder
   → Returns { pid, state: 'running' }
   → xterm.js connects, starts receiving output
 ```
@@ -127,7 +162,8 @@ src/main/
 │   ├── session.ts              # Single session: wraps node-pty
 │   └── types.ts                # SessionState, SessionInfo
 └── ipc/
-    └── session-handlers.ts     # IPC handlers for session:* channels
+    ├── session-handlers.ts     # IPC handlers for session:* channels
+    └── dialog-handlers.ts      # IPC handlers for dialog:openDirectory
 
 renderer/src/
 ├── hooks/
@@ -135,23 +171,23 @@ renderer/src/
 ├── components/
 │   └── terminal/
 │       └── TerminalView.tsx    # xterm.js wrapper (replace existing)
-└── lib/
-    └── directory-picker.ts     # Native directory dialog wrapper
 
 src/shared/
 └── types.ts                    # Add SessionInfo, SpawnParams
 ```
 
 **Dependencies to add:**
-- `node-pty` — PTY spawning (native module, needs rebuild)
+- `node-pty` — PTY spawning (native module, needs rebuild — see Platform Considerations)
 - `@xterm/xterm` — Terminal emulator (v5+)
 - `@xterm/addon-fit` — Auto-resize terminal to container
+- `electron-rebuild` — Dev dependency for rebuilding native modules
 
 **What we're deleting:**
 - `renderer/src/lib/mockPTY.ts` — Replace with real PTY
 - `renderer/src/hooks/useAgentSession.ts` — Replace with `useSession`
 - `renderer/src/components/terminal/CommandBlock.tsx` — Replace with xterm.js
 - `renderer/src/components/terminal/AnsiText.tsx` — xterm.js handles ANSI
+- `renderer/src/lib/directory-picker.ts` — Not needed, use preload API directly
 
 **What stays:**
 - Onboarding flow — unchanged
@@ -168,6 +204,8 @@ src/shared/
 
 **Directory picker:**
 - Native Electron dialog (`dialog.showOpenDialog`) — simplest, no custom UI
+- Preload API: `window.api.openDirectory()` → `ipcRenderer.invoke('dialog:openDirectory')`
+- Main process: `dialog.showOpenDialog({ properties: ['openDirectory'] })`
 - Returns selected path → navigate to `/agent/:agentId?cwd=<path>`
 - Cancel → stay on dashboard
 
@@ -206,12 +244,14 @@ src/shared/
 - Permission denied → "Failed to launch: permission denied"
 - Invalid working directory → "Failed to launch: directory does not exist"
 - node-pty throws → catch, log, return generic error
+- Agent config missing → "Agent not configured, please re-run onboarding"
 
 **Session lifecycle edge cases:**
 - Agent already running → `createSession` rejects with "Session already active"
 - User tries to write to exited session → no-op, renderer shows "Session ended"
 - Resize before PTY ready → queue resize, apply after spawn completes
 - App crashes while session running → PTY dies (Option B), no cleanup needed
+- Agent binary path invalid (deleted after onboarding) → spawn fails, show error toast
 
 **IPC failures:**
 - Renderer sends command to non-existent session → IPC handler returns error, renderer shows toast
