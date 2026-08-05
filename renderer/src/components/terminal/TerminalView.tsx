@@ -5,16 +5,21 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { useSession } from '../../hooks/useSession';
 
-export function TerminalView() {
-  const { agentId } = useParams<{ agentId: string }>();
+type TerminalViewProps = {
+  agentId?: string;
+};
+
+export function TerminalView({ agentId: propAgentId }: TerminalViewProps = {}) {
+  const { agentId: paramAgentId } = useParams<{ agentId: string }>();
   const [searchParams] = useSearchParams();
   const cwd = searchParams.get('cwd') || process.cwd();
+  const agentId = propAgentId || paramAgentId;
 
   const terminalRef = useRef<HTMLDivElement>(null);
-  const { state, spawn, write, resize, destroy } = useSession(agentId);
+  const { state, spawn, write, resize, destroy } = useSession(agentId!);
 
   useEffect(() => {
-    if (!terminalRef.current) return;
+    if (!terminalRef.current || !agentId) return;
 
     const term = new Terminal({
       cursorBlink: true,
