@@ -4,11 +4,11 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { useGitHubAuth } from '../../hooks/useGitHubAuth';
 import { useRepos } from '../../hooks/useRepos';
-import { GitBranch, LogOut, Plus, Trash2 } from 'lucide-react';
+import { GitBranch, LogOut, Trash2 } from 'lucide-react';
 
 export function GitHubSettings() {
   const { isAuthenticated, user, login, logout } = useGitHubAuth();
-  const { repos, addRepo, removeRepo } = useRepos();
+  const { repos, removeRepo } = useRepos();
   const [patInput, setPatInput] = useState('');
   const [showPatInput, setShowPatInput] = useState(false);
 
@@ -81,13 +81,7 @@ export function GitHubSettings() {
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-medium">Repositories</div>
-            <Button size="sm" className="rounded-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Repo
-            </Button>
-          </div>
+          <div className="text-sm font-medium">Repositories</div>
 
           {repos.length === 0 ? (
             <div className="text-sm text-muted-foreground">No repositories configured</div>
