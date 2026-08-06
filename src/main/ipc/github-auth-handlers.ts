@@ -14,4 +14,8 @@ export function registerGitHubAuthHandlers() {
     authService.clearToken();
     return { success: true };
   });
+
+  ipcMain.handle('github:auth:oauth', async () => {
+    return await authService.authenticateOAuth();
+  });
 }
