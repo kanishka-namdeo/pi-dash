@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 import type { CommandBlock } from '../types/session';
 
 export type SessionInfo = {
@@ -86,7 +86,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [sessions],
   );
 
-  const value: SessionContextType = {
+  const value = useMemo(() => ({
     sessions,
     registerSession,
     unregisterSession,
@@ -94,7 +94,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     appendCommand,
     getSession,
     getActiveSessions,
-  };
+  }), [sessions, registerSession, unregisterSession, updateSessionState, appendCommand, getSession, getActiveSessions]);
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
