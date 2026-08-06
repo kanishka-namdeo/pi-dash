@@ -5,7 +5,6 @@ import { useAgents } from '@/hooks/useAgents';
 import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
-import { seedPlanSteps } from '@/data/mockData';
 import { Topbar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
 import { PlanPanel } from './PlanPanel';
@@ -127,7 +126,7 @@ export function Dashboard() {
 
         {/* Plan Panel */}
         <div className={`${activeTab === 'plan' ? 'block' : 'hidden'} md:block flex-1`}>
-          <PlanPanel steps={seedPlanSteps} progress={0} />
+          <PlanPanel steps={[]} progress={0} />
         </div>
 
         {/* Activity Feed */}
