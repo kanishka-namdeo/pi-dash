@@ -217,10 +217,10 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       onClick={() => actions.bringOverlayToFront(overlay.agentId)}
-    >
       <div
         ref={overlayRef}
         tabIndex={0}
+        onKeyDown={handleKeyDown}
         className="h-full flex flex-col bg-[#1a1a1a] border border-[#2a2a2a] rounded-[6px] overflow-hidden focus-within:outline focus-within:outline-2 focus-within:outline-[#3b82f6]"
       >
         {/* Header */}
