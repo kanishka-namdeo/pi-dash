@@ -6,7 +6,13 @@ interface RepoStoreSchema {
   repoConfig: RepoConfig;
 }
 
-const store = new Store<RepoStoreSchema>({
+// Type for store with get/set methods (electron-store extends Conf which provides these)
+interface StoreWithMethods<T> {
+  get<K extends string>(key: K): any;
+  set<K extends string>(key: K, value: any): void;
+}
+
+const store: StoreWithMethods<RepoStoreSchema> = new Store<RepoStoreSchema>({
   projectName: 'pi-dash',
   defaults: {
     repoConfig: { repos: [], activeRepoId: null }

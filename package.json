@@ -34,6 +34,7 @@
     "react-rnd": "^10.5.3",
     "react-router-dom": "^7.18.2",
     "simple-git": "^3.36.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^14.0.1"
@@ -48,6 +49,7 @@
     "@types/react-dom": "^19.2.0",
     "@types/uuid": "^11.0.0",
     "@vitejs/plugin-react": "^4.5.2",
+    "@vitest/coverage-v8": "^4.1.10",
     "autoprefixer": "^10.5.4",
     "concurrently": "^9.1.2",
     "electron": "^43.2.0",

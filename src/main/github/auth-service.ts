@@ -17,17 +17,24 @@ interface GitHubStoreSchema {
   };
 }
 
-const store = new Store<GitHubStoreSchema>({
-  projectName: 'pi-dash',
-  encryptionKey: 'pi-dash-github-encryption-key',
-  defaults: {
-    github: {
-      authMethod: null,
-      accessToken: '',
-      user: null
-    }
+// Wrapper for electron-store to provide typed get/set methods
+class TypedStore<T extends Record<string, any>> {
+  private store: Store<T>;
+  
+  constructor(options: ConstructorParameters<typeof Store<T>>[0]) {
+    this.store = new Store<T>(options);
   }
-});
+  
+  get<K extends string>(key: K): any {
+    return (this.store as any).get(key);
+  }
+  
+  set<K extends string>(key: K, value: any): void {
+    (this.store as any).set(key, value);
+  }
+}
+
+const store = new TypedStore<GitHubStoreSchema>({
 
 export class AuthService {
   private githubService: GitHubService;

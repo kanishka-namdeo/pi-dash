@@ -7,7 +7,13 @@ interface WorktreeStoreSchema {
   worktrees: Worktree[];
 }
 
-const store = new Store<WorktreeStoreSchema>({
+// Type for store with get/set methods (electron-store extends Conf which provides these)
+interface StoreWithMethods<T> {
+  get<K extends string>(key: K): any;
+  set<K extends string>(key: K, value: any): void;
+}
+
+const store: StoreWithMethods<WorktreeStoreSchema> = new Store<WorktreeStoreSchema>({
   projectName: 'pi-dash',
   defaults: {
     worktrees: []

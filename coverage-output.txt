@@ -1,0 +1,63 @@
+
+ RUN  v4.1.10 D:/test_misc/pi-dash
+      Coverage enabled with v8
+
+ ❯ |renderer| renderer/src/hooks/useSession.test.tsx (0 test)
+ ❯ |renderer| renderer/src/App.test.tsx (0 test)
+stdout | renderer/src/utils/agentMapper.test.ts
+
+Test 1: Claude Code
+Input: {
+  id: 'claude',
+  name: 'Claude Code',
+  icon: 'claude',
+  path: '/usr/local/bin/claude',
+  source: 'detected'
+}
+Output: {
+  id: 'claude',
+  name: 'Claude Code',
+  short: 'CL',
+  color: '#1e3a5f',
+  textColor: '#60a5fa',
+  status: 'idle',
+  task: '',
+  progress: 0,
+  path: '/usr/local/bin/claude',
+  files: [],
+  messages: []
+}
+✓ PASS
+
+Test 2: Unknown Agent
+Input: {
+  id: 'unknown-agent',
+  name: 'Unknown Agent',
+  icon: 'bot',
+  path: '/usr/local/bin/unknown',
+  source: 'manual'
+}
+Output: {
+  id: 'unknown-agent',
+  name: 'Unknown Agent',
+  short: 'UN',
+  color: 'hsl(162, 40%, 25%)',
+  textColor: 'hsl(162, 70%, 65%)',
+  status: 'idle',
+  task: '',
+  progress: 0,
+  path: '/usr/local/bin/unknown',
+  files: [],
+  messages: []
+}
+✓ PASS
+
+✓ All tests passed!
+
+ ❯ |renderer| renderer/src/utils/agentMapper.test.ts (0 test)
+
+ Test Files  3 failed | 30 passed (33)
+      Tests  235 passed (235)
+   Start at  22:49:44
+   Duration  22.09s (transform 6.27s, setup 0ms, import 31.78s, tests 22.14s, environment 116.63s)
+
