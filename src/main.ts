@@ -3,6 +3,7 @@ import path from 'path'
 import { registerIpcHandlers } from './main/ipc-handlers'
 import { SessionManager } from './main/session/session-manager'
 import { registerSessionHandlers } from './main/ipc/session-handlers'
+import { registerGitHubAuthHandlers } from './main/ipc/github-auth-handlers'
 
 const isDev = !app.isPackaged
 
@@ -31,6 +32,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   registerIpcHandlers()
   registerSessionHandlers(sessionManager)
+  registerGitHubAuthHandlers()
   createWindow()
 })
 
