@@ -62,7 +62,6 @@ export function Dashboard() {
   const selectedAgent = agents.find((a) => a.id === selectedAgentId);
   const activeAgents = agents.filter((a) => a.status === 'active').length;
   const progress = Math.round(agents.reduce((sum, a) => sum + a.progress, 0) / agents.length);
-  const tokens = Math.floor(elapsed * 150);
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0a0a]">
@@ -134,10 +133,9 @@ export function Dashboard() {
       </div>
 
       <MetricsFooter
-        progress={progress}
         elapsed={elapsed}
         activeAgents={activeAgents}
-        tokens={tokens}
+        totalCommands={0}
       />
 
       <AgentDetailPanel
