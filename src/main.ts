@@ -5,6 +5,7 @@ import { SessionManager } from './main/session/session-manager'
 import { registerSessionHandlers } from './main/ipc/session-handlers'
 import { registerGitHubAuthHandlers } from './main/ipc/github-auth-handlers'
 import { registerGitHubRepoHandlers } from './main/ipc/github-repo-handlers'
+import { registerGitHubDataHandlers } from './main/ipc/github-data-handlers'
 import { registerWorktreeHandlers } from './ipc/worktree-handlers'
 
 const isDev = !app.isPackaged
@@ -36,6 +37,7 @@ app.whenReady().then(() => {
   registerSessionHandlers(sessionManager)
   registerGitHubAuthHandlers()
   registerGitHubRepoHandlers()
+  registerGitHubDataHandlers()
   registerWorktreeHandlers()
   createWindow()
 })
