@@ -8,6 +8,7 @@ import { usePiPContext } from '../../context/PiPContext';
 import { useSession } from '../../hooks/useSession';
 import { useElapsedTimer } from '../../hooks/useElapsedTimer';
 import type { Overlay, OverlayContentMode } from '../../types/pip';
+import { SIZE_PRESETS } from '../../types/pip';
 
 type AgentOverlayProps = {
   overlay: Overlay;
@@ -182,6 +183,17 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
     const nextIndex = (currentIndex + 1) % modes.length;
     setContentMode(modes[nextIndex]);
   };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const sizes: Array<'S' | 'M' | 'L'> = ['S', 'M', 'L'];
+    const currentIndex = sizes.indexOf(overlay.size);
+    const nextIndex = (currentIndex + 1) % sizes.length;
+    const newSize = sizes[nextIndex];
+    const preset = SIZE_PRESETS[newSize];
+
+    actions.updateOverlaySize(overlay.agentId, preset.width, preset.height, newSize);
+  };
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -227,6 +239,7 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
         <div
           className="overlay-header flex items-center gap-2 px-3 py-2 bg-[#0a0a0a] border-b border-[#2a2a2a] cursor-move select-none"
           onClick={handlePromote}
+          onDoubleClick={handleDoubleClick}
         >
           <div
             className="w-2 h-2 rounded-full"
