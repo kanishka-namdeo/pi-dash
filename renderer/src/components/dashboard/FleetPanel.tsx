@@ -21,7 +21,7 @@ export function FleetPanel({ runningSessions, availableAgents, onFocus, onLaunch
           {runningSessions.length}
         </span>
       </div>
-      <div className="px-3 py-2 space-y-2 border-b border-[#2a2a2a]">
+      <div className="max-h-[40%] overflow-y-auto px-3 py-2 space-y-2 border-b border-[#2a2a2a]">
         {runningSessions.length === 0 && (
           <div className="text-xs text-[#737373] text-center py-4">No running agents</div>
         )}
