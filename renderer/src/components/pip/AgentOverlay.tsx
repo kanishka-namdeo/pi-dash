@@ -229,6 +229,7 @@ export function AgentOverlay({ overlay, agentName }: AgentOverlayProps) {
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       onClick={() => actions.bringOverlayToFront(overlay.agentId)}
+    >
       <div
         ref={overlayRef}
         tabIndex={0}
