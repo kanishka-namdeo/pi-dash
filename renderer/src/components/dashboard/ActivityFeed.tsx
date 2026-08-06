@@ -1,4 +1,3 @@
-import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
 import { useAgents } from '@/hooks/useAgents';
 import { useSessionContext } from '@/context/SessionContext';
 import type { FeedEvent } from '@/types/dashboard';
@@ -19,8 +18,12 @@ function formatTimestamp(ts: number): string {
   return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
-export function ActivityFeed() {
-  const { events, isPaused } = useRealActivityFeed();
+type ActivityFeedProps = {
+  events: FeedEvent[];
+  isPaused: boolean;
+};
+
+export function ActivityFeed({ events, isPaused }: ActivityFeedProps) {
   const { agents } = useAgents();
   const { getSession } = useSessionContext();
 
