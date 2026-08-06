@@ -6,9 +6,9 @@ type AgentCardProps = {
   onClick: () => void;
   onViewDetails: () => void;
   onLaunch: (agentId: string) => void;
+  onOpenAsOverlay: (agentId: string) => void;
 };
-
-export function AgentCard({ agent, isSelected, onClick, onViewDetails, onLaunch }: AgentCardProps) {
+export function AgentCard({ agent, isSelected, onClick, onViewDetails, onLaunch, onOpenAsOverlay }: AgentCardProps) {
   const statusColor =
     agent.status === 'active'
       ? 'bg-emerald-500'
@@ -65,6 +65,13 @@ export function AgentCard({ agent, isSelected, onClick, onViewDetails, onLaunch 
           className="px-2 py-1 text-xs text-blue-500 hover:text-blue-400 transition-colors"
         >
           View Terminal →
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onOpenAsOverlay(agent.id); }}
+          className="px-3 py-1.5 text-xs bg-[#2a2a2a] text-[#e5e5e5] rounded hover:bg-[#3a3a3a] transition-colors"
+          title="Open as overlay"
+        >
+          PiP
         </button>
       </div>
     </div>

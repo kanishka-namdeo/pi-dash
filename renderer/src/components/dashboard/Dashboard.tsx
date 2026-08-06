@@ -4,6 +4,7 @@ import { useAgentSimulation } from '@/hooks/useAgentSimulation';
 import { useActivityFeed } from '@/hooks/useActivityFeed';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { useElapsedTimer } from '@/hooks/useElapsedTimer';
+import { usePiPContext } from '@/context/PiPContext';
 import { seedPlanSteps } from '@/data/mockData';
 import { Topbar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
@@ -20,6 +21,7 @@ export function Dashboard() {
   const { activities } = useActivityFeed(agents, isPaused);
   const { mode, setMode } = useDashboardMode();
   const { elapsed, start, reset: resetTimer } = useElapsedTimer();
+  const { actions: pipActions } = usePiPContext();
   const [selectedAgentId, setSelectedAgentId] = useState<string | undefined>();
 
   const handlePause = () => {
@@ -40,6 +42,10 @@ export function Dashboard() {
 
   const handleAgentClick = (agentId: string) => {
     navigate(`/agent/${agentId}`);
+  };
+
+  const handleOpenAsOverlay = (agentId: string) => {
+    pipActions.addOverlay(agentId);
   };
 
   const handleLaunch = async (agentId: string) => {
@@ -109,6 +115,7 @@ export function Dashboard() {
             onSelectAgent={setSelectedAgentId}
             onAgentClick={handleAgentClick}
             onLaunch={handleLaunch}
+            onOpenAsOverlay={handleOpenAsOverlay}
           />
         </div>
 

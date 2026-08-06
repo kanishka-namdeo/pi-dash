@@ -6,12 +6,20 @@ import { AgentDetailView } from './components/views/AgentDetailView';
 import { WorktreeView } from './components/views/WorktreeView';
 import { CompletedWorkView } from './components/views/CompletedWorkView';
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
+import { PiPProvider } from './context/PiPContext';
+import { PiPContainer } from './components/pip/PiPContainer';
+import { MainTerminal } from './components/pip/MainTerminal';
+import { OverlayManager } from './components/pip/OverlayManager';
 
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
 
   useEffect(() => {
-    window.api.getOnboardingStatus().then(setOnboardingCompleted);
+    if (window.api) {
+      window.api.getOnboardingStatus().then(setOnboardingCompleted);
+    } else {
+      setOnboardingCompleted(true);
+    }
   }, []);
 
   const handleOnboardingComplete = useCallback(() => {
@@ -27,14 +35,24 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/agent/:agentId" element={<TerminalView />} />
-        <Route path="/worktrees" element={<WorktreeView />} />
-        <Route path="/completed/:agentId" element={<CompletedWorkView />} />
-      </Routes>
-    </BrowserRouter>
+    <PiPProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PiPContainer>
+                <MainTerminal />
+                <OverlayManager />
+              </PiPContainer>
+            }
+          />
+          <Route path="/agent/:agentId" element={<TerminalView />} />
+          <Route path="/worktrees" element={<WorktreeView />} />
+          <Route path="/completed/:agentId" element={<CompletedWorkView />} />
+        </Routes>
+      </BrowserRouter>
+    </PiPProvider>
   );
 }
 export default App;
