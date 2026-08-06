@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Activity, Agent } from '@/types/dashboard';
-import { seedActivities, activityTemplates } from '@/data/mockData';
+import { activityTemplates } from '@/data/mockData';
 
 export function useActivityFeed(agents: Agent[], isPaused: boolean) {
-  const [activities, setActivities] = useState<Activity[]>(seedActivities);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -42,7 +42,11 @@ export function useActivityFeed(agents: Agent[], isPaused: boolean) {
     };
   }, [agents, isPaused]);
 
-  return { activities };
+  const clear = useCallback(() => {
+    setActivities([]);
+  }, []);
+
+  return { activities, clear };
 }
 
 export default useActivityFeed;
