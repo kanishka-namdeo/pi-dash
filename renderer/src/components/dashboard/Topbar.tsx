@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Pause, Play, GitBranch, LayoutDashboard, Monitor } from 'lucide-react';
+import { Pause, Play, GitBranch, LayoutDashboard, Monitor, Trash2 } from 'lucide-react';
 import type { Mode } from '@/types/dashboard';
 import type { ViewMode } from '@/types/pip';
 
@@ -9,7 +9,7 @@ type TopbarProps = {
   isFeedPaused: boolean;
   hasMainAgent: boolean;
   onModeChange: (mode: Mode) => void;
-  onToggleViewMode: () => void;
+  onSetViewMode: (mode: ViewMode) => void;
   onToggleFeedPause: () => void;
   onClearFeed: () => void;
 };
@@ -20,7 +20,7 @@ export function Topbar({
   isFeedPaused,
   hasMainAgent,
   onModeChange,
-  onToggleViewMode,
+  onSetViewMode,
   onToggleFeedPause,
   onClearFeed,
 }: TopbarProps) {
@@ -39,7 +39,7 @@ export function Topbar({
       {/* View Toggle */}
       <nav aria-label="View mode" className="flex items-center gap-1 bg-[#1a1a1a] rounded-lg p-1">
         <button
-          onClick={onToggleViewMode}
+          onClick={() => onSetViewMode('dashboard')}
           disabled={!hasMainAgent}
           className={`flex items-center gap-1.5 px-3 py-1 text-sm rounded-md transition-colors ${
             viewMode === 'dashboard'
@@ -52,7 +52,7 @@ export function Topbar({
           Dashboard
         </button>
         <button
-          onClick={onToggleViewMode}
+          onClick={() => onSetViewMode('terminal')}
           disabled={!hasMainAgent}
           className={`flex items-center gap-1.5 px-3 py-1 text-sm rounded-md transition-colors ${
             viewMode === 'terminal'
@@ -103,15 +103,10 @@ export function Topbar({
           className="p-2 rounded-lg bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a] transition-colors"
           title="Clear feed"
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 6h18"/>
-            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-            <line x1="10" x2="10" y1="11" y2="17"/>
-            <line x1="14" x2="14" y1="11" y2="17"/>
-          </svg>
+          <Trash2 className="w-4 h-4" />
         </button>
       </nav>
     </header>
   );
 }
+
