@@ -9,6 +9,10 @@ export function MainTerminal() {
     return <Dashboard />;
   }
 
+  if (state.viewMode === 'dashboard') {
+    return <Dashboard />;
+  }
+
   return (
     <div className="w-full h-full">
       <TerminalView agentId={state.mainAgentId} />
