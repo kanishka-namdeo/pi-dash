@@ -25723,76 +25723,26 @@
           "alignItems": "center",
           "children": [
             {
-              "type": "frame",
-              "id": "xDlXS",
-              "name": "IconBox",
-              "width": 64,
-              "height": 64,
-              "fill": "#000000",
-              "cornerRadius": 16,
-              "layout": "vertical",
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "FebNQ",
-                  "name": "EmptyIcon",
-                  "width": 32,
-                  "height": 32,
-                  "icon": "layout-dashboard",
-                  "library": "lucide",
-                  "fill": "$accent-indigo"
+              "type": "ref",
+              "ref": "uRw0B",
+              "name": "EmptyState",
+              "descendants": {
+                "GkU5o/adEYX": {
+                  "icon": "layout-dashboard"
+                },
+                "flpp4": {
+                  "content": "No Agents Running"
+                },
+                "x8QBCm": {
+                  "content": "Launch your first agent to start monitoring and managing AI coding tasks."
+                },
+                "OMyRe/B3foy": {
+                  "icon": "plus"
+                },
+                "OMyRe/DDgGN": {
+                  "content": "Launch Agent"
                 }
-              ]
-            },
-            {
-              "type": "text",
-              "id": "QLPfo",
-              "name": "EmptyTitle",
-              "fill": "#ffffff",
-              "content": "No Agents Running",
-              "fontFamily": "$font-ui",
-              "fontSize": 20,
-              "fontWeight": "700"
-            },
-            {
-              "type": "text",
-              "id": "oql57",
-              "name": "EmptyDesc",
-              "fill": "$text-secondary",
-              "textGrowth": "fixed-width",
-              "width": 400,
-              "content": "Launch your first agent to start monitoring and managing AI coding tasks.",
-              "textAlign": "center",
-              "fontFamily": "$font-ui",
-              "fontSize": 14,
-              "fontWeight": "normal"
-            },
-            {
-              "type": "frame",
-              "id": "DQpzH",
-              "name": "CTABtn",
-              "height": 40,
-              "fill": "$accent-indigo",
-              "cornerRadius": 6,
-              "padding": [
-                0,
-                16
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "rSHzQ",
-                  "name": "BtnLabel",
-                  "fill": "#ffffff",
-                  "content": "+ Launch Agent",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
+              }
             }
           ]
         },
@@ -25812,76 +25762,28 @@
           "alignItems": "center",
           "children": [
             {
-              "type": "frame",
-              "id": "b4BmA",
-              "name": "IconBox",
-              "width": 64,
-              "height": 64,
-              "fill": "#000000",
-              "cornerRadius": 16,
-              "layout": "vertical",
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "Z6y6J5",
-                  "name": "EmptyIcon",
-                  "width": 32,
-                  "height": 32,
+              "type": "ref",
+              "ref": "uRw0B",
+              "name": "EmptyState",
+              "descendants": {
+                "GkU5o/adEYX": {
                   "icon": "list-checks",
-                  "library": "lucide",
+                  "fill": "$accent-emerald"
+                },
+                "flpp4": {
+                  "content": "No Active Plan"
+                },
+                "x8QBCm": {
+                  "content": "Create a plan to break down your task into manageable steps for agents."
+                },
+                "OMyRe/B3foy": {
+                  "icon": "plus"
+                },
+                "OMyRe/DDgGN": {
+                  "content": "Create Plan",
                   "fill": "$accent-emerald"
                 }
-              ]
-            },
-            {
-              "type": "text",
-              "id": "j4ZvJM",
-              "name": "EmptyTitle",
-              "fill": "#ffffff",
-              "content": "No Active Plan",
-              "fontFamily": "$font-ui",
-              "fontSize": 20,
-              "fontWeight": "700"
-            },
-            {
-              "type": "text",
-              "id": "COPbz",
-              "name": "EmptyDesc",
-              "fill": "$text-secondary",
-              "textGrowth": "fixed-width",
-              "width": 400,
-              "content": "Create a plan to break down your task into manageable steps for agents.",
-              "textAlign": "center",
-              "fontFamily": "$font-ui",
-              "fontSize": 14,
-              "fontWeight": "normal"
-            },
-            {
-              "type": "frame",
-              "id": "dpgbv",
-              "name": "CTABtn",
-              "height": 40,
-              "fill": "$accent-emerald",
-              "cornerRadius": 6,
-              "padding": [
-                0,
-                16
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "E5rhP",
-                  "name": "BtnLabel",
-                  "fill": "#ffffff",
-                  "content": "+ Create Plan",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
+              }
             }
           ]
         },
@@ -25901,76 +25803,28 @@
           "alignItems": "center",
           "children": [
             {
-              "type": "frame",
-              "id": "jtT9F",
-              "name": "IconBox",
-              "width": 64,
-              "height": 64,
-              "fill": "#000000",
-              "cornerRadius": 16,
-              "layout": "vertical",
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "e9iOz",
-                  "name": "EmptyIcon",
-                  "width": 32,
-                  "height": 32,
+              "type": "ref",
+              "ref": "uRw0B",
+              "name": "EmptyState",
+              "descendants": {
+                "GkU5o/adEYX": {
                   "icon": "activity",
-                  "library": "lucide",
+                  "fill": "$accent-blue"
+                },
+                "flpp4": {
+                  "content": "No Activity Yet"
+                },
+                "x8QBCm": {
+                  "content": "Agent actions and commands will appear here in real-time."
+                },
+                "OMyRe/B3foy": {
+                  "icon": "plus"
+                },
+                "OMyRe/DDgGN": {
+                  "content": "Launch an Agent",
                   "fill": "$accent-blue"
                 }
-              ]
-            },
-            {
-              "type": "text",
-              "id": "STKVp",
-              "name": "EmptyTitle",
-              "fill": "#ffffff",
-              "content": "No Activity Yet",
-              "fontFamily": "$font-ui",
-              "fontSize": 20,
-              "fontWeight": "700"
-            },
-            {
-              "type": "text",
-              "id": "C9teps",
-              "name": "EmptyDesc",
-              "fill": "$text-secondary",
-              "textGrowth": "fixed-width",
-              "width": 400,
-              "content": "Agent actions and commands will appear here in real-time.",
-              "textAlign": "center",
-              "fontFamily": "$font-ui",
-              "fontSize": 14,
-              "fontWeight": "normal"
-            },
-            {
-              "type": "frame",
-              "id": "q2fxk",
-              "name": "CTABtn",
-              "height": 40,
-              "fill": "$accent-blue",
-              "cornerRadius": 6,
-              "padding": [
-                0,
-                16
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "qUPvK",
-                  "name": "BtnLabel",
-                  "fill": "#ffffff",
-                  "content": "Launch an Agent",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
+              }
             }
           ]
         },
@@ -25990,76 +25844,26 @@
           "alignItems": "center",
           "children": [
             {
-              "type": "frame",
-              "id": "xMjUP",
-              "name": "IconBox",
-              "width": 64,
-              "height": 64,
-              "fill": "#000000",
-              "cornerRadius": 16,
-              "layout": "vertical",
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "hMoKq",
-                  "name": "EmptyIcon",
-                  "width": 32,
-                  "height": 32,
-                  "icon": "git-branch",
-                  "library": "lucide",
-                  "fill": "$accent-indigo"
+              "type": "ref",
+              "ref": "uRw0B",
+              "name": "EmptyState",
+              "descendants": {
+                "GkU5o/adEYX": {
+                  "icon": "git-branch"
+                },
+                "flpp4": {
+                  "content": "No Worktrees"
+                },
+                "x8QBCm": {
+                  "content": "Create a worktree to start isolated work on a new branch."
+                },
+                "OMyRe/B3foy": {
+                  "icon": "plus"
+                },
+                "OMyRe/DDgGN": {
+                  "content": "New Worktree"
                 }
-              ]
-            },
-            {
-              "type": "text",
-              "id": "IY1Jr",
-              "name": "EmptyTitle",
-              "fill": "#ffffff",
-              "content": "No Worktrees",
-              "fontFamily": "$font-ui",
-              "fontSize": 20,
-              "fontWeight": "700"
-            },
-            {
-              "type": "text",
-              "id": "NDBWY",
-              "name": "EmptyDesc",
-              "fill": "$text-secondary",
-              "textGrowth": "fixed-width",
-              "width": 400,
-              "content": "Create a worktree to start isolated work on a new branch.",
-              "textAlign": "center",
-              "fontFamily": "$font-ui",
-              "fontSize": 14,
-              "fontWeight": "normal"
-            },
-            {
-              "type": "frame",
-              "id": "cxG3q",
-              "name": "CTABtn",
-              "height": 40,
-              "fill": "$accent-indigo",
-              "cornerRadius": 6,
-              "padding": [
-                0,
-                16
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "Y8U9Z",
-                  "name": "BtnLabel",
-                  "fill": "#ffffff",
-                  "content": "+ New Worktree",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
+              }
             }
           ]
         },
@@ -26084,7 +25888,7 @@
               "name": "IconBox",
               "width": 64,
               "height": 64,
-              "fill": "#000000",
+              "fill": "$card",
               "cornerRadius": 16,
               "layout": "vertical",
               "justifyContent": "center",
@@ -26094,8 +25898,8 @@
                   "type": "icon",
                   "id": "y4KWm",
                   "name": "ErrorIcon",
-                  "width": 32,
-                  "height": 32,
+                  "width": 30,
+                  "height": 30,
                   "icon": "wifi-off",
                   "library": "lucide",
                   "fill": "$accent-amber"
@@ -26106,10 +25910,10 @@
               "type": "text",
               "id": "uB1IN",
               "name": "ErrorTitle",
-              "fill": "#ffffff",
+              "fill": "$text-primary",
               "content": "Agent Disconnected",
               "fontFamily": "$font-ui",
-              "fontSize": 20,
+              "fontSize": 18,
               "fontWeight": "700"
             },
             {
@@ -26122,7 +25926,7 @@
               "content": "The agent session was unexpectedly terminated. You can attempt to reconnect or review the last output.",
               "textAlign": "center",
               "fontFamily": "$font-ui",
-              "fontSize": 14,
+              "fontSize": 13,
               "fontWeight": "normal"
             },
             {
@@ -26135,7 +25939,7 @@
                   "type": "frame",
                   "id": "fgkf2",
                   "name": "PrimaryBtn",
-                  "height": 40,
+                  "height": 38,
                   "fill": "$accent-amber",
                   "cornerRadius": 6,
                   "padding": [
@@ -26148,10 +25952,10 @@
                       "type": "text",
                       "id": "DNbw8",
                       "name": "PrimaryLabel",
-                      "fill": "#ffffff",
+                      "fill": "$text-primary",
                       "content": "Reconnect",
                       "fontFamily": "$font-ui",
-                      "fontSize": 14,
+                      "fontSize": 13,
                       "fontWeight": "500"
                     }
                   ]
@@ -26160,7 +25964,7 @@
                   "type": "frame",
                   "id": "o16H2l",
                   "name": "SecondaryBtn",
-                  "height": 40,
+                  "height": 38,
                   "fill": "$bg",
                   "cornerRadius": 6,
                   "stroke": "$border",
@@ -26178,7 +25982,7 @@
                       "fill": "$text-secondary",
                       "content": "View Last Output",
                       "fontFamily": "$font-ui",
-                      "fontSize": 14,
+                      "fontSize": 13,
                       "fontWeight": "normal"
                     }
                   ]
@@ -26208,7 +26012,7 @@
               "name": "IconBox",
               "width": 64,
               "height": 64,
-              "fill": "#000000",
+              "fill": "$card",
               "cornerRadius": 16,
               "layout": "vertical",
               "justifyContent": "center",
@@ -26218,8 +26022,8 @@
                   "type": "icon",
                   "id": "kO19F",
                   "name": "ErrorIcon",
-                  "width": 32,
-                  "height": 32,
+                  "width": 30,
+                  "height": 30,
                   "icon": "shield-alert",
                   "library": "lucide",
                   "fill": "$accent-indigo"
@@ -26230,10 +26034,10 @@
               "type": "text",
               "id": "O9pJIS",
               "name": "ErrorTitle",
-              "fill": "#ffffff",
+              "fill": "$text-primary",
               "content": "GitHub Authentication Expired",
               "fontFamily": "$font-ui",
-              "fontSize": 20,
+              "fontSize": 18,
               "fontWeight": "700"
             },
             {
@@ -26246,7 +26050,7 @@
               "content": "Your GitHub token has expired. Re-authenticate to continue using GitHub features.",
               "textAlign": "center",
               "fontFamily": "$font-ui",
-              "fontSize": 14,
+              "fontSize": 13,
               "fontWeight": "normal"
             },
             {
@@ -26259,7 +26063,7 @@
                   "type": "frame",
                   "id": "nMrW9",
                   "name": "PrimaryBtn",
-                  "height": 40,
+                  "height": 38,
                   "fill": "$accent-indigo",
                   "cornerRadius": 6,
                   "padding": [
@@ -26272,10 +26076,10 @@
                       "type": "text",
                       "id": "nPlbG",
                       "name": "PrimaryLabel",
-                      "fill": "#ffffff",
+                      "fill": "$text-primary",
                       "content": "Re-authenticate",
                       "fontFamily": "$font-ui",
-                      "fontSize": 14,
+                      "fontSize": 13,
                       "fontWeight": "500"
                     }
                   ]
@@ -26284,7 +26088,7 @@
                   "type": "frame",
                   "id": "h1gLTS",
                   "name": "SecondaryBtn",
-                  "height": 40,
+                  "height": 38,
                   "fill": "$bg",
                   "cornerRadius": 6,
                   "stroke": "$border",
@@ -26302,7 +26106,7 @@
                       "fill": "$text-secondary",
                       "content": "Use PAT Instead",
                       "fontFamily": "$font-ui",
-                      "fontSize": 14,
+                      "fontSize": 13,
                       "fontWeight": "normal"
                     }
                   ]
@@ -26332,7 +26136,7 @@
               "name": "IconBox",
               "width": 64,
               "height": 64,
-              "fill": "#000000",
+              "fill": "$card",
               "cornerRadius": 16,
               "layout": "vertical",
               "justifyContent": "center",
@@ -26342,8 +26146,8 @@
                   "type": "icon",
                   "id": "rGaZH",
                   "name": "ErrorIcon",
-                  "width": 32,
-                  "height": 32,
+                  "width": 30,
+                  "height": 30,
                   "icon": "triangle",
                   "library": "lucide",
                   "fill": "$accent-rose"
@@ -26354,10 +26158,10 @@
               "type": "text",
               "id": "pyEsc",
               "name": "ErrorTitle",
-              "fill": "#ffffff",
+              "fill": "$text-primary",
               "content": "Worktree Merge Conflict",
               "fontFamily": "$font-ui",
-              "fontSize": 20,
+              "fontSize": 18,
               "fontWeight": "700"
             },
             {
@@ -26370,7 +26174,7 @@
               "content": "Changes in this worktree conflict with the main branch. Review and resolve before continuing.",
               "textAlign": "center",
               "fontFamily": "$font-ui",
-              "fontSize": 14,
+              "fontSize": 13,
               "fontWeight": "normal"
             },
             {
@@ -26383,7 +26187,7 @@
                   "type": "frame",
                   "id": "dukrB",
                   "name": "PrimaryBtn",
-                  "height": 40,
+                  "height": 38,
                   "fill": "$accent-rose",
                   "cornerRadius": 6,
                   "padding": [
@@ -26396,10 +26200,10 @@
                       "type": "text",
                       "id": "R7EhHd",
                       "name": "PrimaryLabel",
-                      "fill": "#ffffff",
+                      "fill": "$text-primary",
                       "content": "Resolve Conflict",
                       "fontFamily": "$font-ui",
-                      "fontSize": 14,
+                      "fontSize": 13,
                       "fontWeight": "500"
                     }
                   ]
@@ -26408,7 +26212,7 @@
                   "type": "frame",
                   "id": "r4ZOG",
                   "name": "SecondaryBtn",
-                  "height": 40,
+                  "height": 38,
                   "fill": "$bg",
                   "cornerRadius": 6,
                   "stroke": "$border",
@@ -26426,7 +26230,7 @@
                       "fill": "$text-secondary",
                       "content": "View Diff",
                       "fontFamily": "$font-ui",
-                      "fontSize": 14,
+                      "fontSize": 13,
                       "fontWeight": "normal"
                     }
                   ]
@@ -37570,7 +37374,6 @@
           ]
         }
       ]
-    }
     },
     {
       "type": "frame",
@@ -37649,7 +37452,10 @@
                   "fill": "$card",
                   "stroke": "$border",
                   "strokeWidth": 1,
-                  "padding": [0, 20],
+                  "padding": [
+                    0,
+                    20
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -37681,7 +37487,10 @@
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 2,
-                  "padding": [12, 8],
+                  "padding": [
+                    12,
+                    8
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -37692,7 +37501,10 @@
                       "fill": "$accent-indigo",
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37725,7 +37537,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37758,7 +37573,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37791,7 +37609,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37824,7 +37645,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37857,7 +37681,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37890,7 +37717,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37923,7 +37753,10 @@
                       "height": 36,
                       "cornerRadius": 6,
                       "gap": 12,
-                      "padding": [0, 12],
+                      "padding": [
+                        0,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
@@ -37971,7 +37804,10 @@
                   "fill": "$bg",
                   "stroke": "$border",
                   "strokeWidth": 1,
-                  "padding": [0, 32],
+                  "padding": [
+                    0,
+                    32
+                  ],
                   "alignItems": "center",
                   "justifyContent": "space-between",
                   "children": [
@@ -38010,7 +37846,10 @@
                       "name": "SaveBtn",
                       "fill": "$accent-indigo",
                       "cornerRadius": 6,
-                      "padding": [8, 16],
+                      "padding": [
+                        8,
+                        16
+                      ],
                       "children": [
                         {
                           "type": "text",
@@ -38257,7 +38096,10 @@
                               "cornerRadius": 6,
                               "stroke": "$border",
                               "strokeWidth": 1,
-                              "padding": [8, 12],
+                              "padding": [
+                                8,
+                                12
+                              ],
                               "gap": 8,
                               "alignItems": "center",
                               "children": [
