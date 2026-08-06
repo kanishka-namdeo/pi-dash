@@ -21,6 +21,14 @@ export type Activity = {
   file?: string;
 };
 
+export type FeedEvent = {
+  id: string;
+  timestamp: number;
+  type: 'session:started' | 'session:exited' | 'command';
+  agentId: string;
+  command?: string;
+};
+
 export type Mode = 'auto' | 'supervised' | 'manual';
 
 export type PlanStep = {

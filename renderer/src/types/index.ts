@@ -1,5 +1,5 @@
 // Re-export dashboard types
-export type { Agent, Activity, Mode, PlanStep } from './dashboard';
+export type { Agent, Activity, FeedEvent, Mode, PlanStep } from './dashboard';
 
 // Re-export shared onboarding types from main process
 export type {
