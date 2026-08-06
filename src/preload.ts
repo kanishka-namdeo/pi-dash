@@ -80,4 +80,14 @@ contextBridge.exposeInMainWorld('api', {
     dataPRs: (owner: string, repo: string) =>
       ipcRenderer.invoke('github:data:prs', owner, repo),
   },
+
+  // Agent GitHub integration
+  agentGitHub: {
+    createPR: (worktreePath: string, title: string, body: string) =>
+      ipcRenderer.invoke('agent-github:createPR', worktreePath, title, body),
+    commentIssue: (owner: string, repo: string, issueNumber: number, body: string) =>
+      ipcRenderer.invoke('agent-github:commentIssue', owner, repo, issueNumber, body),
+    readFeedback: (owner: string, repo: string, prNumber: number) =>
+      ipcRenderer.invoke('agent-github:readFeedback', owner, repo, prNumber)
+  },
 });

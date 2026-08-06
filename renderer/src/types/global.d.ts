@@ -24,6 +24,12 @@ interface GitHubAPI {
   dataPRs: (owner: string, repo: string) => Promise<GitHubPR[]>;
 }
 
+interface AgentGitHubAPI {
+  createPR(worktreePath: string, title: string, body: string): Promise<{ number: number; url: string }>;
+  commentIssue(owner: string, repo: string, issueNumber: number, body: string): Promise<{ success: boolean }>;
+  readFeedback(owner: string, repo: string, prNumber: number): Promise<Array<{ user: string; body: string }>>;
+}
+
 declare global {
   interface Window {
     api: {
@@ -41,6 +47,7 @@ declare global {
       openDirectory: () => Promise<string | null>;
       session: SessionAPI;
       github: GitHubAPI;
+      agentGitHub: AgentGitHubAPI;
     };
   }
 }
