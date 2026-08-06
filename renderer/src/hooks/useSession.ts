@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { SessionState } from '../../src/shared/types';
+import { useSessionContext } from '../context/SessionContext';
 
 export function useSession(agentId: string): {
   state: SessionState;
@@ -13,6 +14,7 @@ export function useSession(agentId: string): {
   const [pid, setPid] = useState<number | null>(null);
   const stateRef = useRef(state);
   stateRef.current = state;
+  const sessionContext = useSessionContext();
 
   const spawn = useCallback(async (cwd: string) => {
     const result = await window.api.session.create(agentId, cwd);
@@ -21,7 +23,8 @@ export function useSession(agentId: string): {
     }
     setState('running');
     setPid(result.pid);
-  }, [agentId]);
+    sessionContext.registerSession(agentId, result.pid, cwd);
+  }, [agentId, sessionContext]);
 
   const write = useCallback((data: string) => {
     if (stateRef.current !== 'running') return;
@@ -37,7 +40,8 @@ export function useSession(agentId: string): {
     window.api.session.destroy(agentId);
     setState('exited');
     setPid(null);
-  }, [agentId]);
+    sessionContext.unregisterSession(agentId);
+  }, [agentId, sessionContext]);
 
   useEffect(() => {
     const unsubData = window.api.session.onData((evtAgentId, data) => {
@@ -50,6 +54,7 @@ export function useSession(agentId: string): {
       if (evtAgentId === agentId) {
         setState('exited');
         setPid(null);
+        sessionContext.updateSessionState(agentId, 'exited');
       }
     });
 
@@ -57,7 +62,7 @@ export function useSession(agentId: string): {
       unsubData();
       unsubExit();
     };
-  }, [agentId]);
+  }, [agentId, sessionContext]);
 
   return { state, pid, spawn, write, resize, destroy };
 }
