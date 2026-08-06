@@ -18,6 +18,7 @@ declare global {
       launchAgent: (id: string) => Promise<{ pid: number }>;
       openExternal: (url: string) => void;
       openDirectory: () => Promise<string | null>;
+      invoke: (channel: string, ...args: unknown[]) => Promise<unknown>;
       session: SessionAPI;
     };
   }

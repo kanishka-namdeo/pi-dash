@@ -7,6 +7,7 @@ import { WorktreeView } from './components/views/WorktreeView';
 import { CompletedWorkView } from './components/views/CompletedWorkView';
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
 import { PiPProvider } from './context/PiPContext';
+import { GitHubProvider } from './context/GitHubContext';
 import { SessionProvider } from './context/SessionContext';
 import { PiPContainer } from './components/pip/PiPContainer';
 import { MainTerminal } from './components/pip/MainTerminal';
@@ -39,24 +40,26 @@ function App() {
   return (
     <>
       <SessionProvider>
-        <PiPProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                <PiPContainer>
-                  <MainTerminal />
-                  <OverlayManager />
-                </PiPContainer>
-              }
-            />
-            <Route path="/agent/:agentId" element={<AgentDetailView />} />
-            <Route path="/worktrees" element={<WorktreeView />} />
-            <Route path="/completed/:agentId" element={<CompletedWorkView />} />
-          </Routes>
-        </BrowserRouter>
-      </PiPProvider>
+        <GitHubProvider>
+          <PiPProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                  <PiPContainer>
+                    <MainTerminal />
+                    <OverlayManager />
+                  </PiPContainer>
+                }
+              />
+              <Route path="/agent/:agentId" element={<AgentDetailView />} />
+              <Route path="/worktrees" element={<WorktreeView />} />
+              <Route path="/completed/:agentId" element={<CompletedWorkView />} />
+            </Routes>
+          </BrowserRouter>
+        </PiPProvider>
+      </GitHubProvider>
     </SessionProvider>
       <Toaster />
     </>

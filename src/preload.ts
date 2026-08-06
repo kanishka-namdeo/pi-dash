@@ -59,4 +59,6 @@ contextBridge.exposeInMainWorld('api', {
 
   // Dialog
   openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
+  // Generic IPC invoke for GitHub channels
+  invoke: (channel: string, ...args: unknown[]) => ipcRenderer.invoke(channel, ...args),
 });
