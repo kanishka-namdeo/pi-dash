@@ -83,4 +83,38 @@ describe('usePiP', () => {
     const newZ1 = result.current.state.overlays[0].zIndex;
     expect(newZ1).toBeGreaterThan(initialZ2);
   });
+  it('starts with dashboard viewMode', () => {
+    const { result } = renderHook(() => usePiP());
+    expect(result.current.state.viewMode).toBe('dashboard');
+  });
+
+  it('toggles viewMode from dashboard to terminal', () => {
+    const { result } = renderHook(() => usePiP());
+    act(() => {
+      result.current.actions.toggleViewMode();
+    });
+    expect(result.current.state.viewMode).toBe('terminal');
+  });
+
+  it('toggles viewMode from terminal back to dashboard', () => {
+    const { result } = renderHook(() => usePiP());
+    act(() => {
+      result.current.actions.toggleViewMode();
+      result.current.actions.toggleViewMode();
+    });
+    expect(result.current.state.viewMode).toBe('dashboard');
+  });
+
+  it('sets viewMode directly', () => {
+    const { result } = renderHook(() => usePiP());
+    act(() => {
+      result.current.actions.setViewMode('terminal');
+    });
+    expect(result.current.state.viewMode).toBe('terminal');
+
+    act(() => {
+      result.current.actions.setViewMode('dashboard');
+    });
+    expect(result.current.state.viewMode).toBe('dashboard');
+  });
 });

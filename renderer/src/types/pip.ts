@@ -25,10 +25,13 @@ export const SIZE_PRESETS: SizePresets = {
 
 export type OverlayContentMode = 'minimal' | 'preview' | 'rich';
 
+export type ViewMode = 'dashboard' | 'terminal';
+
 export type PiPState = {
   mainAgentId: string | null;
   overlays: Overlay[];
   nextZIndex: number;
+  viewMode: ViewMode;
 };
 
 export type PiPActions = {
@@ -39,4 +42,6 @@ export type PiPActions = {
   updateOverlayPosition: (agentId: string, x: number, y: number) => void;
   updateOverlaySize: (agentId: string, width: number, height: number, size: OverlaySize) => void;
   bringOverlayToFront: (agentId: string) => void;
+  toggleViewMode: () => void;
+  setViewMode: (mode: ViewMode) => void;
 };
