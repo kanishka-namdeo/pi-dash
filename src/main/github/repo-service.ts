@@ -6,13 +6,24 @@ interface RepoStoreSchema {
   repoConfig: RepoConfig;
 }
 
-// Type for store with get/set methods (electron-store extends Conf which provides these)
-interface StoreWithMethods<T> {
-  get<K extends string>(key: K): any;
-  set<K extends string>(key: K, value: any): void;
+// Wrapper for electron-store to provide typed get/set methods
+class TypedStore<T extends Record<string, any>> {
+  private store: Store<T>;
+  
+  constructor(options: ConstructorParameters<typeof Store<T>>[0]) {
+    this.store = new Store<T>(options);
+  }
+  
+  get<K extends string>(key: K): any {
+    return (this.store as any).get(key);
+  }
+  
+  set<K extends string>(key: K, value: any): void {
+    (this.store as any).set(key, value);
+  }
 }
 
-const store: StoreWithMethods<RepoStoreSchema> = new Store<RepoStoreSchema>({
+const store = new TypedStore<RepoStoreSchema>({
   projectName: 'pi-dash',
   defaults: {
     repoConfig: { repos: [], activeRepoId: null }
@@ -49,7 +60,7 @@ export class RepoService {
 
   removeRepo(id: number): void {
     const config = store.get('repoConfig');
-    config.repos = config.repos.filter(r => r.id !== id);
+    config.repos = config.repos.filter((r: Repo) => r.id !== id);
     if (config.activeRepoId === id) {
       config.activeRepoId = null;
     }
@@ -63,7 +74,7 @@ export class RepoService {
   getActiveRepo(): Repo | null {
     const config = store.get('repoConfig');
     if (!config.activeRepoId) return null;
-    return config.repos.find(r => r.id === config.activeRepoId) ?? null;
+    return config.repos.find((r: Repo) => r.id === config.activeRepoId) ?? null;
   }
 
   setActiveRepo(id: number): void {

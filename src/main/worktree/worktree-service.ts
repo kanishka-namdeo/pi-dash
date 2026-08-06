@@ -7,13 +7,24 @@ interface WorktreeStoreSchema {
   worktrees: Worktree[];
 }
 
-// Type for store with get/set methods (electron-store extends Conf which provides these)
-interface StoreWithMethods<T> {
-  get<K extends string>(key: K): any;
-  set<K extends string>(key: K, value: any): void;
+// Wrapper for electron-store to provide typed get/set methods
+class TypedStore<T extends Record<string, any>> {
+  private store: Store<T>;
+  
+  constructor(options: ConstructorParameters<typeof Store<T>>[0]) {
+    this.store = new Store<T>(options);
+  }
+  
+  get<K extends string>(key: K): any {
+    return (this.store as any).get(key);
+  }
+  
+  set<K extends string>(key: K, value: any): void {
+    (this.store as any).set(key, value);
+  }
 }
 
-const store: StoreWithMethods<WorktreeStoreSchema> = new Store<WorktreeStoreSchema>({
+const store = new TypedStore<WorktreeStoreSchema>({
   projectName: 'pi-dash',
   defaults: {
     worktrees: []
@@ -52,18 +63,18 @@ export class WorktreeService {
 
   async list(repoPath: string): Promise<Worktree[]> {
     const allWorktrees = store.get('worktrees');
-    return allWorktrees.filter(w => w.path.startsWith(repoPath));
+    return allWorktrees.filter((w: Worktree) => w.path.startsWith(repoPath));
   }
 
   async remove(worktreePath: string): Promise<void> {
     const worktrees = store.get('worktrees');
-    const worktree = worktrees.find(w => w.path === worktreePath);
+    const worktree = worktrees.find((w: Worktree) => w.path === worktreePath);
     if (!worktree) throw new Error('Worktree not found');
 
     const git = simpleGit(worktreePath);
     await git.raw(['worktree', 'remove', worktreePath]);
 
-    const updatedWorktrees = worktrees.filter(w => w.path !== worktreePath);
+    const updatedWorktrees = worktrees.filter((w: Worktree) => w.path !== worktreePath);
     store.set('worktrees', updatedWorktrees);
   }
 

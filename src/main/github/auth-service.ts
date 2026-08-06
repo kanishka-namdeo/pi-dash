@@ -35,7 +35,15 @@ class TypedStore<T extends Record<string, any>> {
 }
 
 const store = new TypedStore<GitHubStoreSchema>({
-
+  projectName: 'pi-dash',
+  defaults: {
+    github: {
+      authMethod: null,
+      accessToken: '',
+      user: null
+    }
+  }
+});
 export class AuthService {
   private githubService: GitHubService;
 

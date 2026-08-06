@@ -17,7 +17,7 @@ export class AgentGitBridge {
 
     const status = await git.status();
     const branch = status.current;
-
+    if (!branch) throw new Error('Could not determine current branch');
     // Get repo info from worktree
     const remoteUrl = await git.getConfig('remote.origin.url');
     const match = remoteUrl.value?.match(/github\.com[:/]([^/]+)\/([^/.]+)/);

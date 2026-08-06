@@ -80,9 +80,9 @@ export class DataService {
       base: { ref: pr.base.ref },
       user: { login: pr.user?.login || '' },
       createdAt: pr.created_at,
-      additions: pr.additions || 0,
-      deletions: pr.deletions || 0,
-      commits: pr.commits || 0
+      additions: (pr as any).additions || 0,
+      deletions: (pr as any).deletions || 0,
+      commits: (pr as any).commits || 0
     }));
 
     this.cache.set(cacheKey, prs);

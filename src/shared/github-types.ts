@@ -46,7 +46,7 @@ export interface GitHubPR {
   base: { ref: string };
   user: { login: string };
   createdAt: string;
-  additions: number;
-  deletions: number;
-  commits: number;
+  additions?: number;
+  deletions?: number;
+  commits?: number;
 }
