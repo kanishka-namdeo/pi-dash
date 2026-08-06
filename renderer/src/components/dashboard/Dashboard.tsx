@@ -129,7 +129,7 @@ export function Dashboard() {
 
         {/* Activity Feed */}
         <div className={`${activeTab === 'activity' ? 'block' : 'hidden'} md:block w-full md:w-96 border-l border-[#2a2a2a]`}>
-          <ActivityFeed activities={activities} agents={agents} />
+          <ActivityFeed />
         </div>
       </div>
 
