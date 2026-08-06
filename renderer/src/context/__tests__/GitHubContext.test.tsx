@@ -35,42 +35,39 @@ const mockUser = {
   avatarUrl: 'https://example.com/avatar.png',
 };
 
-const mockInvoke = vi.fn<(channel: string, ...args: unknown[]) => Promise<unknown>>();
+const mockGitHub = {
+  authGetUser: vi.fn<() => Promise<unknown>>(),
+  authOAuth: vi.fn<() => Promise<{ success: boolean }>>(),
+  authPAT: vi.fn<(token: string) => Promise<{ success: boolean }>>(),
+  authLogout: vi.fn<() => Promise<{ success: true }>>(),
+  repoList: vi.fn<() => Promise<Repo[]>>(),
+  repoAdd: vi.fn<(owner: string, name: string, localPath: string) => Promise<Repo>>(),
+  repoRemove: vi.fn<(id: number) => Promise<{ success: true }>>(),
+  repoGetActive: vi.fn<() => Promise<Repo | null>>(),
+  repoSetActive: vi.fn<(id: number) => Promise<{ success: true }>>(),
+  dataIssues: vi.fn<(owner: string, repo: string) => Promise<GitHubIssue[]>>(),
+  dataPRs: vi.fn<(owner: string, repo: string) => Promise<GitHubPR[]>>(),
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockInvoke.mockImplementation((channel: string) => {
-    switch (channel) {
-      case 'github:auth:getUser':
-        return Promise.resolve(null);
-      case 'github:repo:list':
-        return Promise.resolve([]);
-      case 'github:repo:getActive':
-        return Promise.resolve(null);
-      case 'github:auth:oauth':
-        return Promise.resolve({ success: true });
-      case 'github:auth:pat':
-        return Promise.resolve({ success: true });
-      case 'github:auth:logout':
-        return Promise.resolve({ success: true });
-      case 'github:repo:add':
-        return Promise.resolve(mockRepo);
-      case 'github:repo:remove':
-        return Promise.resolve({ success: true });
-      case 'github:repo:setActive':
-        return Promise.resolve({ success: true });
-      case 'github:data:issues':
-        return Promise.resolve([]);
-      case 'github:data:prs':
-        return Promise.resolve([]);
-      default:
-        return Promise.resolve(null);
-    }
-  });
+  
+  // Default mock implementations
+  mockGitHub.authGetUser.mockResolvedValue(null);
+  mockGitHub.authOAuth.mockResolvedValue({ success: true });
+  mockGitHub.authPAT.mockResolvedValue({ success: true });
+  mockGitHub.authLogout.mockResolvedValue({ success: true });
+  mockGitHub.repoList.mockResolvedValue([]);
+  mockGitHub.repoAdd.mockResolvedValue(mockRepo);
+  mockGitHub.repoRemove.mockResolvedValue({ success: true });
+  mockGitHub.repoGetActive.mockResolvedValue(null);
+  mockGitHub.repoSetActive.mockResolvedValue({ success: true });
+  mockGitHub.dataIssues.mockResolvedValue([]);
+  mockGitHub.dataPRs.mockResolvedValue([]);
   
   Object.defineProperty(window, 'api', {
     value: {
-      invoke: mockInvoke,
+      github: mockGitHub,
     },
     writable: true,
     configurable: true,
@@ -94,12 +91,9 @@ describe('GitHubContext', () => {
   });
 
   it('loads initial state on mount', async () => {
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:auth:getUser') return Promise.resolve(mockUser);
-      if (channel === 'github:repo:list') return Promise.resolve([mockRepo]);
-      if (channel === 'github:repo:getActive') return Promise.resolve(mockRepo);
-      return Promise.resolve(null);
-    });
+    mockGitHub.authGetUser.mockResolvedValue(mockUser);
+    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.repoGetActive.mockResolvedValue(mockRepo);
 
     render(
       <GitHubProvider>
@@ -123,11 +117,8 @@ describe('GitHubContext', () => {
       return <div data-testid="auth">{isAuthenticated ? 'Authenticated' : 'Not authenticated'}</div>;
     }
 
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:auth:oauth') return Promise.resolve({ success: true });
-      if (channel === 'github:auth:getUser') return Promise.resolve(mockUser);
-      return Promise.resolve(null);
-    });
+    mockGitHub.authOAuth.mockResolvedValue({ success: true });
+    mockGitHub.authGetUser.mockResolvedValue(mockUser);
 
     render(
       <GitHubProvider>
@@ -143,8 +134,8 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('auth')).toHaveTextContent('Authenticated');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:auth:oauth');
-    expect(mockInvoke).toHaveBeenCalledWith('github:auth:getUser');
+    expect(mockGitHub.authOAuth).toHaveBeenCalled();
+    expect(mockGitHub.authGetUser).toHaveBeenCalled();
   });
 
   it('handles login with PAT', async () => {
@@ -155,11 +146,8 @@ describe('GitHubContext', () => {
       return <div data-testid="auth">{isAuthenticated ? 'Authenticated' : 'Not authenticated'}</div>;
     }
 
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:auth:pat') return Promise.resolve({ success: true });
-      if (channel === 'github:auth:getUser') return Promise.resolve(mockUser);
-      return Promise.resolve(null);
-    });
+    mockGitHub.authPAT.mockResolvedValue({ success: true });
+    mockGitHub.authGetUser.mockResolvedValue(mockUser);
 
     render(
       <GitHubProvider>
@@ -175,7 +163,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('auth')).toHaveTextContent('Authenticated');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:auth:pat', 'test-token');
+    expect(mockGitHub.authPAT).toHaveBeenCalledWith('test-token');
   });
 
   it('handles logout', async () => {
@@ -186,11 +174,8 @@ describe('GitHubContext', () => {
       return <div data-testid="auth">{isAuthenticated ? 'Authenticated' : 'Not authenticated'}</div>;
     }
 
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:auth:getUser') return Promise.resolve(mockUser);
-      if (channel === 'github:auth:logout') return Promise.resolve({ success: true });
-      return Promise.resolve(null);
-    });
+    mockGitHub.authGetUser.mockResolvedValue(mockUser);
+    mockGitHub.authLogout.mockResolvedValue({ success: true });
 
     render(
       <GitHubProvider>
@@ -210,7 +195,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('auth')).toHaveTextContent('Not authenticated');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:auth:logout');
+    expect(mockGitHub.authLogout).toHaveBeenCalled();
   });
 
   it('handles adding a repo', async () => {
@@ -239,7 +224,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('repos')).toHaveTextContent('1');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:repo:add', 'testowner', 'testrepo', '/path/to/repo');
+    expect(mockGitHub.repoAdd).toHaveBeenCalledWith('testowner', 'testrepo', '/path/to/repo');
   });
 
   it('handles removing a repo', async () => {
@@ -250,11 +235,8 @@ describe('GitHubContext', () => {
       return <div data-testid="repos">{repos.length}</div>;
     }
 
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:repo:list') return Promise.resolve([mockRepo]);
-      if (channel === 'github:repo:remove') return Promise.resolve({ success: true });
-      return Promise.resolve(null);
-    });
+    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.repoRemove.mockResolvedValue({ success: true });
 
     render(
       <GitHubProvider>
@@ -274,7 +256,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('repos')).toHaveTextContent('0');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:repo:remove', 1);
+    expect(mockGitHub.repoRemove).toHaveBeenCalledWith(1);
   });
 
   it('handles setting active repo', async () => {
@@ -288,12 +270,9 @@ describe('GitHubContext', () => {
       </div>;
     }
 
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:repo:list') return Promise.resolve([mockRepo]);
-      if (channel === 'github:repo:getActive') return Promise.resolve(null);
-      if (channel === 'github:repo:setActive') return Promise.resolve({ success: true });
-      return Promise.resolve(null);
-    });
+    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.repoGetActive.mockResolvedValue(null);
+    mockGitHub.repoSetActive.mockResolvedValue({ success: true });
 
     render(
       <GitHubProvider>
@@ -313,20 +292,17 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('active-repo')).toHaveTextContent('testrepo');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:repo:setActive', 1);
+    expect(mockGitHub.repoSetActive).toHaveBeenCalledWith(1);
   });
 
   it('loads issues and PRs when active repo changes', async () => {
     const mockIssues: GitHubIssue[] = [{ number: 1, title: 'Issue 1', state: 'open', labels: [], createdAt: '', updatedAt: '' }];
     const mockPRs: GitHubPR[] = [{ number: 2, title: 'PR 1', state: 'open', head: { ref: 'feature' }, base: { ref: 'main' }, user: { login: 'testuser' }, createdAt: '', additions: 10, deletions: 5, commits: 1 }];
 
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:repo:list') return Promise.resolve([mockRepo]);
-      if (channel === 'github:repo:getActive') return Promise.resolve(mockRepo);
-      if (channel === 'github:data:issues') return Promise.resolve(mockIssues);
-      if (channel === 'github:data:prs') return Promise.resolve(mockPRs);
-      return Promise.resolve(null);
-    });
+    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.repoGetActive.mockResolvedValue(mockRepo);
+    mockGitHub.dataIssues.mockResolvedValue(mockIssues);
+    mockGitHub.dataPRs.mockResolvedValue(mockPRs);
 
     render(
       <GitHubProvider>
@@ -339,8 +315,8 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('prs')).toHaveTextContent('1');
     });
 
-    expect(mockInvoke).toHaveBeenCalledWith('github:data:issues', 'testowner', 'testrepo');
-    expect(mockInvoke).toHaveBeenCalledWith('github:data:prs', 'testowner', 'testrepo');
+    expect(mockGitHub.dataIssues).toHaveBeenCalledWith('testowner', 'testrepo');
+    expect(mockGitHub.dataPRs).toHaveBeenCalledWith('testowner', 'testrepo');
   });
 
   it('handles refresh', async () => {
@@ -353,13 +329,10 @@ describe('GitHubContext', () => {
 
     const mockIssues: GitHubIssue[] = [{ number: 1, title: 'Issue 1', state: 'open', labels: [], createdAt: '', updatedAt: '' }];
     
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:repo:list') return Promise.resolve([mockRepo]);
-      if (channel === 'github:repo:getActive') return Promise.resolve(mockRepo);
-      if (channel === 'github:data:issues') return Promise.resolve(mockIssues);
-      if (channel === 'github:data:prs') return Promise.resolve([]);
-      return Promise.resolve(null);
-    });
+    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.repoGetActive.mockResolvedValue(mockRepo);
+    mockGitHub.dataIssues.mockResolvedValue(mockIssues);
+    mockGitHub.dataPRs.mockResolvedValue([]);
 
     render(
       <GitHubProvider>
@@ -372,11 +345,7 @@ describe('GitHubContext', () => {
     });
 
     const newIssues: GitHubIssue[] = [{ number: 1, title: 'Issue 1', state: 'open', labels: [], createdAt: '', updatedAt: '' }, { number: 2, title: 'Issue 2', state: 'open', labels: [], createdAt: '', updatedAt: '' }];
-    mockInvoke.mockImplementation((channel: string) => {
-      if (channel === 'github:data:issues') return Promise.resolve(newIssues);
-      if (channel === 'github:data:prs') return Promise.resolve([]);
-      return Promise.resolve(null);
-    });
+    mockGitHub.dataIssues.mockResolvedValue(newIssues);
 
     await act(async () => {
       await refreshFn!();

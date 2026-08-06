@@ -59,6 +59,25 @@ contextBridge.exposeInMainWorld('api', {
 
   // Dialog
   openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
-  // Generic IPC invoke for GitHub channels
-  invoke: (channel: string, ...args: unknown[]) => ipcRenderer.invoke(channel, ...args),
+
+  // GitHub integration
+  github: {
+    // Auth
+    authGetUser: () => ipcRenderer.invoke('github:auth:getUser'),
+    authOAuth: () => ipcRenderer.invoke('github:auth:oauth'),
+    authPAT: (token: string) => ipcRenderer.invoke('github:auth:pat', token),
+    authLogout: () => ipcRenderer.invoke('github:auth:logout'),
+    // Repos
+    repoList: () => ipcRenderer.invoke('github:repo:list'),
+    repoAdd: (owner: string, name: string, localPath: string) =>
+      ipcRenderer.invoke('github:repo:add', owner, name, localPath),
+    repoRemove: (id: number) => ipcRenderer.invoke('github:repo:remove', id),
+    repoGetActive: () => ipcRenderer.invoke('github:repo:getActive'),
+    repoSetActive: (id: number) => ipcRenderer.invoke('github:repo:setActive', id),
+    // Data
+    dataIssues: (owner: string, repo: string) =>
+      ipcRenderer.invoke('github:data:issues', owner, repo),
+    dataPRs: (owner: string, repo: string) =>
+      ipcRenderer.invoke('github:data:prs', owner, repo),
+  },
 });

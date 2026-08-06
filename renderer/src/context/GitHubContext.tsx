@@ -43,23 +43,23 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
   }, [activeRepo?.id]);
 
   async function loadInitialState() {
-    const userData = await window.api.invoke('github:auth:getUser') as GitHubUser | null;
+    const userData = await window.api.github.authGetUser();
     if (userData) {
       setIsAuthenticated(true);
       setUser(userData);
     }
 
-    const reposData = await window.api.invoke('github:repo:list') as Repo[];
+    const reposData = await window.api.github.repoList();
     setRepos(reposData);
 
-    const activeRepoData = await window.api.invoke('github:repo:getActive') as Repo | null;
+    const activeRepoData = await window.api.github.repoGetActive();
     setActiveRepoState(activeRepoData);
   }
 
   async function loadDataForRepo(repo: Repo) {
     const [issuesData, prsData] = await Promise.all([
-      window.api.invoke('github:data:issues', repo.owner, repo.name) as Promise<GitHubIssue[]>,
-      window.api.invoke('github:data:prs', repo.owner, repo.name) as Promise<GitHubPR[]>
+      window.api.github.dataIssues(repo.owner, repo.name),
+      window.api.github.dataPRs(repo.owner, repo.name)
     ]);
     setIssues(issuesData);
     setPrs(prsData);
@@ -67,16 +67,16 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
 
   async function login(method: 'oauth' | 'pat', token?: string) {
     if (method === 'oauth') {
-      const result = await window.api.invoke('github:auth:oauth') as { success: boolean };
+      const result = await window.api.github.authOAuth();
       if (result.success) {
-        const userData = await window.api.invoke('github:auth:getUser') as GitHubUser;
+        const userData = await window.api.github.authGetUser();
         setIsAuthenticated(true);
         setUser(userData);
       }
     } else if (method === 'pat' && token) {
-      const result = await window.api.invoke('github:auth:pat', token) as { success: boolean };
+      const result = await window.api.github.authPAT(token);
       if (result.success) {
-        const userData = await window.api.invoke('github:auth:getUser') as GitHubUser;
+        const userData = await window.api.github.authGetUser();
         setIsAuthenticated(true);
         setUser(userData);
       }
@@ -84,7 +84,7 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
-    await window.api.invoke('github:auth:logout');
+    await window.api.github.authLogout();
     setIsAuthenticated(false);
     setUser(null);
     setRepos([]);
@@ -94,12 +94,12 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
   }
 
   async function addRepo(owner: string, name: string, localPath: string) {
-    const repo = await window.api.invoke('github:repo:add', owner, name, localPath) as Repo;
+    const repo = await window.api.github.repoAdd(owner, name, localPath);
     setRepos(prev => [...prev, repo]);
   }
 
   async function removeRepo(id: number) {
-    await window.api.invoke('github:repo:remove', id);
+    await window.api.github.repoRemove(id);
     setRepos(prev => prev.filter(r => r.id !== id));
     if (activeRepo?.id === id) {
       setActiveRepoState(null);
@@ -107,7 +107,7 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
   }
 
   async function setActiveRepo(id: number) {
-    await window.api.invoke('github:repo:setActive', id);
+    await window.api.github.repoSetActive(id);
     const repo = repos.find(r => r.id === id);
     setActiveRepoState(repo || null);
   }
