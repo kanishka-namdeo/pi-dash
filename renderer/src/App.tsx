@@ -11,6 +11,7 @@ import { SessionProvider } from './context/SessionContext';
 import { PiPContainer } from './components/pip/PiPContainer';
 import { MainTerminal } from './components/pip/MainTerminal';
 import { OverlayManager } from './components/pip/OverlayManager';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
@@ -36,13 +37,14 @@ function App() {
   }
 
   return (
-    <SessionProvider>
-      <PiPProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
+    <>
+      <SessionProvider>
+        <PiPProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={
                 <PiPContainer>
                   <MainTerminal />
                   <OverlayManager />
@@ -56,6 +58,8 @@ function App() {
         </BrowserRouter>
       </PiPProvider>
     </SessionProvider>
+      <Toaster />
+    </>
   );
 }
 export default App;

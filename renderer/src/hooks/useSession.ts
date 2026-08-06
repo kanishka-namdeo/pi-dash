@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import type { SessionState } from '../../src/shared/types';
 import { useSessionContext } from '../context/SessionContext';
+import { usePiPContext } from '../context/PiPContext';
 
 export function useSession(agentId: string): {
   state: SessionState;
@@ -15,15 +17,28 @@ export function useSession(agentId: string): {
   const stateRef = useRef(state);
   stateRef.current = state;
   const sessionContext = useSessionContext();
+  const pipContext = usePiPContext();
 
   const spawn = useCallback(async (cwd: string) => {
-    const result = await window.api.session.create(agentId, cwd);
-    if ('error' in result) {
-      throw new Error(result.error);
+    const existing = sessionContext.getSession(agentId);
+    if (existing && existing.state === 'running') {
+      return;
     }
-    setState('running');
-    setPid(result.pid);
-    sessionContext.registerSession(agentId, result.pid, cwd);
+    try {
+      const result = await window.api.session.create(agentId, cwd);
+      if ('error' in result) {
+        toast.error(`Failed to start ${agentId}: ${result.error}`);
+        throw new Error(result.error);
+      }
+      setState('running');
+      setPid(result.pid);
+      sessionContext.registerSession(agentId, result.pid, cwd);
+    } catch (err) {
+      if (!(err instanceof Error && err.message.startsWith('Failed to start'))) {
+        toast.error(`Failed to start ${agentId}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+      throw err;
+    }
   }, [agentId, sessionContext]);
 
   const write = useCallback((data: string) => {
@@ -55,6 +70,12 @@ export function useSession(agentId: string): {
         setState('exited');
         setPid(null);
         sessionContext.updateSessionState(agentId, 'exited');
+        if (pipContext.state.mainAgentId === agentId) {
+          pipContext.actions.setMainAgent(null);
+        }
+        if (exitCode !== null && exitCode !== 0) {
+          toast.error(`${agentId} exited unexpectedly with code ${exitCode}`);
+        }
       }
     });
 
@@ -62,7 +83,7 @@ export function useSession(agentId: string): {
       unsubData();
       unsubExit();
     };
-  }, [agentId, sessionContext]);
+  }, [agentId, sessionContext, pipContext]);
 
   return { state, pid, spawn, write, resize, destroy };
 }
