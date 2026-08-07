@@ -197,7 +197,7 @@ export function Dashboard() {
           onToggleCollapse={() => toggleCollapse('fleet')}
         />
 
-        <TerminalPanel agentId={selectedAgentId} />
+        <TerminalPanel agentId={selectedAgentId} agentName={selectedAgent?.name} onClose={() => setSelectedAgentId(null)} />
 
         <ActivityFeed
           events={events}
