@@ -2,16 +2,16 @@ import { useAgents } from '@/hooks/useAgents';
 import { useSessionContext } from '@/context/SessionContext';
 import type { FeedEvent } from '@/types/dashboard';
 
-const eventTypeStyles: Record<FeedEvent['type'], string> = {
-  'session:started': 'bg-emerald-500/20 text-emerald-500',
-  'session:exited': 'bg-red-500/20 text-red-500',
-  'command': 'bg-blue-500/20 text-blue-500',
+const eventTypeStyles: Record<FeedEvent['type'], { bg: string; label: string }> = {
+  'session:started': { bg: 'rgba(16, 185, 129, 0.2)', label: 'Started' },
+  'session:exited': { bg: 'rgba(244, 63, 94, 0.2)', label: 'Exited' },
+  'command': { bg: 'rgba(59, 130, 246, 0.2)', label: 'Command' },
 };
 
-const eventTypeLabels: Record<FeedEvent['type'], string> = {
-  'session:started': 'Started',
-  'session:exited': 'Exited',
-  'command': 'Command',
+const eventTypeColors: Record<FeedEvent['type'], string> = {
+  'session:started': 'var(--accent-emerald)',
+  'session:exited': 'var(--accent-rose)',
+  'command': 'var(--accent-blue)',
 };
 
 function formatTimestamp(ts: number): string {
@@ -30,98 +30,101 @@ export function ActivityFeed({ events, isPaused }: ActivityFeedProps) {
   const getAgentName = (agentId: string) =>
     agents.find((a) => a.id === agentId)?.name ?? agentId;
 
-  const getCommandOutputLines = (agentId: string, command: string, timestamp: number): string[] => {
-    const session = getSession(agentId);
-    if (!session) return [];
-    const cmd = session.commandHistory.find((c) => c.command === command && c.timestamp === timestamp);
-    if (!cmd?.output) return [];
-    return cmd.output.split('\n').filter((l) => l.trim()).slice(0, 3);
-  };
-
   const reversedEvents = [...events].reverse();
 
   return (
-    <aside className={`w-full lg:w-[320px] bg-[#0a0a0a] flex flex-col ${isPaused ? 'opacity-60' : ''}`}>
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a]">
-        <span className="text-sm font-semibold text-[#e5e5e5]">Activity</span>
-        <div className="flex items-center gap-2">
-          {isPaused && (
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-amber-500/20 text-amber-500">
-              PAUSED
-            </span>
-          )}
+    <aside
+      className={`w-full lg:w-[320px] flex flex-col ${isPaused ? 'opacity-60' : ''}`}
+      style={{
+        backgroundColor: 'var(--bg)',
+        borderLeft: `1px solid var(--border)`,
+      }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: `1px solid var(--border)` }}
+      >
+        <span
+          className="text-sm font-semibold"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          Activity
+        </span>
+        <div
+          className="flex items-center gap-1.5 px-2 py-0.5 rounded"
+          style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}
+        >
           <div
-            className={`w-2 h-2 rounded-full ${isPaused ? 'bg-amber-500' : 'bg-emerald-500 animate-pulse'}`}
+            className="w-1.5 h-1.5 rounded-full animate-pulse"
+            style={{ backgroundColor: 'var(--accent-emerald)' }}
           />
+          <span
+            className="text-xs"
+            style={{ color: 'var(--accent-emerald)' }}
+          >
+            Live
+          </span>
         </div>
       </div>
 
+      {/* Event list */}
       <div className="flex-1 overflow-y-auto">
-        {reversedEvents.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <div className="w-12 h-12 rounded-full bg-[#1a1a1a] flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-[#737373]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
-            <p className="text-sm text-[#a3a3a3] mb-1">No activity yet</p>
-            <p className="text-xs text-[#737373]">Activity will appear here as agents work</p>
+        {reversedEvents.length === 0 ? (
+          <div
+            className="flex items-center justify-center h-full text-sm"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            No activity yet
           </div>
-        )}
+        ) : (
+          reversedEvents.map((event) => {
+            const style = eventTypeStyles[event.type];
+            const color = eventTypeColors[event.type];
+            const agentName = getAgentName(event.agentId);
 
-        {reversedEvents.map((event) => {
-          const agentName = getAgentName(event.agentId);
-          const outputLines =
-            event.type === 'command' && event.command
-              ? getCommandOutputLines(event.agentId, event.command, event.timestamp)
-              : [];
-
-          return (
-            <div
-              key={event.id}
-              className="px-4 py-3 border-b border-[#1a1a1a] animate-in fade-in duration-200"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-xs font-mono text-[#737373] pt-0.5">
-                  {formatTimestamp(event.timestamp)}
+            return (
+              <div
+                key={event.id}
+                className="flex gap-2.5 px-4 py-2.5"
+                style={{ borderBottom: `1px solid var(--border)` }}
+              >
+                {/* Badge */}
+                <span
+                  className="px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0 h-fit"
+                  style={{ backgroundColor: style.bg, color }}
+                >
+                  {style.label}
                 </span>
+
+                {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span
-                      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${eventTypeStyles[event.type]}`}
-                    >
-                      {eventTypeLabels[event.type]}
-                    </span>
-                    <span className="text-[10px] text-[#737373]">{agentName}</span>
+                  <div
+                    className="text-xs font-mono truncate"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    {event.command || event.type}
                   </div>
-                  {event.type === 'command' && event.command && (
-                    <div className="text-xs text-[#a3a3a3] font-mono mb-1 truncate">{event.command}</div>
-                  )}
-                  {event.type === 'session:started' && (
-                    <div className="text-xs text-[#a3a3a3]">Session started</div>
-                  )}
-                  {event.type === 'session:exited' && (
-                    <div className="text-xs text-[#a3a3a3]">Session exited</div>
-                  )}
-                  {outputLines.length > 0 && (
-                    <div className="mt-1 p-2 bg-[#1a1a1a] rounded text-[10px] font-mono text-[#737373] border border-[#2a2a2a]">
-                      {outputLines.map((line, i) => (
-                        <div key={i} className="truncate">
-                          {line}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span
+                      className="text-xs font-mono"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      {agentName}
+                    </span>
+                    <span style={{ color: 'var(--text-muted)' }}>·</span>
+                    <span
+                      className="text-xs font-mono"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      {formatTimestamp(event.timestamp)}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </aside>
   );
