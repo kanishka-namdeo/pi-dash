@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { ScreenName, AgentConfig, ValidationResult, IdentificationResult } from '../../types';
 import { PiLogo } from '../ui/PiLogo';
+import { AgentChip } from '../ui/AgentChip';
 
 const DEBOUNCE_MS = 500;
 
@@ -36,6 +37,15 @@ const CONFIDENCE_COLORS = {
   medium: 'text-yellow-400',
   low: 'text-red-400',
 } as const;
+
+const KNOWN_AGENT_CHIPS = [
+  { name: 'Claude Code', agentId: 'claude' },
+  { name: 'Cursor', agentId: 'cursor' },
+  { name: 'Aider', agentId: 'aider' },
+  { name: 'OMP', agentId: 'omp' },
+  { name: 'Copilot', agentId: 'copilot' },
+];
+
 
 interface ManualAddScreenProps {
   onNavigate: (screen: ScreenName) => void;
@@ -118,6 +128,10 @@ export function ManualAddScreen({ onNavigate, addAgent }: ManualAddScreenProps) 
     [],
   );
 
+  const handleChipClick = useCallback((resolvedPath: string) => {
+    handlePathChange(resolvedPath);
+  }, [handlePathChange]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       <div className="max-w-lg w-full space-y-6">
@@ -170,12 +184,27 @@ export function ManualAddScreen({ onNavigate, addAgent }: ManualAddScreenProps) 
           {validationResult && !validationResult.valid && validationResult.error && (
             <p
               id="validation-error"
-              className="text-sm text-red-400"
+              className="text-sm text-rose-400"
               role="alert"
             >
               {validationResult.error}
             </p>
           )}
+        </div>
+
+        {/* Known agent chips */}
+        <div className="space-y-2">
+          <p className="text-sm text-slate-400">Or choose a known agent:</p>
+          <div className="flex flex-wrap gap-2">
+            {KNOWN_AGENT_CHIPS.map((chip) => (
+              <AgentChip
+                key={chip.agentId}
+                name={chip.name}
+                agentId={chip.agentId}
+                onClick={handleChipClick}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Identification result */}

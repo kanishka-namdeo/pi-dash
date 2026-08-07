@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ManualAddScreen } from './ManualAddScreen';
 import type { AgentConfig } from '../../types';
@@ -109,7 +109,7 @@ describe('ManualAddScreen', () => {
       vi.advanceTimersByTime(500);
     });
 
-    expect(screen.getByText('Cursor')).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: /detected agent/i })).getByText('Cursor')).toBeInTheDocument();
     expect(screen.getByText(/confidence.*high/i)).toBeInTheDocument();
   });
 
@@ -200,5 +200,14 @@ describe('ManualAddScreen', () => {
     });
 
     expect(mockValidate).not.toHaveBeenCalled();
+  });
+
+  it('renders AgentChip group with known agents', () => {
+    mockApi();
+    render(<ManualAddScreen onNavigate={noop} addAgent={noop} />);
+    expect(screen.getByText(/Or choose a known agent/i)).toBeInTheDocument();
+    expect(screen.getByText('Claude Code')).toBeInTheDocument();
+    expect(screen.getByText('Cursor')).toBeInTheDocument();
+    expect(screen.getByText('Aider')).toBeInTheDocument();
   });
 });
