@@ -209,7 +209,12 @@ export function Dashboard() {
         />
       </div>
 
-      <PlanPanel steps={mockSteps} progress={hasAgents ? progress : 0} />
+      <PlanPanel
+        steps={mockSteps}
+        progress={hasAgents ? progress : 0}
+        isCollapsed={collapsedPanels.has('plan')}
+        onToggleCollapse={() => toggleCollapse('plan')}
+      />
 
       <MetricsFooter
         elapsed={elapsed}
