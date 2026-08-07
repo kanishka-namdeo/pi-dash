@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { Timer, Zap, Bell, Settings, ChevronDown, GitBranch } from 'lucide-react';
+import { Timer, Zap, Bell, Settings, ChevronDown, GitBranch, AlertTriangle, X } from 'lucide-react';
 import { useSessionContext } from '@/context/SessionContext';
 import { useGitHub } from '@/context/GitHubContext';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
-
+import { useBottomBarAlerts, BottomBarAlert } from '@/hooks/useBottomBarAlerts';
 type AgentState = 'running' | 'idle' | 'error' | 'exited';
 
 function getAgentStateColor(state: AgentState): string {
@@ -36,10 +36,68 @@ function formatCount(n: number): string {
   return n.toString();
 }
 
-export function BottomBar() {
+type BottomBarProps = {
+  rateLimitAlert?: { provider: string; percentUsed: number; resetsIn: number };
+  agentError?: { agentId: string; message: string };
+  githubAuthExpired?: boolean;
+  planProgress?: { currentStep: number; totalSteps: number; stepName: string };
+};
+
+function formatResetTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+function AlertContent({ alert, onDismiss }: { alert: BottomBarAlert; onDismiss: () => void }) {
+  switch (alert.type) {
+    case 'rate-limit':
+      return (
+        <div data-testid="rate-limit-alert" className="flex items-center gap-2 px-3 py-1 rounded" style={{ backgroundColor: '#f59e0b22' }}>
+          <AlertTriangle size={14} style={{ color: 'var(--accent-amber)' }} />
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--accent-amber)' }}>
+            {alert.provider}: {alert.percentUsed}% used — resets in {formatResetTime(alert.resetsIn)}
+          </span>
+          <button onClick={onDismiss} className="ml-2"><X size={12} style={{ color: 'var(--accent-amber)' }} /></button>
+        </div>
+      );
+    case 'agent-error':
+      return (
+        <div data-testid="agent-error-alert" className="flex items-center gap-2 px-3 py-1 rounded" style={{ backgroundColor: '#f43f5e22' }}>
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent-rose)' }} />
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--accent-rose)' }}>
+            {alert.agentId} {alert.message}
+          </span>
+          <button onClick={onDismiss} className="ml-2"><X size={12} style={{ color: 'var(--accent-rose)' }} /></button>
+        </div>
+      );
+    case 'github-auth':
+      return (
+        <div data-testid="github-auth-alert" className="flex items-center gap-2 px-3 py-1 rounded" style={{ backgroundColor: '#f59e0b22' }}>
+          <AlertTriangle size={14} style={{ color: 'var(--accent-amber)' }} />
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--accent-amber)' }}>
+            GitHub session expired
+          </span>
+          <button onClick={onDismiss} className="ml-2"><X size={12} style={{ color: 'var(--accent-amber)' }} /></button>
+        </div>
+      );
+    case 'plan-progress':
+      return (
+        <div data-testid="plan-progress-alert" className="flex items-center gap-2 px-3 py-1">
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+            Step {alert.currentStep}/{alert.totalSteps}: {alert.stepName}
+          </span>
+        </div>
+      );
+  }
+}
+
+export function BottomBar({ rateLimitAlert, agentError, githubAuthExpired, planProgress }: BottomBarProps = {}) {
   const { mode, setMode } = useDashboardMode('auto');
   const { getActiveSessions, sessions } = useSessionContext();
   const { activeRepo, branches } = useGitHub();
+  const { alert, dismiss } = useBottomBarAlerts({ rateLimit: rateLimitAlert, agentError, githubAuthExpired, planProgress });
   
   const activeSessions = getActiveSessions();
   const hasAgents = activeSessions.length > 0;
@@ -122,9 +180,12 @@ export function BottomBar() {
         )}
       </div>
 
-      {/* Center Zone */}
       <div data-testid="bottom-bar-center" className="flex-1 flex justify-center items-center">
-        <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
+        {alert ? (
+          <AlertContent alert={alert} onDismiss={dismiss} />
+        ) : (
+          <div data-testid="center-divider" className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
+        )}
       </div>
 
       {/* Right Zone */}

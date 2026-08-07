@@ -139,3 +139,27 @@ describe('BottomBar Right Zone', () => {
     expect(screen.getByTestId('settings-btn')).toBeInTheDocument();
   });
 });
+
+describe('BottomBar Center Zone', () => {
+  it('shows divider when no alerts', () => {
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    expect(screen.getByTestId('center-divider')).toBeInTheDocument();
+  });
+
+  it('shows rate limit alert when active', () => {
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar rateLimitAlert={{ provider: 'claude', percentUsed: 85, resetsIn: 9000 }} />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    expect(screen.getByTestId('rate-limit-alert')).toBeInTheDocument();
+  });
+});
