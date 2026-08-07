@@ -112,4 +112,41 @@ describe('RateLimitTracker', () => {
       expect(tracker.getRemaining()).toBe(50);
     });
   });
+
+  describe('getState', () => {
+    it('returns state with remaining, limit, resetAt', () => {
+      tracker.updateFromHeaders({
+        'x-ratelimit-remaining': '4500',
+        'x-ratelimit-limit': '5000',
+        'x-ratelimit-reset': '1700000000'
+      });
+
+      const state = tracker.getState();
+      expect(state.remaining).toBe(4500);
+      expect(state.limit).toBe(5000);
+      expect(state.resetAt).toBe(1700000000000);
+      expect(state.isLow).toBe(false);
+      expect(state.isExhausted).toBe(false);
+    });
+
+    it('isLow when remaining < 500', () => {
+      tracker.updateFromHeaders({
+        'x-ratelimit-remaining': '400',
+        'x-ratelimit-limit': '5000',
+        'x-ratelimit-reset': '1700000000'
+      });
+
+      expect(tracker.getState().isLow).toBe(true);
+    });
+
+    it('isExhausted when remaining === 0', () => {
+      tracker.updateFromHeaders({
+        'x-ratelimit-remaining': '0',
+        'x-ratelimit-limit': '5000',
+        'x-ratelimit-reset': '1700000000'
+      });
+
+      expect(tracker.getState().isExhausted).toBe(true);
+    });
+  });
 });
