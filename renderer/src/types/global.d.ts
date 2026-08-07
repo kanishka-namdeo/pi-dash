@@ -2,7 +2,7 @@
 
 import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult } from './index';
 import type { SessionAPI } from './session';
-import type { Repo, GitHubIssue, GitHubPR } from '../../../src/shared/github-types';
+import type { SettingsSchema } from '../../../src/main/settings/settings-types';
 
 interface GitHubUser {
   id: number;
@@ -35,6 +35,7 @@ declare global {
     api: {
       platform: string;
       versions: NodeJS.ProcessVersions;
+      cwd: string;
       scanAgents: () => Promise<ScanResult>;
       validateAgent: (path: string) => Promise<ValidationResult>;
       identifyAgent: (path: string) => Promise<IdentificationResult>;
@@ -47,7 +48,13 @@ declare global {
       openDirectory: () => Promise<string | null>;
       session: SessionAPI;
       github: GitHubAPI;
-      agentGitHub: AgentGitHubAPI;
+      settings: {
+        getAll: () => Promise<SettingsSchema>;
+        set: (path: string, value: unknown) => Promise<{ success: true }>;
+        reset: () => Promise<{ success: true }>;
+        export: () => Promise<SettingsSchema>;
+        import: (data: SettingsSchema) => Promise<{ success: true }>;
+      };
     };
   }
 }

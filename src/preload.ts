@@ -13,9 +13,9 @@ export type SessionAPI = {
 };
 
 contextBridge.exposeInMainWorld('api', {
-  // Existing
   platform: process.platform,
   versions: process.versions,
+  cwd: process.cwd(),
   
   // Agent management
   scanAgents: () => ipcRenderer.invoke('scan-agents'),
@@ -89,5 +89,14 @@ contextBridge.exposeInMainWorld('api', {
       ipcRenderer.invoke('agent-github:commentIssue', owner, repo, issueNumber, body),
     readFeedback: (owner: string, repo: string, prNumber: number) =>
       ipcRenderer.invoke('agent-github:readFeedback', owner, repo, prNumber)
+  },
+
+  // Settings
+  settings: {
+    getAll: () => ipcRenderer.invoke('settings:getAll'),
+    set: (path: string, value: unknown) => ipcRenderer.invoke('settings:set', path, value),
+    reset: () => ipcRenderer.invoke('settings:reset'),
+    export: () => ipcRenderer.invoke('settings:export'),
+    import: (data: unknown) => ipcRenderer.invoke('settings:import', data),
   },
 });
