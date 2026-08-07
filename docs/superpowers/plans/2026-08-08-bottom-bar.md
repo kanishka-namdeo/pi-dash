@@ -738,4 +738,271 @@ function AlertContent({ alert, onDismiss }: { alert: BottomBarAlert; onDismiss: 
         >
           <AlertTriangle size={14} style={{ color: 'var(--accent-amber)' }} />
           <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--accent-amber)' }}>
-            GitHub session expired —
+            GitHub session expired — <button onClick={onDismiss} className="ml-1 underline">re-authenticate</button>
+          </span>
+          <button onClick={onDismiss} className="ml-2">
+            <X size={12} style={{ color: 'var(--accent-amber)' }} />
+          </button>
+        </div>
+      );
+    case 'plan-progress':
+      return (
+        <div
+          data-testid="plan-progress-alert"
+          className="flex items-center gap-2 px-3 py-1"
+        >
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+            Step {alert.currentStep}/{alert.totalSteps}: {alert.stepName}
+          </span>
+        </div>
+      );
+  }
+}
+
+export function BottomBar({ rateLimitAlert, agentError, githubAuthExpired, planProgress }: BottomBarProps) {
+  const { alert, dismiss } = useBottomBarAlerts({ rateLimit: rateLimitAlert, agentError, githubAuthExpired, planProgress });
+  // ... existing state calculations ...
+
+  return (
+    <footer data-testid="bottom-bar" className="flex items-center justify-between px-4 h-9" style={{ backgroundColor: 'var(--bg)', borderTop: '1px solid var(--border)' }}>
+      {/* Left Zone - unchanged */}
+      <div data-testid="bottom-bar-left" className="flex items-center gap-3">{/* ... */}</div>
+
+      {/* Center Zone */}
+      <div data-testid="bottom-bar-center" className="flex-1 flex justify-center items-center">
+        {alert ? (
+          <AlertContent alert={alert} onDismiss={dismiss} />
+        ) : (
+          <div data-testid="center-divider" className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
+        )}
+      </div>
+
+      {/* Right Zone - unchanged */}
+      <div data-testid="bottom-bar-right" className="flex items-center gap-4">{/* ... */}</div>
+    </footer>
+  );
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `pnpm test renderer/src/components/dashboard/__tests__/BottomBar.test.tsx`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add renderer/src/components/dashboard/BottomBar.tsx renderer/src/components/dashboard/__tests__/BottomBar.test.tsx
+git commit -m "feat: implement BottomBar center zone with alert rendering"
+```
+
+---
+
+### Task 6: Wire BottomBar into Dashboard
+
+**Files:**
+- Modify: `renderer/src/components/dashboard/Dashboard.tsx`
+- Delete: `renderer/src/components/dashboard/MetricsFooter.tsx`
+- Test: `renderer/src/components/dashboard/__tests__/Dashboard.test.tsx`
+
+**Interfaces:**
+- Consumes: `BottomBar` component, `useBottomBarAlerts` data sources
+- Produces: Dashboard with BottomBar replacing MetricsFooter
+
+- [ ] **Step 1: Update Dashboard to use BottomBar**
+
+```tsx
+// renderer/src/components/dashboard/Dashboard.tsx
+// Replace MetricsFooter import with BottomBar
+- import { MetricsFooter } from './MetricsFooter';
++ import { BottomBar } from './BottomBar';
+
+// In the render, replace MetricsFooter with BottomBar:
+- <MetricsFooter
+-   elapsed={elapsed}
+-   activeAgents={activeAgents}
+-   totalCommands={totalCommands}
+- />
++ <BottomBar
++   rateLimitAlert={rateLimitData}
++   agentError={agentErrorData}
++   githubAuthExpired={authExpired}
++   planProgress={planProgressData}
++ />
+```
+
+- [ ] **Step 2: Run existing tests to verify no regressions**
+
+Run: `pnpm test renderer/src/components/dashboard/__tests__/`
+Expected: PASS (may need to update test selectors from MetricsFooter to BottomBar)
+
+- [ ] **Step 3: Delete old MetricsFooter**
+
+```bash
+rm renderer/src/components/dashboard/MetricsFooter.tsx
+```
+
+- [ ] **Step 4: Run full test suite**
+
+Run: `pnpm test`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add -A
+git commit -m "feat: replace MetricsFooter with BottomBar in Dashboard"
+```
+
+---
+
+### Task 7: Add Responsive Behavior
+
+**Files:**
+- Modify: `renderer/src/components/dashboard/BottomBar.tsx`
+- Test: `renderer/src/components/dashboard/__tests__/BottomBar.test.tsx`
+
+**Interfaces:**
+- Consumes: Window width via resize observer
+- Produces: Progressive label hiding at narrow widths
+
+- [ ] **Step 1: Write the failing test**
+
+```tsx
+// Add to BottomBar.test.tsx
+describe('BottomBar Responsive', () => {
+  it('hides repo name at narrow widths', () => {
+    // Mock window.innerWidth = 700
+    Object.defineProperty(window, 'innerWidth', { value: 700, writable: true });
+    window.dispatchEvent(new Event('resize'));
+    
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    
+    // Repo name should be hidden
+    expect(screen.queryByText('pi-dash')).not.toBeInTheDocument();
+    // But branch should still be visible
+    expect(screen.getByText('main')).toBeInTheDocument();
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `pnpm test renderer/src/components/dashboard/__tests__/BottomBar.test.tsx`
+Expected: FAIL
+
+- [ ] **Step 3: Write implementation**
+
+Add to BottomBar.tsx:
+
+```tsx
+import { useState, useEffect } from 'react';
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return width;
+}
+
+export function BottomBar(props: BottomBarProps) {
+  const windowWidth = useWindowWidth();
+  const showRepo = windowWidth >= 800;
+  const showBranchLabel = windowWidth >= 700;
+  
+  // ... in the left zone, conditionally render:
+  // {showRepo && <span>{activeRepo.name}</span>}
+  // {showBranchLabel && <span>main</span>}
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `pnpm test renderer/src/components/dashboard/__tests__/BottomBar.test.tsx`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add renderer/src/components/dashboard/BottomBar.tsx renderer/src/components/dashboard/__tests__/BottomBar.test.tsx
+git commit -m "feat: add responsive behavior to BottomBar"
+```
+
+---
+
+### Task 8: Visual Verification
+
+**Files:**
+- No code changes
+
+- [ ] **Step 1: Start dev server**
+
+```bash
+pnpm dev
+```
+
+- [ ] **Step 2: Open app and verify BottomBar renders**
+
+Check:
+- BottomBar appears at bottom of dashboard
+- Height is 36px
+- Three zones visible (left, center, right)
+- Agent pill shows when agents running
+- Metrics display correctly
+- Mode toggle works
+- Settings button navigates to settings
+
+- [ ] **Step 3: Test alert states**
+
+Trigger each alert type and verify:
+- Rate limit alert shows amber background
+- Agent error shows red background
+- GitHub auth expired shows amber
+- Plan progress shows in center
+- Dismiss button works
+- Priority ordering is correct
+
+- [ ] **Step 4: Test responsive behavior**
+
+Resize window and verify:
+- At < 800px: repo name hides
+- At < 700px: branch label hides
+- Agent pill and metrics always visible
+
+- [ ] **Step 5: Compare with design variants**
+
+Open `design/pidash-ui.pen` and compare implementation against the 4 variants:
+- Variant 1: Default State
+- Variant 2: Alert State
+- Variant 3: Multi-Agent State
+- Variant 4: Empty State
+
+- [ ] **Step 6: Final commit**
+
+```bash
+git add -A
+git commit -m "feat: BottomBar implementation complete"
+```
+
+---
+
+## Summary
+
+**Total tasks:** 8
+**Estimated time:** 4-6 hours
+**Key files:**
+- `renderer/src/components/dashboard/BottomBar.tsx` (new)
+- `renderer/src/hooks/useBottomBarAlerts.ts` (new)
+- `renderer/src/components/dashboard/Dashboard.tsx` (modified)
+- `renderer/src/components/dashboard/MetricsFooter.tsx` (deleted)
+
+**Design reference:** `design/pidash-ui.pen` → "Bottom Bar Flow" frame
