@@ -1,28 +1,5 @@
 import type { AgentConfig, ScreenName } from '../../types';
-
-// ponytail: inline registry — 5 agents, no need for a separate module yet
-const AGENT_GRADIENTS: Record<string, { gradient: string; symbol: string }> = {
-  omp: {
-    gradient: 'from-indigo-500 to-purple-600',
-    symbol: 'π',
-  },
-  cursor: {
-    gradient: 'from-cyan-500 to-blue-600',
-    symbol: '⌘',
-  },
-  aider: {
-    gradient: 'from-emerald-500 to-teal-600',
-    symbol: 'A',
-  },
-  codex: {
-    gradient: 'from-orange-500 to-red-600',
-    symbol: 'C',
-  },
-  continue: {
-    gradient: 'from-violet-500 to-fuchsia-600',
-    symbol: '▶',
-  },
-};
+import { AgentRow } from '../ui/AgentRow';
 
 interface ResultsScreenProps {
   onNavigate: (screen: ScreenName) => void;
@@ -31,24 +8,6 @@ interface ResultsScreenProps {
   toggleAgent: (agentId: string) => void;
   selectAll: () => void;
   deselectAll: () => void;
-}
-
-function AgentIcon({ iconKey }: { iconKey: string }) {
-  const entry = AGENT_GRADIENTS[iconKey];
-  if (!entry) {
-    return (
-      <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center shrink-0">
-        <span className="text-slate-400 text-lg">?</span>
-      </div>
-    );
-  }
-  return (
-    <div
-      className={`w-10 h-10 rounded-lg bg-gradient-to-br ${entry.gradient} flex items-center justify-center shrink-0`}
-    >
-      <span className="text-white font-bold text-lg">{entry.symbol}</span>
-    </div>
-  );
 }
 
 export function ResultsScreen({
@@ -108,7 +67,7 @@ export function ResultsScreen({
               </span>
             </div>
 
-            {/* Agent items */}
+            {/* Agent items using AgentRow + Checkbox */}
             <ul
               className="space-y-2 max-h-72 overflow-y-auto pr-1"
               role="list"
@@ -118,53 +77,15 @@ export function ResultsScreen({
                 const checked = selectedAgents.includes(agent.id);
                 return (
                   <li key={agent.id}>
-                    <label
-                      className={`flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-indigo-500 ${
-                        checked
-                          ? 'bg-indigo-900/30 border-indigo-600'
-                          : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleAgent(agent.id)}
-                        className="sr-only"
-                        aria-label={`Select ${agent.name}`}
-                      />
-                      <span
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                          checked
-                            ? 'bg-indigo-600 border-indigo-600'
-                            : 'border-slate-500 bg-slate-800'
-                        }`}
-                        aria-hidden="true"
-                      >
-                        {checked && (
-                          <svg
-                            className="w-3.5 h-3.5 text-white"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={3}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </span>
-                      <AgentIcon iconKey={agent.icon} />
-                      <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-white truncate">{agent.name}</div>
-                        <div className="text-sm text-slate-400 truncate" title={agent.path}>
-                          {agent.path}
-                        </div>
-                      </div>
-                      {agent.source === 'manual' && (
-                        <span className="text-xs font-medium text-slate-500 bg-slate-700 px-2 py-0.5 rounded-full shrink-0">
-                          manual
-                        </span>
-                      )}
-                    </label>
+                    <AgentRow
+                      name={agent.name}
+                      path={agent.path}
+                      icon={agent.icon}
+                      gradient={agent.icon}
+                      selected={checked}
+                      onToggle={() => toggleAgent(agent.id)}
+                      showCheckbox={true}
+                    />
                   </li>
                 );
               })}
