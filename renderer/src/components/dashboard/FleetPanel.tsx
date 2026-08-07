@@ -9,6 +9,7 @@ type FleetPanelProps = {
   availableAgents: AgentConfig[];
   onFocus: (agentId: string) => void;
   onLaunch: (agentId: string) => void;
+  onRestart: (agentId: string) => void;
   onOpenAsOverlay: (agentId: string) => void;
   onAddAgent: () => void;
   isCollapsed?: boolean;
@@ -20,6 +21,7 @@ export function FleetPanel({
   availableAgents,
   onFocus,
   onLaunch,
+  onRestart,
   onOpenAsOverlay,
   onAddAgent,
   isCollapsed = false,
@@ -155,7 +157,8 @@ export function FleetPanel({
               color: 'var(--accent-indigo)',
             }}
             cwd={session.cwd || undefined}
-            status={session.state === 'running' ? 'active' : 'idle'}
+            status={session.state === 'running' ? 'active' : 'exited'}
+            onRestart={() => onRestart(session.agentId)}
             onFocus={() => onFocus(session.agentId)}
             onPiP={() => onOpenAsOverlay(session.agentId)}
           />

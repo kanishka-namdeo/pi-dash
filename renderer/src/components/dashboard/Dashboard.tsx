@@ -156,7 +156,7 @@ export function Dashboard() {
     short: s.agentId.slice(0, 1).toUpperCase(),
     color: availableAgents.find(a => a.id === s.agentId)?.color ?? '#6366f1',
     textColor: availableAgents.find(a => a.id === s.agentId)?.textColor ?? '#ffffff',
-    status: s.state === 'running' ? 'active' : 'idle',
+    status: s.state === 'running' ? 'active' : 'exited',
     task: '',
     progress: 0,
     path: s.cwd,
@@ -191,6 +191,7 @@ export function Dashboard() {
           availableAgents={availableAgents}
           onFocus={handleAgentClick}
           onLaunch={handleLaunch}
+          onRestart={handleLaunch}
           onOpenAsOverlay={handleOpenAsOverlay}
           onAddAgent={() => setAddAgentOpen(true)}
           isCollapsed={collapsedPanels.has('fleet')}

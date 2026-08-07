@@ -4,7 +4,7 @@ export type Agent = {
   short: string;
   color: string;
   textColor: string;
-  status: 'active' | 'idle' | 'paused';
+  status: 'active' | 'idle' | 'paused' | 'exited';
   task: string;
   progress: number;
   path?: string;
@@ -24,7 +24,7 @@ export type Activity = {
 export type FeedEvent = {
   id: string;
   timestamp: number;
-  type: 'session:started' | 'session:exited' | 'command';
+  type: 'session:started' | 'session:exited' | 'command' | 'github:issue' | 'github:pr' | 'github:worktree';
   agentId: string;
   command?: string;
 };
