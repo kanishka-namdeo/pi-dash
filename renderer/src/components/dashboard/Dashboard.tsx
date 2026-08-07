@@ -14,7 +14,7 @@ import { FleetPanel } from './FleetPanel';
 import { TerminalPanel } from './TerminalPanel';
 import { PlanPanel } from './PlanPanel';
 import { ActivityFeed } from './ActivityFeed';
-import { MetricsFooter } from './MetricsFooter';
+import { BottomBar } from './BottomBar';
 import { AddAgentDialog } from './AddAgentDialog';
 import { AgentDetailPanel } from './AgentDetailPanel';
 import { RateLimitAlert } from '../github/RateLimitAlert';
@@ -39,7 +39,6 @@ export function Dashboard() {
   const { actions: pipActions } = usePiPContext();
   const { isAuthenticated, authExpired, clearAuthExpired, login } = useGitHub();
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
-  const [elapsed, setElapsed] = useState(0);
   const [addAgentOpen, setAddAgentOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [collapsedPanels, setCollapsedPanels] = useState<Set<string>>(new Set());
@@ -58,20 +57,6 @@ export function Dashboard() {
   const prevRunningRef = useRef<Set<string>>(new Set());
 
   const runningSessions = ctx.getActiveSessions();
-
-  // Compute elapsed from earliest active session
-  useEffect(() => {
-    if (runningSessions.length === 0) {
-      setElapsed(0);
-      return;
-    }
-
-    const earliest = Math.min(...runningSessions.map((s) => s.createdAt));
-    const tick = () => setElapsed(Math.floor((Date.now() - earliest) / 1000));
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [ctx.sessions]);
 
   // Detect sessions that transitioned from running to exited unexpectedly
   useEffect(() => {
@@ -152,11 +137,6 @@ export function Dashboard() {
     }
   };
 
-  const activeAgents = runningSessions.length;
-  const totalCommands = Array.from(ctx.sessions.values()).reduce(
-    (sum, s) => sum + s.commandHistory.length,
-    0,
-  );
   const hasAgents = availableAgents.length > 0;
 
   // Compute progress from mock steps
@@ -230,11 +210,7 @@ export function Dashboard() {
         onToggleCollapse={() => toggleCollapse('plan')}
       />
 
-      <MetricsFooter
-        elapsed={elapsed}
-        activeAgents={activeAgents}
-        totalCommands={totalCommands}
-      />
+      <BottomBar />
 
       <AddAgentDialog
         open={addAgentOpen}
