@@ -2,6 +2,7 @@
 
 import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult } from './index';
 import type { SessionAPI } from './session';
+import type { Repo, GitHubIssue, GitHubPR } from '../../../src/shared/github-types';
 import type { SettingsSchema } from '../../../src/main/settings/settings-types';
 
 interface GitHubUser {
