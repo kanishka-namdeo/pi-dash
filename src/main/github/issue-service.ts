@@ -38,8 +38,8 @@ export class IssueService {
 
     return {
       id: data.id,
-      author: { login: data.user.login, avatarUrl: data.user.avatar_url },
-      body: data.body,
+      author: { login: data.user?.login ?? '', avatarUrl: data.user?.avatar_url ?? '' },
+      body: data.body ?? '',
       createdAt: data.created_at,
       type: 'issue'
     };
@@ -121,9 +121,9 @@ export class IssueService {
       title: data.title,
       body: data.body || '',
       state: data.state,
-      labels: data.labels.map((l: any) => ({ name: l.name, color: l.color })),
+      labels: data.labels.map((l: any) => typeof l === 'string' ? { name: l, color: '000000' } : { name: l.name || '', color: l.color || '000000' }),
       assignee: data.assignee ? { login: data.assignee.login } : undefined,
-      author: { login: data.user.login, avatarUrl: data.user.avatar_url },
+      author: { login: data.user?.login ?? '', avatarUrl: data.user?.avatar_url ?? '' },
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       comments: []
