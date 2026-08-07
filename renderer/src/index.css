@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+:root {
+  /* Colors */
+  --bg: #0a0a0a;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+
+  /* Accents */
+  --accent-blue: #3b82f6;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-indigo: #4f46e5;
+  --accent-rose: #f43f5e;
+  --launch-btn: #0066cc;
+
+  /* States */
+  --state-hover: #ffffff0d;
+  --state-pressed: #ffffff14;
+
+  /* Typography */
+  --font-ui: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Monaco', monospace;
+  --text-xs: 10px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 999px;
+}
+
 @theme {
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(222.2 84% 4.9%);
