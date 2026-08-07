@@ -1,7 +1,8 @@
 import type { SessionInfo } from '@/context/SessionContext';
 import type { AgentConfig } from '@/types/session';
-import { RunningAgentCard } from './RunningAgentCard';
-import { AvailableAgentCard } from './AvailableAgentCard';
+// TODO: Task 7 will rewrite FleetPanel to use unified AgentCard
+// import { RunningAgentCard } from './RunningAgentCard';
+// import { AvailableAgentCard } from './AvailableAgentCard';
 
 type FleetPanelProps = {
   runningSessions: SessionInfo[];
@@ -25,13 +26,9 @@ export function FleetPanel({ runningSessions, availableAgents, onFocus, onLaunch
         {runningSessions.length === 0 && (
           <div className="text-xs text-[#737373] text-center py-4">No running agents</div>
         )}
+        {/* TODO: Task 7 will use AgentCard here */}
         {runningSessions.map((session) => (
-          <RunningAgentCard
-            key={session.agentId}
-            session={session}
-            onFocus={onFocus}
-            onOpenAsOverlay={onOpenAsOverlay}
-          />
+          <div key={session.agentId}>{session.agentId}</div>
         ))}
       </div>
 
@@ -54,13 +51,9 @@ export function FleetPanel({ runningSessions, availableAgents, onFocus, onLaunch
             <p className="text-xs text-[#737373]">Add agents to get started</p>
           </div>
         )}
+        {/* TODO: Task 7 will use AgentCard here */}
         {availableAgents.map((agent) => (
-          <AvailableAgentCard
-            key={agent.id}
-            agent={agent}
-            onLaunch={onLaunch}
-            onOpenAsOverlay={onOpenAsOverlay}
-          />
+          <div key={agent.id} className="text-xs text-[#737373]">{agent.name}</div>
         ))}
       </div>
     </aside>

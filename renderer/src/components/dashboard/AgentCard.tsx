@@ -1,78 +1,139 @@
-import type { Agent } from '@/types/dashboard';
+import { Focus, PictureInPicture2, Play } from 'lucide-react';
 
 type AgentCardProps = {
-  agent: Agent;
-  isSelected: boolean;
-  onClick: () => void;
-  onViewDetails: () => void;
-  onLaunch: (agentId: string) => void;
-  onOpenAsOverlay: (agentId: string) => void;
+  variant: 'running' | 'available';
+  name: string;
+  avatar: { letter: string; color: string };
+  cwd?: string;
+  path?: string;
+  status?: 'active' | 'idle';
+  onFocus?: () => void;
+  onLaunch?: () => void;
+  onPiP?: () => void;
 };
-export function AgentCard({ agent, isSelected, onClick, onViewDetails, onLaunch, onOpenAsOverlay }: AgentCardProps) {
-  const statusColor =
-    agent.status === 'active'
-      ? 'bg-emerald-500'
-      : agent.status === 'idle'
-        ? 'bg-amber-500'
-        : 'bg-gray-500';
 
-  const barColor = agent.status === 'active' ? agent.textColor : '#f59e0b';
-
-  const displayPath = agent.path
-    ? agent.path.length > 50 ? `...${agent.path.slice(-47)}` : agent.path
-    : undefined;
+export function AgentCard({
+  variant,
+  name,
+  avatar,
+  cwd,
+  path,
+  status,
+  onFocus,
+  onLaunch,
+  onPiP,
+}: AgentCardProps) {
+  const isRunning = variant === 'running';
 
   return (
     <div
-      onClick={onClick}
-      className={`p-3 rounded-lg cursor-pointer transition-colors ${
-        isSelected ? 'bg-[#2a2a2a] border border-[#3a3a3a]' : 'bg-[#1a1a1a] hover:bg-[#1f1f1f]'
-      }`}
+      className="p-3 rounded-xl flex flex-col gap-2"
+      style={{
+        backgroundColor: 'var(--card)',
+        border: `1px solid var(--border)`,
+      }}
     >
-      <div className="flex items-center gap-3 mb-2">
+      {/* Top row: Avatar + Info */}
+      <div className="flex items-center gap-2.5">
+        {/* Avatar */}
         <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium"
-          style={{ background: agent.color, color: agent.textColor }}
+          className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
+          style={{ backgroundColor: avatar.color }}
         >
-          {agent.short}
+          {avatar.letter}
         </div>
-        <div className="flex-1">
-          <div className="text-sm text-[#e5e5e5] font-medium">{agent.name}</div>
-        </div>
-        <div className={`w-2 h-2 rounded-full ${statusColor} ${agent.status === 'active' ? 'animate-pulse' : ''}`} />
-      </div>
-      {displayPath && (
-        <div className="text-xs font-mono text-[#737373] truncate mb-2" title={agent.path}>{displayPath}</div>
-      )}
 
-      {agent.progress > 0 && (
-        <div className="h-1 bg-[#2a2a2a] rounded-full overflow-hidden">
+        {/* Info */}
+        <div className="flex-1 min-w-0">
           <div
-            className="h-full transition-all duration-500"
-            style={{ width: `${agent.progress}%`, background: barColor }}
-          />
+            className="text-sm font-semibold truncate"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {name}
+          </div>
+          {isRunning && cwd && (
+            <div
+              className="text-xs font-mono truncate"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              {cwd}
+            </div>
+          )}
+          {!isRunning && path && (
+            <div
+              className="text-xs font-mono truncate"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              {path}
+            </div>
+          )}
         </div>
-      )}
-      <div className="flex gap-2 mt-3">
-        <button
-          onClick={(e) => { e.stopPropagation(); onLaunch(agent.id); }}
-          className="launch-button flex-1"
-        >
-          Launch
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
-          className="px-2 py-1 text-xs text-blue-500 hover:text-blue-400 transition-colors"
-        >
-          View Terminal →
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpenAsOverlay(agent.id); }}
-          className="px-3 py-1.5 text-xs bg-[#2a2a2a] text-[#e5e5e5] rounded hover:bg-[#3a3a3a] transition-colors"
-          title="Open as overlay"
-        >
-          PiP
-        </button>
+
+        {/* Status dot (running only) */}
+        {isRunning && status && (
+          <div
+            className="w-2 h-2 rounded-full flex-shrink-0"
+            style={{
+              backgroundColor:
+                status === 'active' ? 'var(--accent-emerald)' : 'var(--text-muted)',
+            }}
+          />
+        )}
+      </div>
+
+      {/* Button row */}
+      <div className="flex gap-2">
+        {isRunning ? (
+          <>
+            <button
+              onClick={onFocus}
+              className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors"
+              style={{
+                backgroundColor: 'var(--bg)',
+                border: `1px solid var(--border)`,
+                color: 'var(--text-secondary)',
+              }}
+            >
+              <Focus size={13} />
+              Focus
+            </button>
+            <button
+              onClick={onPiP}
+              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors"
+              style={{
+                backgroundColor: 'var(--bg)',
+                border: `1px solid var(--border)`,
+                color: 'var(--text-secondary)',
+              }}
+            >
+              <PictureInPicture2 size={13} />
+              PiP
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={onLaunch}
+              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium text-white transition-colors"
+              style={{ backgroundColor: 'var(--launch-btn)' }}
+            >
+              <Play size={13} />
+              Launch
+            </button>
+            <button
+              onClick={onPiP}
+              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors"
+              style={{
+                backgroundColor: 'var(--bg)',
+                border: `1px solid var(--border)`,
+                color: 'var(--text-secondary)',
+              }}
+            >
+              <PictureInPicture2 size={13} />
+              PiP
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
