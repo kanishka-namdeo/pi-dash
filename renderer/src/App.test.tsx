@@ -37,10 +37,38 @@ const mockGetOnboardingStatus = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // Mock window.api with a Promise that resolves to a value we control
+  // Mock window.api with GitHub API and onboarding
   Object.defineProperty(window, 'api', {
     value: {
       getOnboardingStatus: mockGetOnboardingStatus,
+      github: {
+        auth: {
+          getState: vi.fn().mockResolvedValue({ isAuthenticated: false, user: null, method: null }),
+          startOAuth: vi.fn().mockResolvedValue({ success: true }),
+          loginWithPAT: vi.fn().mockResolvedValue({ success: true }),
+          logout: vi.fn().mockResolvedValue({ success: true }),
+        },
+        repos: {
+          getAll: vi.fn().mockResolvedValue({ repos: [], activeRepo: null }),
+          add: vi.fn(),
+          remove: vi.fn().mockResolvedValue({ success: true }),
+          setActive: vi.fn().mockResolvedValue({ success: true }),
+        },
+        data: {
+          fetchIssues: vi.fn().mockResolvedValue([]),
+          fetchPRs: vi.fn().mockResolvedValue([]),
+          fetchBranches: vi.fn().mockResolvedValue([]),
+        },
+        issues: { create: vi.fn(), comment: vi.fn() },
+        prs: { create: vi.fn(), review: vi.fn() },
+      },
+      worktree: {
+        list: vi.fn().mockResolvedValue([]),
+        create: vi.fn().mockResolvedValue({}),
+      },
+      agentGitHub: {
+        assign: vi.fn().mockResolvedValue({ success: true }),
+      },
     },
     writable: true,
   });
