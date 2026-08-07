@@ -5,7 +5,7 @@ import { useAgents } from '@/hooks/useAgents';
 import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
-import { Topbar } from './Topbar';
+import { TopBar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
 import { PlanPanel } from './PlanPanel';
 import { ActivityFeed } from './ActivityFeed';
@@ -68,7 +68,7 @@ export function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0a0a]">
-      <Topbar
+      <TopBar
         mode={mode}
         viewMode={pipState.viewMode}
         isFeedPaused={isPaused}

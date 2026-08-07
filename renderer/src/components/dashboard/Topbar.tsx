@@ -1,9 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { Pause, Play, GitBranch, LayoutDashboard, Monitor, Trash2 } from 'lucide-react';
+import {
+  Pause,
+  Play,
+  GitBranch,
+  LayoutDashboard,
+  Monitor,
+  Trash2,
+  Link,
+  Bell,
+  Settings,
+  HelpCircle,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import type { Mode } from '@/types/dashboard';
 import type { ViewMode } from '@/types/pip';
 
-type TopbarProps = {
+type TopBarProps = {
   mode: Mode;
   viewMode: ViewMode;
   isFeedPaused: boolean;
@@ -14,99 +26,151 @@ type TopbarProps = {
   onClearFeed: () => void;
 };
 
-export function Topbar({
+export function TopBar({
   mode,
   viewMode,
   isFeedPaused,
-  hasMainAgent,
   onModeChange,
   onSetViewMode,
   onToggleFeedPause,
   onClearFeed,
-}: TopbarProps) {
+}: TopBarProps) {
   const navigate = useNavigate();
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a] bg-[#0a0a0a]">
+    <header
+      className="flex items-center justify-between px-6 h-14"
+      style={{
+        backgroundColor: 'var(--bg)',
+        borderBottom: `1px solid var(--border)`,
+      }}
+    >
+      {/* Left: Status + Title */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-base font-semibold text-[#e5e5e5]">Pi Orchestrator</span>
-        </div>
-        <span className="font-mono text-sm font-medium text-[#a3a3a3]">pi-dash</span>
+        <div
+          className="w-2 h-2 rounded-full"
+          style={{ backgroundColor: 'var(--accent-emerald)' }}
+        />
+        <span
+          className="text-base font-semibold"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          Pi Orchestrator
+        </span>
+        <span
+          className="text-sm font-mono font-medium"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          pi-dash
+        </span>
       </div>
 
-      {/* View Toggle */}
-      <nav aria-label="View mode" className="flex items-center gap-1 bg-[#1a1a1a] rounded-lg p-1">
+      {/* Center-left: View Toggle */}
+      <nav
+        className="flex items-center gap-1 p-1 rounded-lg"
+        style={{ backgroundColor: 'var(--card)' }}
+      >
         <button
           onClick={() => onSetViewMode('dashboard')}
-          disabled={!hasMainAgent}
-          className={`flex items-center gap-1.5 px-3 py-1 text-sm rounded-md transition-colors ${
-            viewMode === 'dashboard'
-              ? 'bg-[#2a2a2a] text-[#e5e5e5]'
-              : 'text-[#737373] hover:text-[#a3a3a3]'
-          } ${!hasMainAgent ? 'opacity-40 cursor-not-allowed' : ''}`}
-          title="Dashboard view"
+          className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm transition-colors"
+          style={{
+            backgroundColor: viewMode === 'dashboard' ? 'var(--border)' : 'transparent',
+            color: viewMode === 'dashboard' ? 'var(--text-primary)' : 'var(--text-muted)',
+          }}
         >
-          <LayoutDashboard className="w-3.5 h-3.5" />
+          <LayoutDashboard size={14} />
           Dashboard
         </button>
         <button
           onClick={() => onSetViewMode('terminal')}
-          disabled={!hasMainAgent}
-          className={`flex items-center gap-1.5 px-3 py-1 text-sm rounded-md transition-colors ${
-            viewMode === 'terminal'
-              ? 'bg-[#2a2a2a] text-[#e5e5e5]'
-              : 'text-[#737373] hover:text-[#a3a3a3]'
-          } ${!hasMainAgent ? 'opacity-40 cursor-not-allowed' : ''}`}
-          title="Terminal view"
+          className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm transition-colors"
+          style={{
+            backgroundColor: viewMode === 'terminal' ? 'var(--border)' : 'transparent',
+            color: viewMode === 'terminal' ? 'var(--text-primary)' : 'var(--text-muted)',
+          }}
         >
-          <Monitor className="w-3.5 h-3.5" />
+          <Monitor size={14} />
           Terminal
         </button>
       </nav>
 
+      {/* Center: Worktrees */}
       <button
-        onClick={() => navigate('/worktrees')}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#737373] hover:text-[#e5e5e5] rounded-lg hover:bg-[#1a1a1a] transition-colors"
-        >
-        <GitBranch className="w-3.5 h-3.5" />
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors"
+        style={{ color: 'var(--text-muted)' }}
+      >
+        <GitBranch size={14} />
         Worktrees
       </button>
 
-      <nav aria-label="Dashboard mode" className="flex items-center gap-1 bg-[#1a1a1a] rounded-lg p-1">
-        {(['auto', 'supervised', 'manual'] as Mode[]).map((m) => (
+      {/* Center-right: Mode Toggle */}
+      <nav
+        className="flex items-center gap-1 p-1 rounded-lg"
+        style={{ backgroundColor: 'var(--card)' }}
+      >
+        {(['auto', 'supervised', 'manual'] as const).map((m) => (
           <button
             key={m}
             onClick={() => onModeChange(m)}
-            className={`px-3 py-1 text-sm rounded-md transition-colors ${
-              mode === m
-                ? 'bg-[#2a2a2a] text-[#e5e5e5]'
-                : 'text-[#737373] hover:text-[#a3a3a3]'
-            }`}
+            className="px-3 py-1 rounded-md text-sm transition-colors"
+            style={{
+              backgroundColor: mode === m ? 'var(--border)' : 'transparent',
+              color: mode === m ? 'var(--text-primary)' : 'var(--text-muted)',
+            }}
           >
             {m}
           </button>
         ))}
       </nav>
 
-      <nav aria-label="Dashboard actions" className="flex items-center gap-2">
+      {/* Right: Nav + Actions */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => navigate('/settings/github')}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
+        >
+          <Link size={16} />
+        </button>
+        <button
+          onClick={() => toast('Notifications coming soon')}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
+        >
+          <Bell size={16} />
+        </button>
+        <button
+          onClick={() => navigate('/settings')}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
+        >
+          <Settings size={16} />
+        </button>
+        <button
+          onClick={() => toast('Help docs coming soon')}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
+        >
+          <HelpCircle size={16} />
+        </button>
+
+        <div className="w-px h-6 mx-2" style={{ backgroundColor: 'var(--border)' }} />
+
         <button
           onClick={onToggleFeedPause}
-          className="p-2 rounded-lg bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a] transition-colors"
-          title={isFeedPaused ? 'Resume feed' : 'Pause feed'}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
         >
-          {isFeedPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+          {isFeedPaused ? <Play size={16} /> : <Pause size={16} />}
         </button>
         <button
           onClick={onClearFeed}
-          className="p-2 rounded-lg bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a] transition-colors"
-          title="Clear feed"
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 size={16} />
         </button>
-      </nav>
+      </div>
     </header>
   );
 }
-
