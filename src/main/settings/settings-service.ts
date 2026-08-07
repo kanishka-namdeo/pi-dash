@@ -3,6 +3,12 @@ import { app } from 'electron';
 import type { SettingsSchema } from './settings-types';
 import { getDefaultSettings } from './settings-defaults';
 
+// Minimal interface for store operations not exposed by ElectronStore's generic type
+interface StoreOperations<T> {
+  store: T;
+  clear(): void;
+}
+
 export class SettingsService {
   private store: Store<SettingsSchema>;
 
@@ -27,20 +33,20 @@ export class SettingsService {
   }
 
   getAll(): SettingsSchema {
-    return this.store.store;
+    return (this.store as unknown as StoreOperations<SettingsSchema>).store;
   }
 
   reset(): void {
-    this.store.clear();
-    const defaults = getDefaultSettings();
-    this.store.store = defaults;
+    const ops = this.store as unknown as StoreOperations<SettingsSchema>;
+    ops.clear();
+    ops.store = getDefaultSettings();
   }
 
   export(): SettingsSchema {
-    return this.store.store;
+    return (this.store as unknown as StoreOperations<SettingsSchema>).store;
   }
 
   import(data: SettingsSchema): void {
-    this.store.store = data;
+    (this.store as unknown as StoreOperations<SettingsSchema>).store = data;
   }
 }
