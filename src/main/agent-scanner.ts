@@ -210,6 +210,7 @@ export async function scanSystem(): Promise<ScanResult> {
         name: known.name,
         icon: known.icon,
         path: foundPath,
+        cwd: process.env.HOME || process.env.USERPROFILE || '',
         source: 'detected',
         fingerprint: fingerprintAgent(foundPath),
       });

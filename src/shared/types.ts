@@ -5,6 +5,7 @@ export type AgentConfig = {
   name: string;
   icon: string;
   path: string;
+  cwd: string;
   source: 'detected' | 'manual';
   fingerprint?: string;
   pid?: number;
@@ -53,7 +54,7 @@ export type KnownAgent = {
   versionFlag?: string;
 };
 
-export type ScreenName = 'welcome' | 'scanning' | 'results' | 'manual-add' | 'ready' | 'no-agents';
+export type ScreenName = 'welcome' | 'scanning' | 'results' | 'manual-add' | 'ready' | 'no-agents' | 'scan-error';
 
 
 export type SessionState = 'idle' | 'running' | 'exited';
