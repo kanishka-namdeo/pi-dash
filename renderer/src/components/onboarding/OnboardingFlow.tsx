@@ -5,6 +5,7 @@ import { ScanningScreen } from './ScanningScreen';
 import { ResultsScreen } from './ResultsScreen';
 import { ManualAddScreen } from './ManualAddScreen';
 import { NoAgentsScreen } from './NoAgentsScreen';
+import { ScanErrorScreen } from './ScanErrorScreen';
 import { ReadyScreen } from './ReadyScreen';
 
 const SCREEN_COMPONENTS: Record<ScreenName, React.ComponentType<any>> = {
@@ -13,6 +14,7 @@ const SCREEN_COMPONENTS: Record<ScreenName, React.ComponentType<any>> = {
   results: ResultsScreen,
   'manual-add': ManualAddScreen,
   'no-agents': NoAgentsScreen,
+  'scan-error': ScanErrorScreen,
   ready: ReadyScreen,
 };
 
