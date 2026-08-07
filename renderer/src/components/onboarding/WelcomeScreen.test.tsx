@@ -47,4 +47,15 @@ describe('WelcomeScreen', () => {
     expect(screen.getByText(/One-click launch/i)).toBeInTheDocument();
     expect(screen.getByText(/Live activity/i)).toBeInTheDocument();
   });
+
+  it('renders IconBox components for feature cards', () => {
+    render(<WelcomeScreen onNavigate={mockOnNavigate} />);
+    const iconBoxes = screen.getAllByTestId('icon-box');
+    expect(iconBoxes.length).toBe(3);
+  });
+
+  it('renders privacy note', () => {
+    render(<WelcomeScreen onNavigate={mockOnNavigate} />);
+    expect(screen.getByText(/locally installed agents/i)).toBeInTheDocument();
+  });
 });
