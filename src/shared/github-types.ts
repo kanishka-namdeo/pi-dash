@@ -31,11 +31,22 @@ export interface Worktree {
 export interface GitHubIssue {
   number: number;
   title: string;
+  body: string;
   state: 'open' | 'closed';
   labels: Array<{ name: string; color: string }>;
   assignee?: { login: string };
+  author: { login: string; avatarUrl: string };
   createdAt: string;
   updatedAt: string;
+  comments: GitHubComment[];
+}
+
+export interface GitHubComment {
+  id: number;
+  author: { login: string; avatarUrl: string };
+  body: string;
+  createdAt: string;
+  type: 'issue' | 'review';
 }
 
 export interface GitHubPR {

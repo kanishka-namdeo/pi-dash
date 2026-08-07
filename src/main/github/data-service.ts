@@ -49,11 +49,14 @@ export class DataService {
     const issues: GitHubIssue[] = data.map(issue => ({
       number: issue.number,
       title: issue.title,
+      body: issue.body || '',
       state: issue.state as 'open' | 'closed',
       labels: issue.labels.map(l => typeof l === 'string' ? { name: l, color: '000000' } : { name: l.name || '', color: l.color || '000000' }),
       assignee: issue.assignee ? { login: issue.assignee.login } : undefined,
+      author: { login: issue.user?.login ?? '', avatarUrl: issue.user?.avatar_url ?? '' },
       createdAt: issue.created_at,
-      updatedAt: issue.updated_at
+      updatedAt: issue.updated_at,
+      comments: []
     }));
 
     this.cache.set(cacheKey, issues);

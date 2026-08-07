@@ -6,9 +6,11 @@ import type { Octokit } from '@octokit/rest';
 interface MockIssueData {
   number: number;
   title: string;
+  body?: string;
   state: string;
   labels: Array<string | { name?: string; color?: string }>;
   assignee: { login: string } | null;
+  user: { login: string; avatar_url: string } | null;
   created_at: string;
   updated_at: string;
 }
@@ -65,9 +67,11 @@ describe('DataService', () => {
         {
           number: 1,
           title: 'Bug fix',
+          body: 'Fix description',
           state: 'open',
           labels: [{ name: 'bug', color: 'd73a4a' }],
           assignee: { login: 'dev1' },
+          user: { login: 'testuser', avatar_url: 'https://example.com/avatar.png' },
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-02T00:00:00Z'
         }
@@ -76,15 +80,17 @@ describe('DataService', () => {
 
       const issues = await dataService.fetchIssues('owner', 'repo');
 
-      expect(issues).toHaveLength(1);
       expect(issues[0]).toEqual({
         number: 1,
         title: 'Bug fix',
+        body: 'Fix description',
         state: 'open',
         labels: [{ name: 'bug', color: 'd73a4a' }],
         assignee: { login: 'dev1' },
+        author: { login: 'testuser', avatarUrl: 'https://example.com/avatar.png' },
         createdAt: '2026-01-01T00:00:00Z',
-        updatedAt: '2026-01-02T00:00:00Z'
+        updatedAt: '2026-01-02T00:00:00Z',
+        comments: []
       });
     });
 
@@ -96,6 +102,7 @@ describe('DataService', () => {
           state: 'open',
           labels: [],
           assignee: null,
+          user: { login: 'testuser', avatar_url: 'https://example.com/avatar.png' },
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-01T00:00:00Z'
         }
@@ -114,6 +121,7 @@ describe('DataService', () => {
           state: 'open',
           labels: ['enhancement'],
           assignee: null,
+          user: { login: 'testuser', avatar_url: 'https://example.com/avatar.png' },
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-01T00:00:00Z'
         }
@@ -125,7 +133,7 @@ describe('DataService', () => {
     });
 
     it('returns cached issues within TTL', async () => {
-      const mockIssues: MockIssueData[] = [{ number: 1, title: 'Cached', state: 'open', labels: [], assignee: null, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' }];
+      const mockIssues: MockIssueData[] = [{ number: 1, title: 'Cached', state: 'open', labels: [], assignee: null, user: { login: 'testuser', avatar_url: 'https://example.com/avatar.png' }, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' }];
       const octokit = createMockOctokit({ issues: mockIssues });
       vi.spyOn(mockGitHubService, 'getOctokit').mockReturnValue(octokit);
 
