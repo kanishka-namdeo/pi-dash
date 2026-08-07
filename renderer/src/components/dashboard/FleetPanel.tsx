@@ -1,6 +1,8 @@
+import { UserPlus, Plus, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import type { SessionInfo } from '@/context/SessionContext';
 import type { AgentConfig } from '@/types/session';
 import { AgentCard } from './AgentCard';
+import { EmptyStatePanel } from '../ui/EmptyStatePanel';
 
 type FleetPanelProps = {
   runningSessions: SessionInfo[];
@@ -8,6 +10,9 @@ type FleetPanelProps = {
   onFocus: (agentId: string) => void;
   onLaunch: (agentId: string) => void;
   onOpenAsOverlay: (agentId: string) => void;
+  onAddAgent: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 };
 
 export function FleetPanel({
@@ -16,7 +21,89 @@ export function FleetPanel({
   onFocus,
   onLaunch,
   onOpenAsOverlay,
+  onAddAgent,
+  isCollapsed = false,
+  onToggleCollapse,
 }: FleetPanelProps) {
+  if (isCollapsed) {
+    return (
+      <aside
+        className="w-12 flex flex-col items-center"
+        style={{
+          backgroundColor: 'var(--bg)',
+          borderRight: `1px solid var(--border)`,
+        }}
+      >
+        {/* Running avatars */}
+        <div className="flex flex-col items-center gap-2 py-3">
+          {runningSessions.map((session) => (
+            <button
+              key={session.agentId}
+              onClick={() => onFocus(session.agentId)}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold cursor-pointer hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: 'var(--accent-indigo)',
+                color: '#ffffff',
+              }}
+              title={session.agentId}
+            >
+              {session.agentId[0].toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        {/* Available avatars */}
+        {availableAgents.length > 0 && (
+          <div className="flex flex-col items-center gap-2 py-3">
+            {availableAgents.map((agent) => (
+              <button
+                key={agent.id}
+                onClick={() => onLaunch(agent.id)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold cursor-pointer hover:opacity-80 transition-opacity"
+                style={{
+                  backgroundColor: agent.color || 'var(--accent-emerald)',
+                  color: agent.textColor || '#ffffff',
+                }}
+                title={agent.name}
+              >
+                {agent.name[0].toUpperCase()}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Add agent button */}
+        <button
+          onClick={onAddAgent}
+          className="w-8 h-8 rounded-full flex items-center justify-center mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+          style={{
+            backgroundColor: 'var(--card)',
+            color: 'var(--text-muted)',
+            border: `1px dashed var(--border)`,
+          }}
+          title="Add Agent"
+        >
+          <Plus size={14} />
+        </button>
+
+        {/* Toggle expand button */}
+        <button
+          onClick={onToggleCollapse}
+          className="w-8 h-8 rounded flex items-center justify-center mb-3 cursor-pointer hover:opacity-80 transition-opacity"
+          style={{
+            color: 'var(--text-muted)',
+          }}
+          title="Expand panel"
+        >
+          <PanelLeftOpen size={16} />
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside
       className="w-full md:w-[240px] lg:w-[280px] flex flex-col"
@@ -51,12 +138,12 @@ export function FleetPanel({
         style={{ borderBottom: `1px solid var(--border)` }}
       >
         {runningSessions.length === 0 && (
-          <div
-            className="text-xs text-center py-4"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            No running agents
-          </div>
+          <EmptyStatePanel
+            icon={UserPlus}
+            iconColor="var(--accent-indigo)"
+            title="No Running Agents"
+            description="Launch an agent to start working."
+          />
         )}
         {runningSessions.map((session) => (
           <AgentCard
@@ -98,34 +185,16 @@ export function FleetPanel({
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {availableAgents.length === 0 && (
-          <div
-            className="flex flex-col items-center justify-center h-full p-8 text-center"
-          >
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-              style={{ backgroundColor: 'var(--card)' }}
-            >
-              <svg
-                className="w-6 h-6"
-                style={{ color: 'var(--text-muted)' }}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-            </div>
-            <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>
-              No agents
-            </p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Add agents to get started
-            </p>
+          <div className="flex items-center justify-center h-full">
+            <EmptyStatePanel
+              icon={UserPlus}
+              iconColor="var(--accent-indigo)"
+              title="No Agents"
+              description="Add an agent to start monitoring and managing AI coding tasks."
+              ctaLabel="Add Agent"
+              ctaIcon={Plus}
+              onCta={onAddAgent}
+            />
           </div>
         )}
         {availableAgents.map((agent) => (
@@ -142,6 +211,20 @@ export function FleetPanel({
             onPiP={() => onOpenAsOverlay(agent.id)}
           />
         ))}
+      </div>
+      {/* Toggle collapse button */}
+      <div
+        className="flex items-center justify-end px-3 py-2"
+        style={{ borderTop: `1px solid var(--border)` }}
+      >
+        <button
+          onClick={onToggleCollapse}
+          className="flex items-center gap-1.5 text-xs cursor-pointer hover:opacity-80 transition-opacity"
+          style={{ color: 'var(--text-muted)' }}
+          title="Collapse panel"
+        >
+          <PanelLeftClose size={14} />
+        </button>
       </div>
     </aside>
   );

@@ -193,6 +193,8 @@ export function Dashboard() {
           onLaunch={handleLaunch}
           onOpenAsOverlay={handleOpenAsOverlay}
           onAddAgent={() => setAddAgentOpen(true)}
+          isCollapsed={collapsedPanels.has('fleet')}
+          onToggleCollapse={() => toggleCollapse('fleet')}
         />
 
         <TerminalPanel agentId={selectedAgentId} />
