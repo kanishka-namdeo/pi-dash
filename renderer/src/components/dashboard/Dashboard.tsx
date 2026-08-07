@@ -11,6 +11,7 @@ import type { PlanStep, Agent } from '@/types/dashboard';
 import type { ViewMode } from '@/types/pip';
 import { TopBar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
+import { TerminalPanel } from './TerminalPanel';
 import { PlanPanel } from './PlanPanel';
 import { ActivityFeed } from './ActivityFeed';
 import { MetricsFooter } from './MetricsFooter';
@@ -182,7 +183,7 @@ export function Dashboard() {
           onAddAgent={() => setAddAgentOpen(true)}
         />
 
-        <PlanPanel steps={mockSteps} progress={hasAgents ? progress : 0} />
+        <TerminalPanel agentId={selectedAgentId} />
 
         <ActivityFeed
           events={events}
@@ -191,6 +192,8 @@ export function Dashboard() {
           onAddAgent={() => setAddAgentOpen(true)}
         />
       </div>
+
+      <PlanPanel steps={mockSteps} progress={hasAgents ? progress : 0} />
 
       <MetricsFooter
         elapsed={elapsed}
