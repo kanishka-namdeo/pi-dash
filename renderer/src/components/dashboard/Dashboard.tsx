@@ -1,17 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useSessionContext } from '@/context/SessionContext';
 import { useAgents } from '@/hooks/useAgents';
 import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
-import type { PlanStep } from '@/types/dashboard';
+import { useGitHub } from '@/context/GitHubContext';
+import type { PlanStep, Agent } from '@/types/dashboard';
 import type { ViewMode } from '@/types/pip';
 import { TopBar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
 import { PlanPanel } from './PlanPanel';
 import { ActivityFeed } from './ActivityFeed';
 import { MetricsFooter } from './MetricsFooter';
+import { AddAgentDialog } from './AddAgentDialog';
+import { AgentDetailPanel } from './AgentDetailPanel';
+import { RateLimitAlert } from '../github/RateLimitAlert';
+import { AgentDisconnected } from '../ui/AgentDisconnected';
+import { GitHubAuthExpired } from '../github/GitHubAuthExpired';
 
 // Mock plan data
 const mockSteps: PlanStep[] = [
@@ -25,12 +32,17 @@ const mockSteps: PlanStep[] = [
 export function Dashboard() {
   const navigate = useNavigate();
   const ctx = useSessionContext();
-  const { agents: availableAgents } = useAgents();
+  const { agents: availableAgents, refresh: refreshAgents } = useAgents();
   const { events, isPaused, pause, resume, clear } = useRealActivityFeed();
   const { mode, setMode } = useDashboardMode();
   const { actions: pipActions } = usePiPContext();
+  const { isAuthenticated, authExpired, clearAuthExpired, login } = useGitHub();
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [elapsed, setElapsed] = useState(0);
+  const [addAgentOpen, setAddAgentOpen] = useState(false);
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [disconnectedAgent, setDisconnectedAgent] = useState<string | null>(null);
+  const prevRunningRef = useRef<Set<string>>(new Set());
 
   const runningSessions = ctx.getActiveSessions();
 
@@ -48,6 +60,26 @@ export function Dashboard() {
     return () => clearInterval(id);
   }, [ctx.sessions]);
 
+  // Detect sessions that transitioned from running to exited unexpectedly
+  useEffect(() => {
+    const currentRunning = new Set<string>();
+    const exited: string[] = [];
+
+    for (const [, session] of ctx.sessions) {
+      if (session.state === 'running') {
+        currentRunning.add(session.agentId);
+      } else if (session.state === 'exited' && prevRunningRef.current.has(session.agentId)) {
+        exited.push(session.agentId);
+      }
+    }
+
+    if (exited.length > 0 && !disconnectedAgent) {
+      setDisconnectedAgent(exited[0]);
+    }
+
+    prevRunningRef.current = currentRunning;
+  }, [ctx.sessions, disconnectedAgent]);
+
   const handlePause = () => {
     if (isPaused) {
       resume();
@@ -57,19 +89,41 @@ export function Dashboard() {
   };
 
   const handleAgentClick = (agentId: string) => {
-    navigate(`/agent/${agentId}`);
+    setSelectedAgentId(agentId);
   };
 
   const handleLaunch = async (agentId: string) => {
+    const agent = availableAgents.find(a => a.id === agentId);
+    if (!agent) return;
+
     try {
-      await window.api.launchAgent(agentId);
+      const result = await window.api.session.create(agentId, agent.cwd);
+      if ('error' in result) {
+        toast.error(`Failed to start ${agentId}: ${result.error}`);
+        return;
+      }
+      ctx.registerSession(agentId, result.pid, agent.cwd);
+      setSelectedAgentId(agentId);
     } catch (error) {
       console.error('Failed to launch agent:', error);
     }
   };
-
   const handleOpenAsOverlay = (agentId: string) => {
     pipActions.addOverlay(agentId);
+  };
+
+  const handleReconnect = () => {
+    if (disconnectedAgent) {
+      handleLaunch(disconnectedAgent);
+      setDisconnectedAgent(null);
+    }
+  };
+
+  const handleViewLastOutput = () => {
+    if (disconnectedAgent) {
+      navigate(`/agent/${disconnectedAgent}`);
+      setDisconnectedAgent(null);
+    }
   };
 
   const activeAgents = runningSessions.length;
@@ -77,13 +131,35 @@ export function Dashboard() {
     (sum, s) => sum + s.commandHistory.length,
     0,
   );
+  const hasAgents = availableAgents.length > 0;
 
   // Compute progress from mock steps
   const doneSteps = mockSteps.filter((s) => s.status === 'done').length;
   const progress = Math.round((doneSteps / mockSteps.length) * 100);
+  // Map a running session to Agent shape for the detail panel
+  const sessionToAgent = (s: typeof runningSessions[number]): Agent => ({
+    id: s.agentId,
+    name: availableAgents.find(a => a.id === s.agentId)?.name ?? s.agentId,
+    short: s.agentId.slice(0, 1).toUpperCase(),
+    color: availableAgents.find(a => a.id === s.agentId)?.color ?? '#6366f1',
+    textColor: availableAgents.find(a => a.id === s.agentId)?.textColor ?? '#ffffff',
+    status: s.state === 'running' ? 'active' : 'idle',
+    task: '',
+    progress: 0,
+    path: s.cwd,
+  });
+
+  const selectedAgent = selectedAgentId
+    ? availableAgents.find(a => a.id === selectedAgentId) ?? (() => {
+        const s = runningSessions.find(s => s.agentId === selectedAgentId);
+        return s ? sessionToAgent(s) : undefined;
+      })()
+    : undefined;
+
 
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
+      {isAuthenticated && <RateLimitAlert />}
       <TopBar
         mode={mode}
         viewMode={viewMode}
@@ -93,6 +169,7 @@ export function Dashboard() {
         onSetViewMode={setViewMode}
         onToggleFeedPause={handlePause}
         onClearFeed={clear}
+        onAddAgent={() => setAddAgentOpen(true)}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -102,11 +179,17 @@ export function Dashboard() {
           onFocus={handleAgentClick}
           onLaunch={handleLaunch}
           onOpenAsOverlay={handleOpenAsOverlay}
+          onAddAgent={() => setAddAgentOpen(true)}
         />
 
-        <PlanPanel steps={mockSteps} progress={progress} />
+        <PlanPanel steps={mockSteps} progress={hasAgents ? progress : 0} />
 
-        <ActivityFeed events={events} isPaused={isPaused} />
+        <ActivityFeed
+          events={events}
+          isPaused={isPaused}
+          hasAgents={hasAgents}
+          onAddAgent={() => setAddAgentOpen(true)}
+        />
       </div>
 
       <MetricsFooter
@@ -114,6 +197,34 @@ export function Dashboard() {
         activeAgents={activeAgents}
         totalCommands={totalCommands}
       />
+
+      <AddAgentDialog
+        open={addAgentOpen}
+        onOpenChange={setAddAgentOpen}
+        onAdded={refreshAgents}
+      />
+
+      <AgentDetailPanel
+        agent={selectedAgent}
+        isOpen={selectedAgentId !== null}
+        onClose={() => setSelectedAgentId(null)}
+        onViewCompletedWork={(agentId) => navigate(`/completed/${agentId}`)}
+      />
+
+      {disconnectedAgent && (
+        <AgentDisconnected
+          agentId={disconnectedAgent}
+          onReconnect={handleReconnect}
+          onViewOutput={handleViewLastOutput}
+        />
+      )}
+
+      {authExpired && (
+        <GitHubAuthExpired
+          onReauth={() => { clearAuthExpired(); login('oauth'); }}
+          onUsePAT={() => { clearAuthExpired(); navigate('/settings/github'); }}
+        />
+      )}
     </div>
   );
 }
