@@ -12,26 +12,51 @@ function formatElapsed(seconds: number): string {
 
 export function MetricsFooter({ elapsed, activeAgents, totalCommands }: MetricsFooterProps) {
   return (
-    <footer className="flex items-center px-6 py-3 border-t border-[#2a2a2a] bg-[#0a0a0a]">
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[#737373]">Elapsed</span>
-          <span className="text-xs font-mono tabular-nums text-[#e5e5e5]">{formatElapsed(elapsed)}</span>
-        </div>
+    <footer
+      className="flex items-center gap-6 px-6 h-10"
+      style={{
+        backgroundColor: 'var(--bg)',
+        borderTop: `1px solid var(--border)`,
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          Elapsed
+        </span>
+        <span
+          className="text-xs font-mono tabular-nums"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {formatElapsed(elapsed)}
+        </span>
+      </div>
 
-        <div className="w-px h-4 bg-[#2a2a2a]" />
+      <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[#737373]">Agents</span>
-          <span className="text-xs font-mono tabular-nums text-[#e5e5e5]">{activeAgents}</span>
-        </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          Agents
+        </span>
+        <span
+          className="text-xs font-mono tabular-nums"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {activeAgents}
+        </span>
+      </div>
 
-        <div className="w-px h-4 bg-[#2a2a2a]" />
+      <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[#737373]">Commands</span>
-          <span className="text-xs font-mono tabular-nums text-[#e5e5e5]">{totalCommands.toLocaleString()}</span>
-        </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          Commands
+        </span>
+        <span
+          className="text-xs font-mono tabular-nums"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {totalCommands.toLocaleString()}
+        </span>
       </div>
     </footer>
   );
