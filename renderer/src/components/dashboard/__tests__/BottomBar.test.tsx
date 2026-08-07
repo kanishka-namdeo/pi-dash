@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BottomBar } from '../BottomBar';
 import { SessionProvider, useSessionContext } from '@/context/SessionContext';
@@ -161,5 +161,101 @@ describe('BottomBar Center Zone', () => {
       </SessionProvider>
     );
     expect(screen.getByTestId('rate-limit-alert')).toBeInTheDocument();
+  });
+});
+describe('BottomBar Responsive', () => {
+  it('hides repo name at narrow widths', async () => {
+    // Override mock to provide an active repo
+    Object.defineProperty(window, 'api', {
+      value: {
+        github: {
+          auth: {
+            getState: vi.fn().mockResolvedValue({ isAuthenticated: false, user: null, method: null }),
+          },
+          repos: {
+            getAll: vi.fn().mockResolvedValue({
+              repos: [{ id: 'pi-dash', name: 'pi-dash', owner: 'test', localPath: '/test' }],
+              activeRepo: { id: 'pi-dash', name: 'pi-dash', owner: 'test', localPath: '/test' },
+            }),
+          },
+          data: {
+            fetchIssues: vi.fn().mockResolvedValue([]),
+            fetchPRs: vi.fn().mockResolvedValue([]),
+            fetchBranches: vi.fn().mockResolvedValue(['main']),
+          },
+        },
+        worktree: {
+          list: vi.fn().mockResolvedValue([]),
+        },
+      },
+      writable: true,
+    });
+
+    // Mock window.innerWidth = 700
+    Object.defineProperty(window, 'innerWidth', { value: 700, writable: true });
+    window.dispatchEvent(new Event('resize'));
+
+    render(
+      <SessionProvider>
+        <SessionRegistrar>
+          <GitHubProvider>
+            <BottomBar />
+          </GitHubProvider>
+        </SessionRegistrar>
+      </SessionProvider>
+    );
+
+
+    // Repo name should be hidden at width < 800
+    expect(screen.queryByText('pi-dash')).not.toBeInTheDocument();
+    // But branch should still be visible at width >= 700 (wait for async load)
+    await waitFor(() => {
+      expect(screen.getByText('main')).toBeInTheDocument();
+    });
+  });
+
+  it('hides branch label at very narrow widths', async () => {
+    Object.defineProperty(window, 'api', {
+      value: {
+        github: {
+          auth: {
+            getState: vi.fn().mockResolvedValue({ isAuthenticated: false, user: null, method: null }),
+          },
+          repos: {
+            getAll: vi.fn().mockResolvedValue({
+              repos: [{ id: 'pi-dash', name: 'pi-dash', owner: 'test', localPath: '/test' }],
+              activeRepo: { id: 'pi-dash', name: 'pi-dash', owner: 'test', localPath: '/test' },
+            }),
+          },
+          data: {
+            fetchIssues: vi.fn().mockResolvedValue([]),
+            fetchPRs: vi.fn().mockResolvedValue([]),
+            fetchBranches: vi.fn().mockResolvedValue(['main']),
+          },
+        },
+        worktree: {
+          list: vi.fn().mockResolvedValue([]),
+        },
+      },
+      writable: true,
+    });
+
+    // Mock window.innerWidth = 600
+    Object.defineProperty(window, 'innerWidth', { value: 600, writable: true });
+    window.dispatchEvent(new Event('resize'));
+
+    render(
+      <SessionProvider>
+        <SessionRegistrar>
+          <GitHubProvider>
+            <BottomBar />
+          </GitHubProvider>
+        </SessionRegistrar>
+      </SessionProvider>
+    );
+
+    // Both repo name and branch should be hidden at width < 700
+    expect(screen.queryByText('pi-dash')).not.toBeInTheDocument();
+    expect(screen.queryByText('main')).not.toBeInTheDocument();
   });
 });

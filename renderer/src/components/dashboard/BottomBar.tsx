@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Timer, Zap, Bell, Settings, ChevronDown, GitBranch, AlertTriangle, X } from 'lucide-react';
 import { useSessionContext } from '@/context/SessionContext';
 import { useGitHub } from '@/context/GitHubContext';
@@ -35,6 +35,16 @@ function formatCount(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return n.toString();
 }
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return width;
+}
+
 
 type BottomBarProps = {
   rateLimitAlert?: { provider: string; percentUsed: number; resetsIn: number };
@@ -93,11 +103,15 @@ function AlertContent({ alert, onDismiss }: { alert: BottomBarAlert; onDismiss: 
   }
 }
 
+
 export function BottomBar({ rateLimitAlert, agentError, githubAuthExpired, planProgress }: BottomBarProps = {}) {
   const { mode, setMode } = useDashboardMode('auto');
   const { getActiveSessions, sessions } = useSessionContext();
   const { activeRepo, branches } = useGitHub();
   const { alert, dismiss } = useBottomBarAlerts({ rateLimit: rateLimitAlert, agentError, githubAuthExpired, planProgress });
+  const windowWidth = useWindowWidth();
+  const showRepo = windowWidth >= 800;
+  const showBranchLabel = windowWidth >= 700;
   
   const activeSessions = getActiveSessions();
   const hasAgents = activeSessions.length > 0;
@@ -155,20 +169,28 @@ export function BottomBar({ rateLimitAlert, agentError, githubAuthExpired, planP
             </button>
             {activeRepo && (
               <>
-                <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>·</span>
-                <button
-                  className="flex items-center gap-1 px-1 rounded transition-colors"
-                  style={{ fontSize: '13px' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--card) 50%, transparent)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <GitBranch size={14} style={{ color: 'var(--text-secondary)' }} />
-                  <span style={{ color: 'var(--text-secondary)' }}>{branches[0] || 'main'}</span>
-                </button>
-                <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>·</span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
-                  {activeRepo.name}
-                </span>
+                {showBranchLabel && (
+                  <>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>·</span>
+                    <button
+                      className="flex items-center gap-1 px-1 rounded transition-colors"
+                      style={{ fontSize: '13px' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--card) 50%, transparent)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <GitBranch size={14} style={{ color: 'var(--text-secondary)' }} />
+                      <span style={{ color: 'var(--text-secondary)' }}>{branches[0] || 'main'}</span>
+                    </button>
+                  </>
+                )}
+                {showRepo && (
+                  <>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>·</span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+                      {activeRepo.name}
+                    </span>
+                  </>
+                )}
               </>
             )}
           </>
