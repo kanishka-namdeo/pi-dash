@@ -30,6 +30,7 @@ describe('agent-store', () => {
         name: 'Test Agent',
         icon: 'generic',
         path: '/test/path',
+        cwd: '/test/cwd',
         source: 'manual' as const,
       },
     ];

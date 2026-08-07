@@ -1,7 +1,6 @@
 import { ipcMain } from 'electron';
 import { scanSystem, validateAgent, identifyAgent } from './agent-scanner';
 import { loadAgents, saveAgents, completeOnboarding } from './agent-store';
-import { spawn } from 'child_process';
 import type { AgentConfig } from '../shared/types';
 
 export function registerIpcHandlers(): void {
@@ -35,21 +34,6 @@ export function registerIpcHandlers(): void {
     return store.onboardingCompleted;
   });
 
-  ipcMain.handle('launch-agent', async (_event, id: string) => {
-    const store = await loadAgents();
-    const agent = store.agents.find(a => a.id === id);
-    if (!agent) {
-      throw new Error(`Agent ${id} not found`);
-    }
-
-    const child = spawn(agent.path, [], {
-      detached: true,
-      stdio: 'ignore',
-    });
-
-    child.unref();
-    return { pid: child.pid };
-  });
   ipcMain.handle('dialog:openDirectory', async (_event) => {
     const { dialog } = await import('electron');
     const result = await dialog.showOpenDialog({
@@ -58,4 +42,8 @@ export function registerIpcHandlers(): void {
     if (result.canceled) return null;
     return result.filePaths[0];
   });
+  ipcMain.handle('get-cwd', () => {
+    return process.cwd();
+  });
 }
+

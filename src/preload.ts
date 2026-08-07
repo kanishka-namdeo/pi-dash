@@ -15,7 +15,7 @@ export type SessionAPI = {
 contextBridge.exposeInMainWorld('api', {
   platform: process.platform,
   versions: process.versions,
-  cwd: process.cwd(),
+  cwd: () => ipcRenderer.invoke('get-cwd'),
   
   // Agent management
   scanAgents: () => ipcRenderer.invoke('scan-agents'),
@@ -25,7 +25,6 @@ contextBridge.exposeInMainWorld('api', {
   saveAgents: (agents: AgentConfig[]) => ipcRenderer.invoke('save-agents', agents),
   completeOnboarding: () => ipcRenderer.invoke('complete-onboarding'),
   getOnboardingStatus: () => ipcRenderer.invoke('get-onboarding-status'),
-  launchAgent: (id: string) => ipcRenderer.invoke('launch-agent', id),
 
   // Session management
   session: {
