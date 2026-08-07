@@ -139,4 +139,11 @@ contextBridge.exposeInMainWorld('api', {
     export: () => ipcRenderer.invoke('settings:export'),
     import: (data: unknown) => ipcRenderer.invoke('settings:import', data),
   },
+
+  // Keyboard shortcuts
+  onShortcut: (callback: (action: string) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, action: string) => callback(action);
+    ipcRenderer.on('shortcut', handler);
+    return () => ipcRenderer.removeListener('shortcut', handler);
+  },
 });

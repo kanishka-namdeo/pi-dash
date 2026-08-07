@@ -125,6 +125,19 @@ export function Dashboard() {
     pipActions.addOverlay(agentId);
   };
 
+  // Ctrl+L shortcut: launch first available agent
+  useEffect(() => {
+    const unsub = window.api.onShortcut?.((action: string) => {
+      if (action === 'launchAgent') {
+        const firstAvailable = availableAgents.find(a => !runningSessions.some(s => s.agentId === a.id));
+        if (firstAvailable) {
+          handleLaunch(firstAvailable.id);
+        }
+      }
+    });
+    return unsub;
+  }, [availableAgents, runningSessions, handleLaunch]);
+
   const handleReconnect = () => {
     if (disconnectedAgent) {
       handleLaunch(disconnectedAgent);

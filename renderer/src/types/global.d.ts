@@ -99,6 +99,7 @@ declare global {
         export: () => Promise<SettingsSchema>;
         import: (data: SettingsSchema) => Promise<{ success: true }>;
       };
+      onShortcut: (callback: (action: string) => void) => () => void;
     };
   }
 }
