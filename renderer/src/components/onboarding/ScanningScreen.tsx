@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import type { ScreenName, AgentConfig, ScanResult } from '../../types';
 import { PiLogo } from '../ui/PiLogo';
+import { Spinner } from '../ui/Spinner';
 
 interface ScanningScreenProps {
   onNavigate: (screen: ScreenName) => void;
@@ -10,7 +11,6 @@ interface ScanningScreenProps {
 export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
   const [status, setStatus] = useState<'scanning' | 'complete' | 'error'>('scanning');
   const [result, setResult] = useState<ScanResult | null>(null);
-  const [error, setError] = useState<string>('');
   const navigateCalledRef = useRef(false);
   const onNavigateRef = useRef(onNavigate);
   const setAgentsRef = useRef(setAgents);
@@ -26,39 +26,39 @@ export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
 
     const scan = async () => {
       try {
-        const timeoutPromise = new Promise<ScanResult>((resolve, reject) => {
-          const timer = setTimeout(() => reject(new Error('scan-timeout')), timeoutMs);
-          controller.signal.addEventListener('abort', () => {
-            clearTimeout(timer);
-            resolve(undefined as never);
-          });
+        const { promise: timeoutPromise, resolve: resolveTimeout, reject: rejectTimeout } =
+          Promise.withResolvers<ScanResult>();
+        const timer = setTimeout(() => rejectTimeout(new Error('scan-timeout')), timeoutMs);
+        controller.signal.addEventListener('abort', () => {
+          clearTimeout(timer);
+          resolveTimeout(undefined as never);
         });
 
-        const result = await Promise.race<ScanResult>([
+        const scanResult = await Promise.race<ScanResult>([
           window.api.scanAgents(),
           timeoutPromise,
         ]);
 
         if (controller.signal.aborted) return;
 
-        setResult(result);
-        setAgentsRef.current(result.agents);
+        setResult(scanResult);
+        setAgentsRef.current(scanResult.agents);
         setStatus('complete');
 
         // Auto-navigate after 1.5s
         setTimeout(() => {
           if (!navigateCalledRef.current) {
             navigateCalledRef.current = true;
-            onNavigateRef.current(result.agents.length > 0 ? 'results' : 'no-agents');
+            onNavigateRef.current(scanResult.agents.length > 0 ? 'results' : 'no-agents');
           }
         }, 1500);
       } catch (err: unknown) {
         if (controller.signal.aborted) return;
-        const message = err instanceof Error && err.message === 'scan-timeout'
-          ? 'Scan timed out after 15 seconds'
-          : 'Scan failed';
-        setError(message);
-        setStatus('error');
+        // Navigate to scan-error screen instead of showing inline error
+        if (!navigateCalledRef.current) {
+          navigateCalledRef.current = true;
+          onNavigateRef.current('scan-error');
+        }
       }
     };
 
@@ -69,37 +69,6 @@ export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
     };
   }, []);
 
-  if (status === 'error') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="flex justify-center">
-            <PiLogo size={60} />
-          </div>
-          <h2 className="text-2xl font-bold text-white">Scan Failed</h2>
-          <p className="text-slate-400">{error}</p>
-          <p className="text-sm text-slate-500">
-            Don't worry — you can still add agents manually.
-          </p>
-          <button
-            onClick={() => onNavigate('manual-add')}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-            aria-label="Add agents manually"
-          >
-            Add Agents Manually
-          </button>
-          <button
-            onClick={() => onNavigate('no-agents')}
-            className="w-full bg-transparent hover:bg-slate-800 text-slate-400 hover:text-slate-300 font-medium py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-900"
-            aria-label="Skip to dashboard without agents"
-          >
-            Skip for Now
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       <div className="max-w-md w-full text-center space-y-6">
@@ -109,16 +78,16 @@ export function ScanningScreen({ onNavigate, setAgents }: ScanningScreenProps) {
 
         {status === 'scanning' ? (
           <>
-            {/* Spinner */}
-            <div className="flex justify-center" role="status" aria-label="Scanning for agents">
-              <div className="relative h-16 w-16">
-                <div className="absolute inset-0 rounded-full border-4 border-slate-700" />
-                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-500 animate-spin" />
-              </div>
+            {/* Spinner component */}
+            <div className="flex justify-center">
+              <Spinner size={64} />
             </div>
             <h2 className="text-2xl font-bold text-white">Scanning for agents</h2>
             <p className="text-slate-400">
               Looking for installed AI coding assistants...
+            </p>
+            <p className="text-xs text-slate-500">
+              We only detect locally installed agents — nothing leaves your device.
             </p>
           </>
         ) : (
