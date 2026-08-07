@@ -5,11 +5,22 @@ import { useAgents } from '@/hooks/useAgents';
 import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
+import type { PlanStep } from '@/types/dashboard';
+import type { ViewMode } from '@/types/pip';
 import { TopBar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
 import { PlanPanel } from './PlanPanel';
 import { ActivityFeed } from './ActivityFeed';
 import { MetricsFooter } from './MetricsFooter';
+
+// Mock plan data
+const mockSteps: PlanStep[] = [
+  { id: '1', number: 1, name: 'Scaffold project structure', agentId: 'omp', status: 'done', duration: '2m 14s' },
+  { id: '2', number: 2, name: 'Implement authentication', agentId: 'claude-code', status: 'done', duration: '5m 32s' },
+  { id: '3', number: 3, name: 'Build API endpoints', agentId: 'omp', status: 'active', duration: '3m 45s' },
+  { id: '4', number: 4, name: 'Write unit tests', agentId: 'codex', status: 'pending', duration: '' },
+  { id: '5', number: 5, name: 'Deploy to staging', agentId: 'aider', status: 'pending', duration: '' },
+];
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -18,23 +29,23 @@ export function Dashboard() {
   const { events, isPaused, pause, resume, clear } = useRealActivityFeed();
   const { mode, setMode } = useDashboardMode();
   const { state: pipState, actions: pipActions } = usePiPContext();
-  const [activeTab, setActiveTab] = useState<'fleet' | 'plan' | 'activity'>('plan');
+  const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [elapsed, setElapsed] = useState(0);
 
   const runningSessions = ctx.getActiveSessions();
 
   // Compute elapsed from earliest active session
   useEffect(() => {
-    const active = ctx.getActiveSessions();
-    if (active.length === 0) {
+    if (runningSessions.length === 0) {
       setElapsed(0);
       return;
     }
-    const earliest = Math.min(...active.map(s => s.createdAt));
-    const update = () => setElapsed(Math.floor((Date.now() - earliest) / 1000));
-    update();
-    const interval = window.setInterval(update, 1000);
-    return () => window.clearInterval(interval);
+
+    const earliest = Math.min(...runningSessions.map((s) => s.createdAt));
+    const tick = () => setElapsed(Math.floor((Date.now() - earliest) / 1000));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, [ctx.sessions]);
 
   const handlePause = () => {
@@ -66,73 +77,35 @@ export function Dashboard() {
     0,
   );
 
+  // Compute progress from mock steps
+  const doneSteps = mockSteps.filter((s) => s.status === 'done').length;
+  const progress = Math.round((doneSteps / mockSteps.length) * 100);
+
   return (
-    <div className="h-screen flex flex-col bg-[#0a0a0a]">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       <TopBar
         mode={mode}
-        viewMode={pipState.viewMode}
+        viewMode={viewMode}
         isFeedPaused={isPaused}
-        hasMainAgent={pipState.mainAgentId !== null}
+        hasMainAgent={runningSessions.length > 0}
         onModeChange={setMode}
-        onSetViewMode={pipActions.setViewMode}
+        onSetViewMode={setViewMode}
         onToggleFeedPause={handlePause}
         onClearFeed={clear}
       />
 
-      {/* Mobile tab bar */}
-      <div className="flex md:hidden border-b border-[#2a2a2a] bg-[#0a0a0a]">
-        <button
-          onClick={() => setActiveTab('fleet')}
-          className={`flex-1 px-4 py-2 text-sm ${
-            activeTab === 'fleet'
-              ? 'text-[#e5e5e5] border-b-2 border-blue-500'
-              : 'text-[#737373]'
-          }`}
-        >
-          Fleet
-        </button>
-        <button
-          onClick={() => setActiveTab('plan')}
-          className={`flex-1 px-4 py-2 text-sm ${
-            activeTab === 'plan'
-              ? 'text-[#e5e5e5] border-b-2 border-blue-500'
-              : 'text-[#737373]'
-          }`}
-        >
-          Plan
-        </button>
-        <button
-          onClick={() => setActiveTab('activity')}
-          className={`flex-1 px-4 py-2 text-sm ${
-            activeTab === 'activity'
-              ? 'text-[#e5e5e5] border-b-2 border-blue-500'
-              : 'text-[#737373]'
-          }`}
-        >
-          Activity
-        </button>
-      </div>
+      <div className="flex-1 flex overflow-hidden">
+        <FleetPanel
+          runningSessions={runningSessions}
+          availableAgents={availableAgents}
+          onFocus={handleAgentClick}
+          onLaunch={handleLaunch}
+          onOpenAsOverlay={handleOpenAsOverlay}
+        />
 
-      <div className="flex flex-1 overflow-hidden">
-        <div className={`${activeTab === 'fleet' ? 'block' : 'hidden'} md:block w-full md:w-80 border-r border-[#2a2a2a]`}>
-          <FleetPanel
-            runningSessions={runningSessions}
-            availableAgents={availableAgents}
-            onFocus={handleAgentClick}
-            onLaunch={handleLaunch}
-            onOpenAsOverlay={handleOpenAsOverlay}
-          />
-        </div>
+        <PlanPanel steps={mockSteps} progress={progress} />
 
-        {/* Plan Panel */}
-        <div className={`${activeTab === 'plan' ? 'block' : 'hidden'} md:block flex-1`}>
-          <PlanPanel steps={[]} progress={0} />
-        </div>
-
-        {/* Activity Feed */}
-        <div className={`${activeTab === 'activity' ? 'block' : 'hidden'} md:block w-full md:w-96 border-l border-[#2a2a2a]`}>
-          <ActivityFeed events={events} isPaused={isPaused} />
-        </div>
+        <ActivityFeed events={events} isPaused={isPaused} />
       </div>
 
       <MetricsFooter
