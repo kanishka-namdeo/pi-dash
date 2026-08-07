@@ -62,23 +62,62 @@ contextBridge.exposeInMainWorld('api', {
 
   // GitHub integration
   github: {
-    // Auth
+    // New nested API (Tasks 6-7 channels)
+    auth: {
+      getState: () => ipcRenderer.invoke('github:auth:getState'),
+      startOAuth: () => ipcRenderer.invoke('github:auth:oauth'),
+      loginWithPAT: (token: string) => ipcRenderer.invoke('github:auth:pat', token),
+      logout: () => ipcRenderer.invoke('github:auth:logout'),
+    },
+    repos: {
+      getAll: () => ipcRenderer.invoke('github:repos:getAll'),
+      add: (owner: string, name: string, localPath: string) =>
+        ipcRenderer.invoke('github:repos:add', owner, name, localPath),
+      remove: (id: number) => ipcRenderer.invoke('github:repos:remove', id),
+      setActive: (id: number | null) => ipcRenderer.invoke('github:repos:setActive', id),
+    },
+    data: {
+      fetchIssues: (owner: string, repo: string) =>
+        ipcRenderer.invoke('github:data:issues', owner, repo),
+      fetchPRs: (owner: string, repo: string) =>
+        ipcRenderer.invoke('github:data:prs', owner, repo),
+      fetchBranches: (owner: string, repo: string) =>
+        ipcRenderer.invoke('github:data:branches', owner, repo),
+    },
+    issues: {
+      create: (owner: string, repo: string, title: string, body: string, labels?: string[], assignees?: string[]) =>
+        ipcRenderer.invoke('github:issues:create', owner, repo, title, body, labels, assignees),
+      comment: (owner: string, repo: string, issueNumber: number, body: string) =>
+        ipcRenderer.invoke('github:issues:comment', owner, repo, issueNumber, body),
+    },
+    prs: {
+      create: (owner: string, repo: string, title: string, body: string, head: string, base: string) =>
+        ipcRenderer.invoke('github:prs:create', owner, repo, title, body, head, base),
+      review: (owner: string, repo: string, prNumber: number, event: string, body: string) =>
+        ipcRenderer.invoke('github:prs:review', owner, repo, prNumber, event, body),
+    },
+    // Legacy flat methods (backward compatibility)
     authGetUser: () => ipcRenderer.invoke('github:auth:getUser'),
     authOAuth: () => ipcRenderer.invoke('github:auth:oauth'),
     authPAT: (token: string) => ipcRenderer.invoke('github:auth:pat', token),
     authLogout: () => ipcRenderer.invoke('github:auth:logout'),
-    // Repos
     repoList: () => ipcRenderer.invoke('github:repo:list'),
     repoAdd: (owner: string, name: string, localPath: string) =>
       ipcRenderer.invoke('github:repo:add', owner, name, localPath),
     repoRemove: (id: number) => ipcRenderer.invoke('github:repo:remove', id),
     repoGetActive: () => ipcRenderer.invoke('github:repo:getActive'),
     repoSetActive: (id: number) => ipcRenderer.invoke('github:repo:setActive', id),
-    // Data
     dataIssues: (owner: string, repo: string) =>
       ipcRenderer.invoke('github:data:issues', owner, repo),
     dataPRs: (owner: string, repo: string) =>
       ipcRenderer.invoke('github:data:prs', owner, repo),
+  },
+
+  // Worktree management
+  worktree: {
+    list: (repoPath: string) => ipcRenderer.invoke('worktree:list', repoPath),
+    create: (repoPath: string, branch: string, baseBranch: string, issueNumber?: number) =>
+      ipcRenderer.invoke('worktree:create', repoPath, branch, baseBranch, issueNumber),
   },
 
   // Agent GitHub integration
@@ -88,7 +127,9 @@ contextBridge.exposeInMainWorld('api', {
     commentIssue: (owner: string, repo: string, issueNumber: number, body: string) =>
       ipcRenderer.invoke('agent-github:commentIssue', owner, repo, issueNumber, body),
     readFeedback: (owner: string, repo: string, prNumber: number) =>
-      ipcRenderer.invoke('agent-github:readFeedback', owner, repo, prNumber)
+      ipcRenderer.invoke('agent-github:readFeedback', owner, repo, prNumber),
+    assign: (worktreeId: string, agentId: string) =>
+      ipcRenderer.invoke('agent-github:assign', worktreeId, agentId),
   },
 
   // Settings
