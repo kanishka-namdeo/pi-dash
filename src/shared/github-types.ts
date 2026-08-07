@@ -46,18 +46,34 @@ export interface GitHubComment {
   author: { login: string; avatarUrl: string };
   body: string;
   createdAt: string;
-  type: 'issue' | 'review';
+  type: 'issue' | 'review' | 'pr';
+  path?: string;
+  line?: number;
 }
 
 export interface GitHubPR {
   number: number;
   title: string;
+  body: string;
   state: 'open' | 'closed' | 'merged';
-  head: { ref: string };
+  head: { ref: string; sha: string };
   base: { ref: string };
-  user: { login: string };
+  user: { login: string; avatarUrl: string };
   createdAt: string;
-  additions?: number;
-  deletions?: number;
-  commits?: number;
+  updatedAt: string;
+  additions: number;
+  deletions: number;
+  commits: number;
+  changedFiles: number;
+  ciStatus: 'passing' | 'failing' | 'pending' | 'none';
+  reviews: GitHubReview[];
+  comments: GitHubComment[];
+}
+
+export interface GitHubReview {
+  id: number;
+  author: { login: string; avatarUrl: string };
+  body: string;
+  state: 'approved' | 'changes_requested' | 'commented' | 'pending';
+  submittedAt: string;
 }
