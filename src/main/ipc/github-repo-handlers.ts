@@ -23,4 +23,10 @@ export function registerGitHubRepoHandlers() {
     repoService.setActiveRepo(id);
     return { success: true };
   });
+
+  ipcMain.handle('github:repos:getAll', async () => {
+    const repos = repoService.listRepos();
+    const activeRepo = repoService.getActiveRepo();
+    return { repos, activeRepo };
+  });
 }

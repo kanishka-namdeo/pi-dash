@@ -162,6 +162,17 @@ export class AuthService {
   getUser(): GitHubUser | null {
     return store.get('github.user');
   }
+
+  getAuthState(): { isAuthenticated: boolean; user: GitHubUser | null; method: 'oauth' | 'pat' | null } {
+    const user = this.getUser();
+    const token = this.getToken();
+    const method = store.get('github.authMethod') as 'oauth' | 'pat' | null;
+    return {
+      isAuthenticated: !!(user && token),
+      user,
+      method
+    };
+  }
 }
 
 export const authService = new AuthService(githubService);

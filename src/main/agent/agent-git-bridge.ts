@@ -58,6 +58,11 @@ export class AgentGitBridge {
       body: c.body || ''
     }));
   }
+
+  async assignAgentToWorktree(worktreeId: string, agentId: string): Promise<{ success: boolean }> {
+    // ponytail: stub implementation - full agent assignment logic deferred
+    return { success: true };
+  }
 }
 
 export const agentGitBridge = new AgentGitBridge(githubService, worktreeService);

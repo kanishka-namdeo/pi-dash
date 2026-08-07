@@ -76,6 +76,23 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
     }
   }, [activeRepo?.id]);
 
+  // Polling state management
+  useEffect(() => {
+    if (!isAuthenticated || !activeRepo) {
+      setPolling(prev => ({ ...prev, isPolling: false }));
+      return;
+    }
+
+    setPolling(prev => ({ ...prev, isPolling: true, lastSync: Date.now() }));
+
+    const interval = setInterval(async () => {
+      await refresh();
+      setPolling(prev => ({ ...prev, lastSync: Date.now() }));
+    }, polling.interval);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, activeRepo?.id, polling.interval]);
+
   async function loadInitialState() {
     const authState = await window.api.github.auth.getState();
     setIsAuthenticated(authState.isAuthenticated);
@@ -105,7 +122,14 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
     if (method === 'oauth') {
       await window.api.github.auth.startOAuth();
     } else {
-      await window.api.github.auth.loginWithPAT(token!);
+      if (!token || token.trim().length === 0) {
+        throw new Error('PAT token is required');
+      }
+      // Validate token format (GitHub PATs start with ghp_ or github_pat_)
+      if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+        throw new Error('Invalid PAT token format');
+      }
+      await window.api.github.auth.loginWithPAT(token);
     }
     await loadInitialState();
   }

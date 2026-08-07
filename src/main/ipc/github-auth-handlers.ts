@@ -18,4 +18,8 @@ export function registerGitHubAuthHandlers() {
   ipcMain.handle('github:auth:oauth', async () => {
     return await authService.authenticateOAuth();
   });
+
+  ipcMain.handle('github:auth:getState', async () => {
+    return authService.getAuthState();
+  });
 }
