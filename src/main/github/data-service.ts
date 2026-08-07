@@ -78,14 +78,20 @@ export class DataService {
     const prs: GitHubPR[] = data.map(pr => ({
       number: pr.number,
       title: pr.title,
+      body: pr.body || '',
       state: pr.state as 'open' | 'closed' | 'merged',
-      head: { ref: pr.head.ref },
+      head: { ref: pr.head.ref, sha: pr.head.sha },
       base: { ref: pr.base.ref },
-      user: { login: pr.user?.login || '' },
+      user: { login: pr.user?.login || '', avatarUrl: pr.user?.avatar_url || '' },
       createdAt: pr.created_at,
+      updatedAt: pr.updated_at,
       additions: (pr as any).additions || 0,
       deletions: (pr as any).deletions || 0,
-      commits: (pr as any).commits || 0
+      commits: (pr as any).commits || 0,
+      changedFiles: (pr as any).changed_files || 0,
+      ciStatus: 'none' as const,
+      reviews: [],
+      comments: []
     }));
 
     this.cache.set(cacheKey, prs);

@@ -18,14 +18,17 @@ interface MockIssueData {
 interface MockPRData {
   number: number;
   title: string;
+  body?: string;
   state: string;
-  head: { ref: string };
+  head: { ref: string; sha: string };
   base: { ref: string };
-  user: { login: string } | null;
+  user: { login: string; avatar_url: string } | null;
   created_at: string;
+  updated_at: string;
   additions: number;
   deletions: number;
   commits: number;
+  changed_files: number;
 }
 
 interface MockBranchData {
@@ -150,14 +153,17 @@ describe('DataService', () => {
         {
           number: 10,
           title: 'Add feature',
+          body: 'PR body',
           state: 'open',
-          head: { ref: 'feature-branch' },
+          head: { ref: 'feature-branch', sha: 'abc123' },
           base: { ref: 'main' },
-          user: { login: 'dev2' },
+          user: { login: 'dev2', avatar_url: 'https://example.com/dev2.png' },
           created_at: '2026-01-01T00:00:00Z',
+          updated_at: '2026-01-01T00:00:00Z',
           additions: 50,
           deletions: 10,
-          commits: 3
+          commits: 3,
+          changed_files: 5
         }
       ];
       vi.spyOn(mockGitHubService, 'getOctokit').mockReturnValue(createMockOctokit({ pulls: mockPRs }));
@@ -168,14 +174,20 @@ describe('DataService', () => {
       expect(prs[0]).toEqual({
         number: 10,
         title: 'Add feature',
+        body: 'PR body',
         state: 'open',
-        head: { ref: 'feature-branch' },
+        head: { ref: 'feature-branch', sha: 'abc123' },
         base: { ref: 'main' },
-        user: { login: 'dev2' },
+        user: { login: 'dev2', avatarUrl: 'https://example.com/dev2.png' },
         createdAt: '2026-01-01T00:00:00Z',
+        updatedAt: '2026-01-01T00:00:00Z',
         additions: 50,
         deletions: 10,
-        commits: 3
+        commits: 3,
+        changedFiles: 5,
+        ciStatus: 'none',
+        reviews: [],
+        comments: []
       });
     });
 
@@ -184,14 +196,17 @@ describe('DataService', () => {
         {
           number: 11,
           title: 'No user PR',
+          body: '',
           state: 'open',
-          head: { ref: 'fix' },
+          head: { ref: 'fix', sha: 'def456' },
           base: { ref: 'main' },
           user: null,
           created_at: '2026-01-01T00:00:00Z',
+          updated_at: '2026-01-01T00:00:00Z',
           additions: 0,
           deletions: 0,
-          commits: 1
+          commits: 1,
+          changed_files: 1
         }
       ];
       vi.spyOn(mockGitHubService, 'getOctokit').mockReturnValue(createMockOctokit({ pulls: mockPRs }));
@@ -201,7 +216,7 @@ describe('DataService', () => {
     });
 
     it('returns cached PRs within TTL', async () => {
-      const mockPRs: MockPRData[] = [{ number: 10, title: 'PR', state: 'open', head: { ref: 'a' }, base: { ref: 'b' }, user: { login: 'u' }, created_at: '2026-01-01T00:00:00Z', additions: 0, deletions: 0, commits: 1 }];
+      const mockPRs: MockPRData[] = [{ number: 10, title: 'PR', body: '', state: 'open', head: { ref: 'a', sha: 'sha1' }, base: { ref: 'b' }, user: { login: 'u', avatar_url: '' }, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z', additions: 0, deletions: 0, commits: 1, changed_files: 1 }];
       const octokit = createMockOctokit({ pulls: mockPRs });
       vi.spyOn(mockGitHubService, 'getOctokit').mockReturnValue(octokit);
 

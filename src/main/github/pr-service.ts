@@ -27,22 +27,26 @@ export class PRService {
 
     // Add reviewers if provided
     if (reviewers && reviewers.length > 0) {
-      await this.githubService.getOctokit().rest.pulls.requestReviewers({
-        owner,
-        repo,
-        pull_number: data.number,
-        reviewers
-      });
+      await this.githubService.makeRequest(() =>
+        this.githubService.getOctokit().rest.pulls.requestReviewers({
+          owner,
+          repo,
+          pull_number: data.number,
+          reviewers
+        })
+      );
     }
 
     // Add labels if provided
     if (labels && labels.length > 0) {
-      await this.githubService.getOctokit().rest.issues.addLabels({
-        owner,
-        repo,
-        issue_number: data.number,
-        labels
-      });
+      await this.githubService.makeRequest(() =>
+        this.githubService.getOctokit().rest.issues.addLabels({
+          owner,
+          repo,
+          issue_number: data.number,
+          labels
+        })
+      );
     }
 
     return this.mapPR(data);
@@ -70,7 +74,7 @@ export class PRService {
       author: { login: data.user?.login ?? '', avatarUrl: data.user?.avatar_url ?? '' },
       body: data.body || '',
       state: data.state.toLowerCase().replace(' ', '_') as GitHubReview['state'],
-      submittedAt: data.submitted_at
+      submittedAt: data.submitted_at ?? ''
     };
   }
 
@@ -87,8 +91,8 @@ export class PRService {
     return {
       id: data.id,
       author: { login: data.user?.login ?? '', avatarUrl: data.user?.avatar_url ?? '' },
-      body: data.body,
-      createdAt: data.created_at,
+      body: data.body ?? '',
+      createdAt: data.created_at ?? new Date().toISOString(),
       type: 'pr'
     };
   }
