@@ -57,6 +57,7 @@ app.whenReady().then(() => {
   registerGitHubAuthHandlers()
   registerGitHubRepoHandlers()
   registerGitHubDataHandlers()
+  registerAgentGitHubHandlers()
   registerGitHubIssuesHandlers()
   registerGitHubPRsHandlers()
   settingsService = new SettingsService()
