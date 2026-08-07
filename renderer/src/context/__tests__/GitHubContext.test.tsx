@@ -36,38 +36,63 @@ const mockUser = {
 };
 
 const mockGitHub = {
-  authGetUser: vi.fn<() => Promise<unknown>>(),
-  authOAuth: vi.fn<() => Promise<{ success: boolean }>>(),
-  authPAT: vi.fn<(token: string) => Promise<{ success: boolean }>>(),
-  authLogout: vi.fn<() => Promise<{ success: true }>>(),
-  repoList: vi.fn<() => Promise<Repo[]>>(),
-  repoAdd: vi.fn<(owner: string, name: string, localPath: string) => Promise<Repo>>(),
-  repoRemove: vi.fn<(id: number) => Promise<{ success: true }>>(),
-  repoGetActive: vi.fn<() => Promise<Repo | null>>(),
-  repoSetActive: vi.fn<(id: number) => Promise<{ success: true }>>(),
-  dataIssues: vi.fn<(owner: string, repo: string) => Promise<GitHubIssue[]>>(),
-  dataPRs: vi.fn<(owner: string, repo: string) => Promise<GitHubPR[]>>(),
+  auth: {
+    getState: vi.fn<() => Promise<{ isAuthenticated: boolean; user: typeof mockUser | null; method: 'oauth' | 'pat' | null }>>(),
+    startOAuth: vi.fn<() => Promise<{ success: boolean }>>(),
+    loginWithPAT: vi.fn<(token: string) => Promise<{ success: boolean }>>(),
+    logout: vi.fn<() => Promise<{ success: true }>>(),
+  },
+  repos: {
+    getAll: vi.fn<() => Promise<{ repos: Repo[]; activeRepo: Repo | null }>>(),
+    add: vi.fn<(owner: string, name: string, localPath: string) => Promise<Repo>>(),
+    remove: vi.fn<(id: number) => Promise<{ success: true }>>(),
+    setActive: vi.fn<(id: number) => Promise<{ success: true }>>(),
+  },
+  data: {
+    fetchIssues: vi.fn<(owner: string, repo: string) => Promise<GitHubIssue[]>>(),
+    fetchPRs: vi.fn<(owner: string, repo: string) => Promise<GitHubPR[]>>(),
+    fetchBranches: vi.fn<(owner: string, repo: string) => Promise<string[]>>(),
+  },
+  issues: {
+    create: vi.fn(),
+    comment: vi.fn(),
+  },
+  prs: {
+    create: vi.fn(),
+    review: vi.fn(),
+  },
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
   
   // Default mock implementations
-  mockGitHub.authGetUser.mockResolvedValue(null);
-  mockGitHub.authOAuth.mockResolvedValue({ success: true });
-  mockGitHub.authPAT.mockResolvedValue({ success: true });
-  mockGitHub.authLogout.mockResolvedValue({ success: true });
-  mockGitHub.repoList.mockResolvedValue([]);
-  mockGitHub.repoAdd.mockResolvedValue(mockRepo);
-  mockGitHub.repoRemove.mockResolvedValue({ success: true });
-  mockGitHub.repoGetActive.mockResolvedValue(null);
-  mockGitHub.repoSetActive.mockResolvedValue({ success: true });
-  mockGitHub.dataIssues.mockResolvedValue([]);
-  mockGitHub.dataPRs.mockResolvedValue([]);
+  mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: false, user: null, method: null });
+  mockGitHub.auth.startOAuth.mockResolvedValue({ success: true });
+  mockGitHub.auth.loginWithPAT.mockResolvedValue({ success: true });
+  mockGitHub.auth.logout.mockResolvedValue({ success: true });
+  mockGitHub.repos.getAll.mockResolvedValue({ repos: [], activeRepo: null });
+  mockGitHub.repos.add.mockResolvedValue(mockRepo);
+  mockGitHub.repos.remove.mockResolvedValue({ success: true });
+  mockGitHub.repos.setActive.mockResolvedValue({ success: true });
+  mockGitHub.data.fetchIssues.mockResolvedValue([]);
+  mockGitHub.data.fetchPRs.mockResolvedValue([]);
+  mockGitHub.data.fetchBranches.mockResolvedValue([]);
+  mockGitHub.issues.create.mockResolvedValue({});
+  mockGitHub.issues.comment.mockResolvedValue({});
+  mockGitHub.prs.create.mockResolvedValue({});
+  mockGitHub.prs.review.mockResolvedValue({});
   
   Object.defineProperty(window, 'api', {
     value: {
       github: mockGitHub,
+      worktree: {
+        list: vi.fn().mockResolvedValue([]),
+        create: vi.fn().mockResolvedValue({}),
+      },
+      agentGitHub: {
+        assign: vi.fn().mockResolvedValue({ success: true }),
+      },
     },
     writable: true,
     configurable: true,
@@ -91,9 +116,8 @@ describe('GitHubContext', () => {
   });
 
   it('loads initial state on mount', async () => {
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
-    mockGitHub.repoGetActive.mockResolvedValue(mockRepo);
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: mockRepo });
 
     render(
       <GitHubProvider>
@@ -117,8 +141,8 @@ describe('GitHubContext', () => {
       return <div data-testid="auth">{isAuthenticated ? 'Authenticated' : 'Not authenticated'}</div>;
     }
 
-    mockGitHub.authOAuth.mockResolvedValue({ success: true });
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
+    mockGitHub.auth.startOAuth.mockResolvedValue({ success: true });
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'oauth' });
 
     render(
       <GitHubProvider>
@@ -134,8 +158,8 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('auth')).toHaveTextContent('Authenticated');
     });
 
-    expect(mockGitHub.authOAuth).toHaveBeenCalled();
-    expect(mockGitHub.authGetUser).toHaveBeenCalled();
+    expect(mockGitHub.auth.startOAuth).toHaveBeenCalled();
+    expect(mockGitHub.auth.getState).toHaveBeenCalled();
   });
 
   it('handles login with PAT', async () => {
@@ -146,8 +170,8 @@ describe('GitHubContext', () => {
       return <div data-testid="auth">{isAuthenticated ? 'Authenticated' : 'Not authenticated'}</div>;
     }
 
-    mockGitHub.authPAT.mockResolvedValue({ success: true });
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
+    mockGitHub.auth.loginWithPAT.mockResolvedValue({ success: true });
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
 
     render(
       <GitHubProvider>
@@ -156,14 +180,14 @@ describe('GitHubContext', () => {
     );
 
     await act(async () => {
-      await loginFn!('pat', 'test-token');
+      await loginFn!('pat', 'ghp_testtoken123');
     });
 
     await waitFor(() => {
       expect(screen.getByTestId('auth')).toHaveTextContent('Authenticated');
     });
 
-    expect(mockGitHub.authPAT).toHaveBeenCalledWith('test-token');
+    expect(mockGitHub.auth.loginWithPAT).toHaveBeenCalledWith('ghp_testtoken123');
   });
 
   it('handles logout', async () => {
@@ -174,8 +198,8 @@ describe('GitHubContext', () => {
       return <div data-testid="auth">{isAuthenticated ? 'Authenticated' : 'Not authenticated'}</div>;
     }
 
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
-    mockGitHub.authLogout.mockResolvedValue({ success: true });
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
+    mockGitHub.auth.logout.mockResolvedValue({ success: true });
 
     render(
       <GitHubProvider>
@@ -195,7 +219,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('auth')).toHaveTextContent('Not authenticated');
     });
 
-    expect(mockGitHub.authLogout).toHaveBeenCalled();
+    expect(mockGitHub.auth.logout).toHaveBeenCalled();
   });
 
   it('handles adding a repo', async () => {
@@ -205,6 +229,9 @@ describe('GitHubContext', () => {
       addRepoFn = addRepo;
       return <div data-testid="repos">{repos.length}</div>;
     }
+
+    mockGitHub.repos.getAll.mockResolvedValueOnce({ repos: [], activeRepo: null });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: null });
 
     render(
       <GitHubProvider>
@@ -224,7 +251,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('repos')).toHaveTextContent('1');
     });
 
-    expect(mockGitHub.repoAdd).toHaveBeenCalledWith('testowner', 'testrepo', '/path/to/repo');
+    expect(mockGitHub.repos.add).toHaveBeenCalledWith('testowner', 'testrepo', '/path/to/repo');
   });
 
   it('handles removing a repo', async () => {
@@ -235,8 +262,9 @@ describe('GitHubContext', () => {
       return <div data-testid="repos">{repos.length}</div>;
     }
 
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
-    mockGitHub.repoRemove.mockResolvedValue({ success: true });
+    mockGitHub.repos.getAll.mockResolvedValueOnce({ repos: [mockRepo], activeRepo: null });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [], activeRepo: null });
+    mockGitHub.repos.remove.mockResolvedValue({ success: true });
 
     render(
       <GitHubProvider>
@@ -247,7 +275,7 @@ describe('GitHubContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('repos')).toHaveTextContent('1');
     });
-
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [], activeRepo: null });
     await act(async () => {
       await removeRepoFn!(1);
     });
@@ -256,7 +284,7 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('repos')).toHaveTextContent('0');
     });
 
-    expect(mockGitHub.repoRemove).toHaveBeenCalledWith(1);
+    expect(mockGitHub.repos.remove).toHaveBeenCalledWith(1);
   });
 
   it('handles setting active repo', async () => {
@@ -270,9 +298,9 @@ describe('GitHubContext', () => {
       </div>;
     }
 
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
-    mockGitHub.repoGetActive.mockResolvedValue(null);
-    mockGitHub.repoSetActive.mockResolvedValue({ success: true });
+    mockGitHub.repos.getAll.mockResolvedValueOnce({ repos: [mockRepo], activeRepo: null });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: mockRepo });
+    mockGitHub.repos.setActive.mockResolvedValue({ success: true });
 
     render(
       <GitHubProvider>
@@ -292,17 +320,16 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('active-repo')).toHaveTextContent('testrepo');
     });
 
-    expect(mockGitHub.repoSetActive).toHaveBeenCalledWith(1);
+    expect(mockGitHub.repos.setActive).toHaveBeenCalledWith(1);
   });
 
   it('loads issues and PRs when active repo changes', async () => {
     const mockIssues: GitHubIssue[] = [{ number: 1, title: 'Issue 1', state: 'open', labels: [], createdAt: '', updatedAt: '' }];
     const mockPRs: GitHubPR[] = [{ number: 2, title: 'PR 1', state: 'open', head: { ref: 'feature' }, base: { ref: 'main' }, user: { login: 'testuser' }, createdAt: '', additions: 10, deletions: 5, commits: 1 }];
 
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
-    mockGitHub.repoGetActive.mockResolvedValue(mockRepo);
-    mockGitHub.dataIssues.mockResolvedValue(mockIssues);
-    mockGitHub.dataPRs.mockResolvedValue(mockPRs);
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: mockRepo });
+    mockGitHub.data.fetchIssues.mockResolvedValue(mockIssues);
+    mockGitHub.data.fetchPRs.mockResolvedValue(mockPRs);
 
     render(
       <GitHubProvider>
@@ -315,8 +342,8 @@ describe('GitHubContext', () => {
       expect(screen.getByTestId('prs')).toHaveTextContent('1');
     });
 
-    expect(mockGitHub.dataIssues).toHaveBeenCalledWith('testowner', 'testrepo');
-    expect(mockGitHub.dataPRs).toHaveBeenCalledWith('testowner', 'testrepo');
+    expect(mockGitHub.data.fetchIssues).toHaveBeenCalledWith('testowner', 'testrepo');
+    expect(mockGitHub.data.fetchPRs).toHaveBeenCalledWith('testowner', 'testrepo');
   });
 
   it('handles refresh', async () => {
@@ -329,10 +356,9 @@ describe('GitHubContext', () => {
 
     const mockIssues: GitHubIssue[] = [{ number: 1, title: 'Issue 1', state: 'open', labels: [], createdAt: '', updatedAt: '' }];
     
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
-    mockGitHub.repoGetActive.mockResolvedValue(mockRepo);
-    mockGitHub.dataIssues.mockResolvedValue(mockIssues);
-    mockGitHub.dataPRs.mockResolvedValue([]);
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: mockRepo });
+    mockGitHub.data.fetchIssues.mockResolvedValue(mockIssues);
+    mockGitHub.data.fetchPRs.mockResolvedValue([]);
 
     render(
       <GitHubProvider>
@@ -345,7 +371,7 @@ describe('GitHubContext', () => {
     });
 
     const newIssues: GitHubIssue[] = [{ number: 1, title: 'Issue 1', state: 'open', labels: [], createdAt: '', updatedAt: '' }, { number: 2, title: 'Issue 2', state: 'open', labels: [], createdAt: '', updatedAt: '' }];
-    mockGitHub.dataIssues.mockResolvedValue(newIssues);
+    mockGitHub.data.fetchIssues.mockResolvedValue(newIssues);
 
     await act(async () => {
       await refreshFn!();

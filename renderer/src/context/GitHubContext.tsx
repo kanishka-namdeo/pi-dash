@@ -7,6 +7,19 @@ interface GitHubUser {
   avatarUrl: string;
 }
 
+interface CreatePRParams {
+  title: string;
+  body: string;
+  head: string;
+  base: string;
+}
+
+interface CreateWorktreeParams {
+  branch: string;
+  baseBranch: string;
+  issueNumber?: number;
+}
+
 interface GitHubContextType {
   // Auth
   isAuthenticated: boolean;
@@ -39,9 +52,9 @@ interface GitHubContextType {
   refresh: () => Promise<void>;
   createIssue: (title: string, body: string, labels?: string[], assignees?: string[]) => Promise<GitHubIssue>;
   commentOnIssue: (issueNumber: number, body: string) => Promise<void>;
-  createPR: (title: string, body: string, head: string, base: string) => Promise<GitHubPR>;
+  createPR: (params: CreatePRParams) => Promise<GitHubPR>;
   submitReview: (prNumber: number, event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT', body: string) => Promise<void>;
-  createWorktree: (branch: string, baseBranch: string, issueNumber?: number) => Promise<Worktree>;
+  createWorktree: (params: CreateWorktreeParams) => Promise<Worktree>;
   assignAgent: (worktreeId: string, agentId: string) => Promise<void>;
 }
 
@@ -182,9 +195,9 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
     await refresh();
   }
 
-  async function createPR(title: string, body: string, head: string, base: string): Promise<GitHubPR> {
+  async function createPR(params: CreatePRParams): Promise<GitHubPR> {
     if (!activeRepo) throw new Error('No active repo');
-    const pr = await window.api.github.prs.create(activeRepo.owner, activeRepo.name, title, body, head, base);
+    const pr = await window.api.github.prs.create(activeRepo.owner, activeRepo.name, params.title, params.body, params.head, params.base);
     setPrs(prev => [pr, ...prev]);
     return pr;
   }
@@ -195,9 +208,9 @@ export function GitHubProvider({ children }: { children: ReactNode }) {
     await refresh();
   }
 
-  async function createWorktree(branch: string, baseBranch: string, issueNumber?: number): Promise<Worktree> {
+  async function createWorktree(params: CreateWorktreeParams): Promise<Worktree> {
     if (!activeRepo) throw new Error('No active repo');
-    const worktree = await window.api.worktree.create(activeRepo.localPath, branch, baseBranch, issueNumber);
+    const worktree = await window.api.worktree.create(activeRepo.localPath, params.branch, params.baseBranch, params.issueNumber);
     setWorktrees(prev => [worktree, ...prev]);
     return worktree;
   }

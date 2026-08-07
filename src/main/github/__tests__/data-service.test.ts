@@ -43,13 +43,28 @@ function createMockOctokit(overrides: {
   return {
     rest: {
       issues: {
-        listForRepo: vi.fn().mockResolvedValue({ data: overrides.issues || [] })
+        listForRepo: vi.fn(({ headers }: any) => {
+          if (headers?.['If-None-Match']) {
+            return Promise.resolve({ data: [], headers: {}, status: 304 });
+          }
+          return Promise.resolve({ data: overrides.issues || [], headers: { etag: '"issues-etag"' }, status: 200 });
+        })
       },
       pulls: {
-        list: vi.fn().mockResolvedValue({ data: overrides.pulls || [] })
+        list: vi.fn(({ headers }: any) => {
+          if (headers?.['If-None-Match']) {
+            return Promise.resolve({ data: [], headers: {}, status: 304 });
+          }
+          return Promise.resolve({ data: overrides.pulls || [], headers: { etag: '"prs-etag"' }, status: 200 });
+        })
       },
       repos: {
-        listBranches: vi.fn().mockResolvedValue({ data: overrides.branches || [] })
+        listBranches: vi.fn(({ headers }: any) => {
+          if (headers?.['If-None-Match']) {
+            return Promise.resolve({ data: [], headers: {}, status: 304 });
+          }
+          return Promise.resolve({ data: overrides.branches || [], headers: { etag: '"branches-etag"' }, status: 200 });
+        })
       }
     }
   } as unknown as Octokit;

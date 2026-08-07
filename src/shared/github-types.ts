@@ -26,6 +26,9 @@ export interface Worktree {
   createdAt: number;
   lastCommitAt?: number;
   uncommittedChanges: boolean;
+  aheadOfRemote: number;
+  behindRemote: number;
+  linkedPR?: { number: number; state: 'open' | 'closed' | 'merged' };
 }
 
 export interface GitHubIssue {

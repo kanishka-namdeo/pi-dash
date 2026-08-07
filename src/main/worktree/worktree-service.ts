@@ -2,6 +2,7 @@ import simpleGit from 'simple-git';
 import Store from 'electron-store';
 import { Worktree } from '../../shared/github-types';
 import { v4 as uuidv4 } from 'uuid';
+import { githubService } from '../github/github-service';
 
 interface WorktreeStoreSchema {
   worktrees: Worktree[];
@@ -51,7 +52,9 @@ export class WorktreeService {
       issueNumber: params.issueNumber,
       status: 'active',
       createdAt: Date.now(),
-      uncommittedChanges: false
+      uncommittedChanges: false,
+      aheadOfRemote: 0,
+      behindRemote: 0
     };
 
     const worktrees = store.get('worktrees');
@@ -94,6 +97,40 @@ export class WorktreeService {
       behindRemote: status.behind,
       lastCommitHash: log.latest?.hash || ''
     };
+  }
+
+  async getLinkedPR(worktreePath: string): Promise<{ number: number; state: 'open' | 'closed' | 'merged' } | null> {
+    const git = simpleGit(worktreePath);
+    const status = await git.status();
+    const branch = status.current;
+    if (!branch) return null;
+
+    const remoteUrl = await git.getConfig('remote.origin.url');
+    const match = remoteUrl.value?.match(/github\.com[:/]([^/]+)\/([^/.]+)/);
+    if (!match) return null;
+
+    const [, owner, repo] = match;
+
+    try {
+      const { data: pulls } = await githubService.makeRequest(() =>
+        githubService.getOctokit().rest.pulls.list({
+          owner,
+          repo,
+          state: 'all',
+          head: `${owner}:${branch}`
+        })
+      );
+
+      if (pulls.length === 0) return null;
+
+      const pr = pulls[0];
+      return {
+        number: pr.number,
+        state: pr.state as 'open' | 'closed' | 'merged'
+      };
+    } catch {
+      return null;
+    }
   }
 }
 

@@ -22,36 +22,35 @@ const mockUser = {
 };
 
 const mockGitHub = {
-  authGetUser: vi.fn<() => Promise<unknown>>(),
-  authOAuth: vi.fn<() => Promise<{ success: boolean }>>(),
-  authPAT: vi.fn<(token: string) => Promise<{ success: boolean }>>(),
-  authLogout: vi.fn<() => Promise<{ success: true }>>(),
-  repoList: vi.fn<() => Promise<typeof mockRepo[]>>(),
-  repoAdd: vi.fn<(owner: string, name: string, localPath: string) => Promise<typeof mockRepo>>(),
-  repoRemove: vi.fn<(id: number) => Promise<{ success: true }>>(),
-  repoGetActive: vi.fn<() => Promise<typeof mockRepo | null>>(),
-  repoSetActive: vi.fn<(id: number) => Promise<{ success: true }>>(),
-  dataIssues: vi.fn<() => Promise<unknown[]>>(),
-  dataPRs: vi.fn<() => Promise<unknown[]>>(),
+  auth: {
+    getState: vi.fn().mockResolvedValue({ isAuthenticated: false, user: null, method: null }),
+    startOAuth: vi.fn().mockResolvedValue({ success: true }),
+    loginWithPAT: vi.fn().mockResolvedValue({ success: true }),
+    logout: vi.fn().mockResolvedValue({ success: true }),
+  },
+  repos: {
+    getAll: vi.fn().mockResolvedValue({ repos: [], activeRepo: null }),
+    add: vi.fn().mockResolvedValue(mockRepo),
+    remove: vi.fn().mockResolvedValue({ success: true }),
+    setActive: vi.fn().mockResolvedValue({ success: true }),
+  },
+  data: {
+    fetchIssues: vi.fn().mockResolvedValue([]),
+    fetchPRs: vi.fn().mockResolvedValue([]),
+    fetchBranches: vi.fn().mockResolvedValue([]),
+  },
+  issues: { create: vi.fn(), comment: vi.fn() },
+  prs: { create: vi.fn(), review: vi.fn() },
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
-
-  mockGitHub.authGetUser.mockResolvedValue(null);
-  mockGitHub.authOAuth.mockResolvedValue({ success: true });
-  mockGitHub.authPAT.mockResolvedValue({ success: true });
-  mockGitHub.authLogout.mockResolvedValue({ success: true });
-  mockGitHub.repoList.mockResolvedValue([]);
-  mockGitHub.repoAdd.mockResolvedValue(mockRepo);
-  mockGitHub.repoRemove.mockResolvedValue({ success: true });
-  mockGitHub.repoGetActive.mockResolvedValue(null);
-  mockGitHub.repoSetActive.mockResolvedValue({ success: true });
-  mockGitHub.dataIssues.mockResolvedValue([]);
-  mockGitHub.dataPRs.mockResolvedValue([]);
-
   Object.defineProperty(window, 'api', {
-    value: { github: mockGitHub },
+    value: {
+      github: mockGitHub,
+      worktree: { list: vi.fn().mockResolvedValue([]), create: vi.fn().mockResolvedValue({}) },
+      agentGitHub: { assign: vi.fn().mockResolvedValue({ success: true }) },
+    },
     writable: true,
     configurable: true,
   });
@@ -87,8 +86,8 @@ describe('GitHubSettings', () => {
   });
 
   it('renders user info and repos when authenticated', async () => {
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: mockRepo });
 
     render(
       <GitHubProvider>
@@ -105,8 +104,8 @@ describe('GitHubSettings', () => {
   });
 
   it('shows empty state when no repos configured', async () => {
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
-    mockGitHub.repoList.mockResolvedValue([]);
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [], activeRepo: null });
 
     render(
       <GitHubProvider>
@@ -121,7 +120,7 @@ describe('GitHubSettings', () => {
   });
 
   it('calls logout when logout button clicked', async () => {
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
 
     render(
       <GitHubProvider>
@@ -135,13 +134,13 @@ describe('GitHubSettings', () => {
 
     fireEvent.click(screen.getByText(/Logout/i));
     await waitFor(() => {
-      expect(mockGitHub.authLogout).toHaveBeenCalled();
+      expect(mockGitHub.auth.logout).toHaveBeenCalled();
     });
   });
 
   it('calls removeRepo when trash button clicked', async () => {
-    mockGitHub.authGetUser.mockResolvedValue(mockUser);
-    mockGitHub.repoList.mockResolvedValue([mockRepo]);
+    mockGitHub.auth.getState.mockResolvedValue({ isAuthenticated: true, user: mockUser, method: 'pat' });
+    mockGitHub.repos.getAll.mockResolvedValue({ repos: [mockRepo], activeRepo: mockRepo });
 
     render(
       <GitHubProvider>
@@ -159,7 +158,7 @@ describe('GitHubSettings', () => {
     fireEvent.click(trashButton!);
 
     await waitFor(() => {
-      expect(mockGitHub.repoRemove).toHaveBeenCalledWith(1);
+      expect(mockGitHub.repos.remove).toHaveBeenCalledWith(1);
     });
   });
 });
