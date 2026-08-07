@@ -7,6 +7,7 @@ import { registerGitHubAuthHandlers } from './main/ipc/github-auth-handlers'
 import { registerGitHubRepoHandlers } from './main/ipc/github-repo-handlers'
 import { registerGitHubDataHandlers } from './main/ipc/github-data-handlers'
 import { registerAgentGitHubHandlers } from './main/ipc/agent-github-handlers'
+import { registerGitHubIssuesHandlers } from './main/ipc/github-issues-handlers'
 import { SettingsService } from './main/settings/settings-service'
 import { KeyboardShortcutManager } from './main/keyboard/keyboard-shortcut-manager'
 import { NotificationManager } from './main/notifications/notification-manager'
@@ -56,6 +57,7 @@ app.whenReady().then(() => {
   registerGitHubRepoHandlers()
   registerGitHubDataHandlers()
   registerAgentGitHubHandlers()
+  registerGitHubIssuesHandlers()
   settingsService = new SettingsService()
   const shortcutManager = new KeyboardShortcutManager(settingsService)
   shortcutManager.register()
