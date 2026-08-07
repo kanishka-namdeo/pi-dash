@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
+import { Timer, Zap, Bell, Settings, ChevronDown, GitBranch } from 'lucide-react';
 import { useSessionContext } from '@/context/SessionContext';
 import { useGitHub } from '@/context/GitHubContext';
-import { GitBranch } from 'lucide-react';
+import { useDashboardMode } from '@/hooks/useDashboardMode';
 
 type AgentState = 'running' | 'idle' | 'error' | 'exited';
 
@@ -21,7 +23,21 @@ function getWorstState(states: AgentState[]): AgentState {
   return 'exited';
 }
 
+function formatElapsed(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function formatCount(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+  return n.toString();
+}
+
 export function BottomBar() {
+  const { mode, setMode } = useDashboardMode('auto');
   const { getActiveSessions, sessions } = useSessionContext();
   const { activeRepo, branches } = useGitHub();
   
@@ -37,6 +53,17 @@ export function BottomBar() {
     s.state === 'running' ? 'running' : s.state === 'exited' ? 'exited' : 'idle'
   );
   const worstState = getWorstState(allStates);
+  
+  const elapsed = useMemo(() => {
+    const sessionArray = Array.from(sessions.values());
+    if (sessionArray.length === 0) return 0;
+    const earliest = Math.min(...sessionArray.map(s => s.createdAt));
+    return Math.floor((Date.now() - earliest) / 1000);
+  }, [sessions]);
+  
+  const totalCommands = useMemo(() => {
+    return Array.from(sessions.values()).reduce((sum, s) => sum + s.commandHistory.length, 0);
+  }, [sessions]);
 
   return (
     <footer
@@ -96,10 +123,80 @@ export function BottomBar() {
       </div>
 
       {/* Center Zone */}
-      <div data-testid="bottom-bar-center" className="flex-1 flex justify-center items-center" />
+      <div data-testid="bottom-bar-center" className="flex-1 flex justify-center items-center">
+        <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
+      </div>
 
       {/* Right Zone */}
-      <div data-testid="bottom-bar-right" className="flex items-center gap-4" />
+      <div data-testid="bottom-bar-right" className="flex items-center gap-4">
+        {/* Mode Toggle */}
+        <button
+          data-testid="mode-toggle"
+          className="flex items-center gap-1 px-2 py-1 rounded transition-colors"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--card) 50%, transparent)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            {mode === 'auto' ? 'Auto' : mode === 'supervised' ? 'Supervised' : 'Manual'}
+          </span>
+          <ChevronDown size={12} style={{ color: 'var(--text-secondary)' }} />
+        </button>
+
+        {/* Separator */}
+        <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
+
+        {/* Elapsed */}
+        <div data-testid="elapsed-time" className="flex items-center gap-1">
+          <Timer size={14} style={{ color: 'var(--text-secondary)' }} />
+          <span className="font-mono" style={{ fontSize: '12px', color: 'var(--text-primary)' }}>
+            {formatElapsed(elapsed)}
+          </span>
+        </div>
+
+        {/* Agent Count */}
+        <button
+          data-testid="agent-count"
+          className="flex items-center gap-1 px-1 rounded transition-colors"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--card) 50%, transparent)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          <span className="font-mono" style={{ fontSize: '12px', color: 'var(--text-primary)' }}>
+            {sessions.size}
+          </span>
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: getAgentStateColor(worstState) }}
+          />
+        </button>
+
+        {/* Commands */}
+        <div className="flex items-center gap-1">
+          <Zap size={14} style={{ color: 'var(--text-secondary)' }} />
+          <span className="font-mono" style={{ fontSize: '12px', color: 'var(--text-primary)' }}>
+            {formatCount(totalCommands)}
+          </span>
+        </div>
+
+        {/* Notifications */}
+        <button
+          data-testid="notifications-btn"
+          className="flex items-center px-1 rounded transition-colors"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--card) 50%, transparent)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          <Bell size={14} style={{ color: 'var(--text-secondary)' }} />
+        </button>
+
+        {/* Settings */}
+        <button
+          data-testid="settings-btn"
+          className="flex items-center px-1 rounded transition-colors"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--card) 50%, transparent)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          <Settings size={16} style={{ color: 'var(--text-muted)' }} />
+        </button>
+      </div>
     </footer>
   );
 }

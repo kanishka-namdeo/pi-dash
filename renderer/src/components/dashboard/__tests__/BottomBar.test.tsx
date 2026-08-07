@@ -92,3 +92,50 @@ describe('BottomBar Left Zone', () => {
     expect(screen.getByText('PiDash')).toBeInTheDocument();
   });
 });
+
+describe('BottomBar Right Zone', () => {
+  it('renders mode toggle', () => {
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    expect(screen.getByTestId('mode-toggle')).toBeInTheDocument();
+    expect(screen.getByText('Auto')).toBeInTheDocument();
+  });
+
+  it('renders elapsed time', () => {
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    expect(screen.getByTestId('elapsed-time')).toBeInTheDocument();
+  });
+
+  it('renders agent count with status dot', () => {
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    expect(screen.getByTestId('agent-count')).toBeInTheDocument();
+  });
+
+  it('renders settings button', () => {
+    render(
+      <SessionProvider>
+        <GitHubProvider>
+          <BottomBar />
+        </GitHubProvider>
+      </SessionProvider>
+    );
+    expect(screen.getByTestId('settings-btn')).toBeInTheDocument();
+  });
+});
