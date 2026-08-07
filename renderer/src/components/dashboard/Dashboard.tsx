@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSessionContext } from '@/context/SessionContext';
@@ -42,7 +42,19 @@ export function Dashboard() {
   const [elapsed, setElapsed] = useState(0);
   const [addAgentOpen, setAddAgentOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
-  const [disconnectedAgent, setDisconnectedAgent] = useState<string | null>(null);
+  const [collapsedPanels, setCollapsedPanels] = useState<Set<string>>(new Set());
+
+  const toggleCollapse = useCallback((panel: string) => {
+    setCollapsedPanels(prev => {
+      const next = new Set(prev);
+      if (next.has(panel)) {
+        next.delete(panel);
+      } else {
+        next.add(panel);
+      }
+      return next;
+    });
+  }, []);
   const prevRunningRef = useRef<Set<string>>(new Set());
 
   const runningSessions = ctx.getActiveSessions();
