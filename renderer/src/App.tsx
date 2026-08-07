@@ -6,9 +6,11 @@ import { AgentDetailView } from './components/views/AgentDetailView';
 import { WorktreeView } from './components/views/WorktreeView';
 import { CompletedWorkView } from './components/views/CompletedWorkView';
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
+import { SettingsScreen } from './components/settings/SettingsScreen';
 import { PiPProvider } from './context/PiPContext';
 import { GitHubProvider } from './context/GitHubContext';
 import { SessionProvider } from './context/SessionContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { PiPContainer } from './components/pip/PiPContainer';
 import { MainTerminal } from './components/pip/MainTerminal';
 import { OverlayManager } from './components/pip/OverlayManager';
@@ -54,7 +56,7 @@ function App() {
                 }
               />
               <Route path="/agent/:agentId" element={<AgentDetailView />} />
-              <Route path="/worktrees" element={<WorktreeView />} />
+              <Route path="/settings/*" element={<SettingsProvider><SettingsScreen /></SettingsProvider>} />
               <Route path="/completed/:agentId" element={<CompletedWorkView />} />
             </Routes>
           </BrowserRouter>
