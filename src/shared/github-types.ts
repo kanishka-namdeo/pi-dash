@@ -77,3 +77,12 @@ export interface GitHubReview {
   state: 'approved' | 'changes_requested' | 'commented' | 'pending';
   submittedAt: string;
 }
+
+export interface PollingState {
+  isPolling: boolean;
+  interval: number;
+  lastSync: number;
+  remaining: number;
+  limit: number;
+  resetAt: number;
+}
