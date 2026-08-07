@@ -28,7 +28,7 @@ export function Dashboard() {
   const { agents: availableAgents } = useAgents();
   const { events, isPaused, pause, resume, clear } = useRealActivityFeed();
   const { mode, setMode } = useDashboardMode();
-  const { state: pipState, actions: pipActions } = usePiPContext();
+  const { actions: pipActions } = usePiPContext();
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [elapsed, setElapsed] = useState(0);
 
@@ -61,9 +61,10 @@ export function Dashboard() {
   };
 
   const handleLaunch = async (agentId: string) => {
-    const cwd = await window.api.openDirectory();
-    if (cwd) {
-      navigate(`/agent/${agentId}?cwd=${encodeURIComponent(cwd)}`);
+    try {
+      await window.api.launchAgent(agentId);
+    } catch (error) {
+      console.error('Failed to launch agent:', error);
     }
   };
 
