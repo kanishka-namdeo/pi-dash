@@ -111,6 +111,7 @@ export function ManualAddScreen({ onNavigate, addAgent }: ManualAddScreenProps) 
       name: identificationResult?.suggestedName ?? path.split(/[/\\]/).pop() ?? path,
       icon: identificationResult?.suggestedIcon ?? 'unknown',
       path: path.trim(),
+      cwd: process.env.HOME || process.env.USERPROFILE || '',
       source: 'manual',
     };
 
