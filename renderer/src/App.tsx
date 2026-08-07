@@ -46,23 +46,24 @@ function App() {
           <PiPProvider>
             <BrowserRouter>
               <Routes>
+                <Route path="/" element={<Dashboard />} />
                 <Route
-                  path="/"
+                  path="/terminal"
                   element={
-                  <PiPContainer>
-                    <MainTerminal />
-                    <OverlayManager />
-                  </PiPContainer>
-                }
-              />
-              <Route path="/agent/:agentId" element={<AgentDetailView />} />
-              <Route path="/settings/*" element={<SettingsProvider><SettingsScreen /></SettingsProvider>} />
-              <Route path="/completed/:agentId" element={<CompletedWorkView />} />
-            </Routes>
-          </BrowserRouter>
-        </PiPProvider>
-      </GitHubProvider>
-    </SessionProvider>
+                    <PiPContainer>
+                      <MainTerminal />
+                      <OverlayManager />
+                    </PiPContainer>
+                  }
+                />
+                <Route path="/agent/:agentId" element={<AgentDetailView />} />
+                <Route path="/settings/*" element={<SettingsProvider><SettingsScreen /></SettingsProvider>} />
+                <Route path="/completed/:agentId" element={<CompletedWorkView />} />
+              </Routes>
+            </BrowserRouter>
+          </PiPProvider>
+        </GitHubProvider>
+      </SessionProvider>
       <Toaster />
     </>
   );
