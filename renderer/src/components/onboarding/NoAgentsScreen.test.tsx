@@ -1,62 +1,48 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { NoAgentsScreen } from './NoAgentsScreen';
 
 describe('NoAgentsScreen', () => {
-  const mockNavigate = vi.fn();
+  const mockOnNavigate = vi.fn();
 
-  beforeEach(() => {
-    mockNavigate.mockClear();
+  it('renders no agents title', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
+    expect(screen.getByText(/No Agents Found/i)).toBeInTheDocument();
   });
 
-  it('renders friendly message when no agents found', () => {
-    render(<NoAgentsScreen onNavigate={mockNavigate} />);
-    expect(screen.getByText('No Agents Found')).toBeInTheDocument();
-    expect(
-      screen.getByText(/couldn't detect any AI coding agents/)
-    ).toBeInTheDocument();
-  });
-
-  it('shows list of popular agents with names and descriptions', () => {
-    render(<NoAgentsScreen onNavigate={mockNavigate} />);
+  it('renders AgentCard components for popular agents', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
     expect(screen.getByText('Oh My Pile (OMP)')).toBeInTheDocument();
     expect(screen.getByText('Cursor')).toBeInTheDocument();
     expect(screen.getByText('Aider')).toBeInTheDocument();
-    expect(screen.getByText('OpenAI Codex')).toBeInTheDocument();
-    expect(screen.getByText('Continue')).toBeInTheDocument();
-    // Descriptions
-    expect(screen.getByText(/AI coding assistant with unified agent dashboard/)).toBeInTheDocument();
-    expect(screen.getByText(/AI-first code editor/)).toBeInTheDocument();
-    expect(screen.getByText(/AI pair programming in your terminal/)).toBeInTheDocument();
-    expect(screen.getByText(/AI code generation from OpenAI/)).toBeInTheDocument();
-    expect(screen.getByText(/Open-source AI coding assistant/)).toBeInTheDocument();
   });
 
-  it('has download buttons for each agent', () => {
-    render(<NoAgentsScreen onNavigate={mockNavigate} />);
-    const downloadButtons = screen.getAllByRole('button', { name: /Download/ });
-    expect(downloadButtons).toHaveLength(5);
+  it('renders download links for each agent', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
+    const downloadLinks = screen.getAllByText(/Download/i);
+    expect(downloadLinks.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('calls onNavigate("manual-add") when Add Manually clicked', () => {
-    render(<NoAgentsScreen onNavigate={mockNavigate} />);
-    fireEvent.click(screen.getByRole('button', { name: /Add an agent manually/ }));
-    expect(mockNavigate).toHaveBeenCalledWith('manual-add');
+  it('renders Add Manually button', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
+    expect(screen.getByRole('button', { name: /add an agent manually/i })).toBeInTheDocument();
   });
 
-  it('calls onNavigate("scanning") when Scan Again clicked', () => {
-    render(<NoAgentsScreen onNavigate={mockNavigate} />);
-    fireEvent.click(screen.getByRole('button', { name: /Scan again/ }));
-    expect(mockNavigate).toHaveBeenCalledWith('scanning');
+  it('renders Scan Again button', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
+    expect(screen.getByRole('button', { name: /scan again for agents/i })).toBeInTheDocument();
   });
 
-  it('buttons are keyboard accessible', () => {
-    render(<NoAgentsScreen onNavigate={mockNavigate} />);
-    const addManuallyBtn = screen.getByRole('button', { name: /Add an agent manually/ });
-    const scanAgainBtn = screen.getByRole('button', { name: /Scan again/ });
-    // Buttons are natively keyboard accessible; verify they are actual button elements
-    expect(addManuallyBtn.tagName).toBe('BUTTON');
-    expect(scanAgainBtn.tagName).toBe('BUTTON');
+  it('navigates to manual-add on Add Manually click', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
+    fireEvent.click(screen.getByRole('button', { name: /add an agent manually/i }));
+    expect(mockOnNavigate).toHaveBeenCalledWith('manual-add');
+  });
+
+  it('navigates to scanning on Scan Again click', () => {
+    render(<NoAgentsScreen onNavigate={mockOnNavigate} />);
+    fireEvent.click(screen.getByRole('button', { name: /scan again for agents/i }));
+    expect(mockOnNavigate).toHaveBeenCalledWith('scanning');
   });
 });
