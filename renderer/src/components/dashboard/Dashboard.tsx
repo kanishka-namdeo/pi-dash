@@ -204,6 +204,8 @@ export function Dashboard() {
           isPaused={isPaused}
           hasAgents={hasAgents}
           onAddAgent={() => setAddAgentOpen(true)}
+          isCollapsed={collapsedPanels.has('activity')}
+          onToggleCollapse={() => toggleCollapse('activity')}
         />
       </div>
 
