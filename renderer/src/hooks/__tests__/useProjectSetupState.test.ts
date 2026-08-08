@@ -1,8 +1,19 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useProjectSetupState } from '../useProjectSetupState';
 
 describe('useProjectSetupState', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    Object.defineProperty(window, 'api', {
+      value: {
+        addProject: vi.fn().mockResolvedValue(undefined),
+        isGitRepo: vi.fn().mockResolvedValue(true),
+      },
+      writable: true,
+    });
+  });
+
   it('starts at project-selection in full mode', () => {
     const { result } = renderHook(() => useProjectSetupState('full'));
     expect(result.current.currentScreen).toBe('project-selection');
@@ -44,5 +55,64 @@ describe('useProjectSetupState', () => {
     });
 
     expect(result.current.selectedAgents).toEqual(['omp', 'claude-code']);
+  });
+
+  describe('complete()', () => {
+    it('calls addProject and onComplete on success', async () => {
+      const { result } = renderHook(() => useProjectSetupState('full'));
+
+      act(() => {
+        result.current.updateProject('/path/to/project');
+        result.current.updateSelectedAgents(['omp']);
+      });
+
+      const onComplete = vi.fn();
+
+      await act(async () => {
+        await result.current.complete(onComplete);
+      });
+
+      expect(window.api.addProject).toHaveBeenCalledWith(expect.objectContaining({
+        path: '/path/to/project',
+        name: 'project',
+        selectedAgents: ['omp'],
+      }));
+      expect(window.api.isGitRepo).toHaveBeenCalledWith('/path/to/project');
+      expect(onComplete).toHaveBeenCalled();
+    });
+
+    it('navigates to project-already-added on PROJECT_ALREADY_EXISTS error', async () => {
+      window.api.addProject = vi.fn().mockRejectedValue(new Error('PROJECT_ALREADY_EXISTS'));
+
+      const { result } = renderHook(() => useProjectSetupState('full'));
+
+      act(() => {
+        result.current.updateProject('/path/to/project');
+      });
+
+      const onComplete = vi.fn();
+
+      await act(async () => {
+        await result.current.complete(onComplete);
+      });
+
+      expect(window.api.addProject).toHaveBeenCalled();
+      expect(onComplete).not.toHaveBeenCalled();
+      expect(result.current.currentScreen).toBe('project-already-added');
+    });
+
+    it('calls isGitRepo with projectPath', async () => {
+      const { result } = renderHook(() => useProjectSetupState('full'));
+
+      act(() => {
+        result.current.updateProject('/some/other/path');
+      });
+
+      await act(async () => {
+        await result.current.complete();
+      });
+
+      expect(window.api.isGitRepo).toHaveBeenCalledWith('/some/other/path');
+    });
   });
 });
