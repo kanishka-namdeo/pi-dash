@@ -7,6 +7,7 @@ import { WorktreeView } from './components/views/WorktreeView';
 import { CompletedWorkView } from './components/views/CompletedWorkView';
 import { PRDetailView } from './components/github/PRDetailView';
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
+import { ProjectSetupFlow } from './components/project-setup/ProjectSetupFlow';
 import { SettingsScreen } from './components/settings/SettingsScreen';
 import { SettingsProvider } from './context/SettingsContext';
 import { GlobalSettingsEffect } from './components/settings/GlobalSettingsEffect';
@@ -78,25 +79,43 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
+  const [projectCount, setProjectCount] = useState<number | null>(null);
+
+  const refreshProjectCount = useCallback(async () => {
+    const projects = await window.api.getProjects();
+    setProjectCount(projects.length);
+  }, []);
 
   useEffect(() => {
+    let ignored = false;
     if (window.api) {
-      window.api.getOnboardingStatus().then(setOnboardingCompleted);
+      window.api.getOnboardingStatus().then((status) => {
+        if (ignored) return;
+        setOnboardingCompleted(status);
+      });
+      refreshProjectCount().then(() => {
+        if (ignored) return;
+      });
     } else {
       setOnboardingCompleted(true);
     }
-  }, []);
+    return () => { ignored = true; };
+  }, [refreshProjectCount]);
 
   const handleOnboardingComplete = useCallback(() => {
     setOnboardingCompleted(true);
   }, []);
 
-  if (onboardingCompleted === null) {
+  if (onboardingCompleted === null || projectCount === null) {
     return null; // Loading
   }
 
   if (!onboardingCompleted) {
     return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
+
+  if (projectCount === 0) {
+    return <ProjectSetupFlow flowMode="full" onComplete={refreshProjectCount} />;
   }
 
   return (
@@ -125,6 +144,7 @@ function App() {
                   <Route path="/pr/:prNumber" element={<PRDetailView />} />
                   <Route path="/worktrees" element={<WorktreeView />} />
                 </Routes>
+                <CommandPalette />
               </BrowserRouter>
             </SettingsProvider>
           </PiPProvider>
@@ -132,7 +152,6 @@ function App() {
         </ErrorBoundary>
       </SessionProvider>
       <Toaster />
-      <CommandPalette />
     </>
   );
 }
