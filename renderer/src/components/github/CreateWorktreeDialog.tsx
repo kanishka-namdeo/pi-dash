@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSettingsContext } from '../../context/SettingsContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -12,9 +13,26 @@ interface Props {
 }
 
 export function CreateWorktreeDialog({ open, onClose, issueNumber, repoPath }: Props) {
-  const [branch, setBranch] = useState(issueNumber ? `fix/${issueNumber}-` : '');
+  const [branch, setBranch] = useState('');
   const [baseBranch, setBaseBranch] = useState('main');
   const [destination, setDestination] = useState('');
+  const { settings } = useSettingsContext();
+
+  useEffect(() => {
+    if (!issueNumber || !settings?.worktrees.branchNamingPattern) return;
+    const pattern = settings.worktrees.branchNamingPattern;
+    const generated = pattern
+      .replace('{number}', String(issueNumber))
+      .replace('{name}', `issue-${issueNumber}`)
+      .replace('{id}', crypto.randomUUID().slice(0, 8));
+    setBranch(generated);
+  }, [issueNumber, settings?.worktrees.branchNamingPattern]);
+
+  useEffect(() => {
+    if (open && settings?.worktrees.directory && !destination) {
+      setDestination(`${settings.worktrees.directory}/${branch}`);
+    }
+  }, [open, settings?.worktrees.directory]);
 
   async function handleCreate() {
     // Note: worktree IPC methods need to be exposed in preload.ts similar to GitHub methods.
