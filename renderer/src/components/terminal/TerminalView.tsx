@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
+import { useSettingsContext } from '../../context/SettingsContext';
 import { useSession } from '../../hooks/useSession';
 
 type TerminalViewProps = {
@@ -16,20 +17,33 @@ export function TerminalView({ agentId: propAgentId }: TerminalViewProps = {}) {
   const agentId = propAgentId || paramAgentId;
 
   const terminalRef = useRef<HTMLDivElement>(null);
-  const { state, spawn, write, resize, destroy } = useSession(agentId!);
+  const { settings } = useSettingsContext();
+  const terminal = settings?.terminal;
 
   useEffect(() => {
     if (!terminalRef.current || !agentId) return;
 
+
     const term = new Terminal({
       cursorBlink: true,
-      fontSize: 14,
-      fontFamily: 'Menlo, Monaco, monospace',
+      fontSize: terminal?.fontSize ?? 14,
+      fontFamily: terminal?.fontFamily ?? 'Geist Mono, monospace',
+      cursorStyle: terminal?.cursorStyle ?? 'block',
+      scrollbackLines: terminal?.scrollbackLines ?? 10000,
+      theme: terminal?.theme === 'light'
+        ? { background: '#ffffff', foreground: '#000000' }
+        : { background: '#1e1e1e', foreground: '#e5e5e5' },
     });
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
 
     term.open(terminalRef.current);
+    if (terminal?.copyOnSelect) {
+      term.onSelectionChange(() => {
+        const selection = term.getSelection();
+        if (selection) navigator.clipboard.writeText(selection);
+      });
+    }
     fitAddon.fit();
 
     const onDataDisposable = term.onData((data) => {
@@ -66,7 +80,7 @@ export function TerminalView({ agentId: propAgentId }: TerminalViewProps = {}) {
       onDataDisposable.dispose();
       term.dispose();
     };
-  }, [agentId, cwd, spawn, write, resize, destroy]);
+  }, [agentId, cwd, spawn, write, resize, destroy, settings?.terminal]);
 
   return <div className="terminal-container" ref={terminalRef} />;
 }
