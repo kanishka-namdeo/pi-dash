@@ -16,6 +16,7 @@ import { PiPContainer } from './components/pip/PiPContainer';
 import { MainTerminal } from './components/pip/MainTerminal';
 import { OverlayManager } from './components/pip/OverlayManager';
 import { Toaster } from './components/ui/sonner';
+import { CommandPalette } from './components/CommandPalette';
 import { AlertCircle } from 'lucide-react';
 
 interface ErrorBoundaryProps {
@@ -127,6 +128,7 @@ function App() {
         </ErrorBoundary>
       </SessionProvider>
       <Toaster />
+      <CommandPalette />
     </>
   );
 }
