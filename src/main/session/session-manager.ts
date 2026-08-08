@@ -1,5 +1,6 @@
 import { Session } from './session';
 import type { SessionInfo } from '../../shared/types';
+import { loadAgents } from '../agent-store';
 import { SettingsService } from '../settings/settings-service';
 
 
