@@ -1,6 +1,8 @@
 import { ipcMain } from 'electron';
 import { scanSystem, validateAgent, identifyAgent } from './agent-scanner';
 import { loadAgents, saveAgents, completeOnboarding } from './agent-store';
+import { getProjects, addProject, updateProject, removeProject, getRecentProjects } from './project-manager';
+import { isGitRepo, cloneRepository } from './git-operations';
 import type { AgentConfig } from '../shared/types';
 
 export function registerIpcHandlers(): void {
@@ -44,6 +46,39 @@ export function registerIpcHandlers(): void {
   });
   ipcMain.handle('get-cwd', () => {
     return process.cwd();
+  });
+}
+
+export function registerProjectHandlers(): void {
+  ipcMain.handle('get-projects', async () => {
+    return await getProjects();
+  });
+
+  ipcMain.handle('add-project', async (_event, project) => {
+    return await addProject(project);
+  });
+
+  ipcMain.handle('update-project', async (_event, path, updates) => {
+    return await updateProject(path, updates);
+  });
+
+  ipcMain.handle('remove-project', async (_event, path) => {
+    return await removeProject(path);
+  });
+
+  ipcMain.handle('get-recent-projects', async (_event, limit) => {
+    return await getRecentProjects(limit);
+  });
+
+  ipcMain.handle('is-git-repo', async (_event, path) => {
+    return await isGitRepo(path);
+  });
+
+  ipcMain.handle('clone-repository', async (event, url, dest, branch) => {
+    const result = await cloneRepository(url, dest, branch, (progress) => {
+      event.sender.send('clone-progress', progress);
+    });
+    return result;
   });
 }
 

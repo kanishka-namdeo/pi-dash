@@ -4,6 +4,8 @@ import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult } 
 import type { SessionAPI } from './session';
 import type { Repo, GitHubIssue, GitHubPR, Worktree, PollingState } from '../../../src/shared/github-types';
 import type { SettingsSchema } from '../../../src/main/settings/settings-types';
+import type { Project, CloneError } from './project-setup';
+
 
 interface GitHubUser {
   id: number;
@@ -88,6 +90,14 @@ declare global {
       getOnboardingStatus: () => Promise<boolean>;
       openExternal: (url: string) => void;
       openDirectory: () => Promise<string | null>;
+      getProjects(): Promise<Project[]>;
+      addProject(project: Project): Promise<void>;
+      updateProject(path: string, updates: Partial<Project>): Promise<void>;
+      removeProject(path: string): Promise<void>;
+      getRecentProjects(limit?: number): Promise<Project[]>;
+      isGitRepo(path: string): Promise<boolean>;
+      cloneRepository(url: string, dest: string, branch?: string): Promise<{ success: boolean; error?: CloneError }>;
+      onCloneProgress(callback: (progress: number) => void): () => void;
       session: SessionAPI;
       github: GitHubAPI;
       worktree: WorktreeAPI;

@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { AgentConfig, SessionInfo } from './shared/types';
+import type { Project, CloneError } from '../renderer/src/types/project-setup';
 
 export type SessionAPI = {
   create: (agentId: string, cwd: string) => Promise<{ pid: number; state: string } | { error: string }>;
@@ -55,6 +56,20 @@ contextBridge.exposeInMainWorld('api', {
       return () => ipcRenderer.removeListener('session:exit', listener);
     },
   } satisfies SessionAPI,
+
+  // Project management
+  getProjects: () => ipcRenderer.invoke('get-projects'),
+  addProject: (project: Project) => ipcRenderer.invoke('add-project', project),
+  updateProject: (path: string, updates: Partial<Project>) => ipcRenderer.invoke('update-project', path, updates),
+  removeProject: (path: string) => ipcRenderer.invoke('remove-project', path),
+  getRecentProjects: (limit?: number) => ipcRenderer.invoke('get-recent-projects', limit),
+  isGitRepo: (path: string) => ipcRenderer.invoke('is-git-repo', path),
+  cloneRepository: (url: string, dest: string, branch?: string) => ipcRenderer.invoke('clone-repository', url, dest, branch),
+  onCloneProgress: (callback: (progress: number) => void) => {
+    const subscription = (_event: Electron.IpcRendererEvent, progress: number) => callback(progress);
+    ipcRenderer.on('clone-progress', subscription);
+    return () => ipcRenderer.removeListener('clone-progress', subscription);
+  },
 
   // Dialog
   openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
