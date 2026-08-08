@@ -51,7 +51,11 @@ export function getDefaultSettings(): SettingsSchema {
         dashboardView: 'Ctrl+1',
         terminalView: 'Ctrl+2',
         toggleSidebar: 'Ctrl+B',
+        openCommandPalette: 'Ctrl+K',
       },
+    },
+    search: {
+      recent: [],
     },
     terminal: {
       defaultShell: isWindows ? 'powershell.exe' : '/bin/bash',

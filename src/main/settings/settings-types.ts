@@ -46,7 +46,11 @@ export interface SettingsSchema {
       dashboardView: string;
       terminalView: string;
       toggleSidebar: string;
+      openCommandPalette: string;
     };
+  };
+  search: {
+    recent: Array<{ term: string; timestamp: number }>;
   };
   terminal: {
     defaultShell: string;
