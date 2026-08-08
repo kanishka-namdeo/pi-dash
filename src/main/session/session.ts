@@ -13,14 +13,22 @@ export class Session {
   private dataCallbacks: Array<(data: string) => void> = [];
   private exitCallbacks: Array<(exitCode: number) => void> = [];
 
-  constructor(agentId: string, cwd: string, private readonly agentPath: string) {
+  private readonly shell?: string;
+  private readonly shellArgs?: string;
+
+
+  constructor(agentId: string, cwd: string, private readonly agentPath: string, shell?: string, shellArgs?: string) {
     this.agentId = agentId;
     this.cwd = cwd;
+    this.shell = shell;
+    this.shellArgs = shellArgs;
   }
 
   async spawn(): Promise<void> {
     try {
-      this.pty = pty.spawn(this.agentPath, [], {
+      const shell = this.shell || this.agentPath;
+      const args = this.shellArgs ? this.shellArgs.split(/\s+/).filter(Boolean) : [];
+      this.pty = pty.spawn(shell, args, {
         cwd: this.cwd,
         name: 'xterm-256color',
       });

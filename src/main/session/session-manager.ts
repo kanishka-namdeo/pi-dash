@@ -1,9 +1,11 @@
 import { Session } from './session';
 import type { SessionInfo } from '../../shared/types';
-import { loadAgents } from '../agent-store';
+import { SettingsService } from '../settings/settings-service';
+
 
 export class SessionManager {
   private sessions = new Map<string, Session>();
+  private settingsService = new SettingsService();
 
   async createSession(agentId: string, cwd: string): Promise<Session> {
     if (this.sessions.has(agentId)) {
@@ -16,7 +18,10 @@ export class SessionManager {
       throw new Error(`Agent not found: ${agentId}`);
     }
 
-    const session = new Session(agentId, cwd, agent.path);
+    const defaultShell = this.settingsService.get('terminal.defaultShell') as string | undefined;
+    const shellArgs = this.settingsService.get('terminal.shellArgs') as string | undefined;
+
+    const session = new Session(agentId, cwd, agent.path, defaultShell, shellArgs);
     await session.spawn();
     this.sessions.set(agentId, session);
     return session;
