@@ -1,5 +1,5 @@
 {
-  "version": "2.15",
+  "version": "2.17",
   "children": [
     {
       "type": "frame",
@@ -4637,106 +4637,11 @@
               ]
             },
             {
-              "type": "frame",
-              "id": "HFnxi",
-              "name": "MetricsFooter",
-              "width": "fill_container",
-              "height": 40,
-              "fill": "$bg",
-              "stroke": "$border",
-              "strokeWidth": {
-                "top": 1
-              },
-              "gap": 24,
-              "padding": [
-                0,
-                24
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "id": "vAYiH",
-                  "type": "ref",
-                  "ref": "lTQZV",
-                  "name": "Elapsed",
-                  "layout": "horizontal",
-                  "gap": 8,
-                  "alignItems": "center",
-                  "descendants": {
-                    "jc7yJ": {
-                      "content": "Elapsed",
-                      "fontFamily": "$font-ui",
-                      "fontSize": 12,
-                      "fontWeight": "normal",
-                      "letterSpacing": 0
-                    },
-                    "oU9Zc": {
-                      "content": "12:34",
-                      "fontSize": 12
-                    }
-                  }
-                },
-                {
-                  "type": "rectangle",
-                  "id": "EOoKq",
-                  "name": "Sep1",
-                  "fill": "$border",
-                  "width": 1,
-                  "height": 16
-                },
-                {
-                  "id": "LA43q",
-                  "type": "ref",
-                  "ref": "lTQZV",
-                  "name": "Agents",
-                  "layout": "horizontal",
-                  "gap": 8,
-                  "alignItems": "center",
-                  "descendants": {
-                    "jc7yJ": {
-                      "content": "Agents",
-                      "fontFamily": "$font-ui",
-                      "fontSize": 12,
-                      "fontWeight": "normal",
-                      "letterSpacing": 0
-                    },
-                    "oU9Zc": {
-                      "content": "2",
-                      "fontSize": 12
-                    }
-                  }
-                },
-                {
-                  "type": "rectangle",
-                  "id": "i1Rf6",
-                  "name": "Sep2",
-                  "fill": "$border",
-                  "width": 1,
-                  "height": 16
-                },
-                {
-                  "id": "KeZm6",
-                  "type": "ref",
-                  "ref": "lTQZV",
-                  "name": "Commands",
-                  "layout": "horizontal",
-                  "gap": 8,
-                  "alignItems": "center",
-                  "descendants": {
-                    "jc7yJ": {
-                      "content": "Commands",
-                      "fontFamily": "$font-ui",
-                      "fontSize": 12,
-                      "fontWeight": "normal",
-                      "letterSpacing": 0
-                    },
-                    "oU9Zc": {
-                      "content": "47",
-                      "fontSize": 12
-                    }
-                  }
-                }
-              ]
+              "id": "vHahH",
+              "type": "ref",
+              "ref": "G4ENVU",
+              "name": "BottomBar",
+              "width": "fill_container"
             }
           ]
         },
@@ -53732,23 +53637,10 @@
               ]
             },
             {
-              "id": "QuxSU",
+              "id": "pYZro",
               "type": "ref",
-              "ref": "dHYeU",
-              "name": "MetricsFooter",
-              "width": "fill_container",
-              "height": 40,
-              "descendants": {
-                "PUcMA/oU9Zc": {
-                  "content": "12:34"
-                },
-                "PUhYC/oU9Zc": {
-                  "content": "2"
-                },
-                "R6otlN/oU9Zc": {
-                  "content": "47"
-                }
-              }
+              "ref": "VjCRp",
+              "name": "BottomBar"
             },
             {
               "type": "frame",
@@ -54875,23 +54767,10 @@
               ]
             },
             {
-              "id": "v8rCWC",
+              "id": "ylzpv",
               "type": "ref",
-              "ref": "dHYeU",
-              "name": "MetricsFooter",
-              "width": "fill_container",
-              "height": 40,
-              "descendants": {
-                "PUcMA/oU9Zc": {
-                  "content": "12:34"
-                },
-                "PUhYC/oU9Zc": {
-                  "content": "2"
-                },
-                "R6otlN/oU9Zc": {
-                  "content": "47"
-                }
-              }
+              "ref": "VjCRp",
+              "name": "BottomBar"
             },
             {
               "type": "frame",
@@ -55487,23 +55366,10 @@
               ]
             },
             {
-              "id": "U2bqSm",
+              "id": "mrTsi",
               "type": "ref",
-              "ref": "dHYeU",
-              "name": "MetricsFooter",
-              "width": "fill_container",
-              "height": 40,
-              "descendants": {
-                "PUcMA/oU9Zc": {
-                  "content": "00:00"
-                },
-                "PUhYC/oU9Zc": {
-                  "content": "0"
-                },
-                "R6otlN/oU9Zc": {
-                  "content": "0"
-                }
-              }
+              "ref": "VjCRp",
+              "name": "BottomBar"
             },
             {
               "type": "frame",
@@ -56963,9 +56829,9 @@
     },
     {
       "type": "frame",
-      "id": "CmdPalFlow",
+      "id": "cehqD",
       "x": -593,
-      "y": 14500,
+      "y": 15929,
       "name": "Command Palette Flow",
       "width": 7600,
       "height": 1020,
@@ -56973,7 +56839,7 @@
       "children": [
         {
           "type": "text",
-          "id": "CmdPalLabel",
+          "id": "YrXNR",
           "x": 40,
           "y": 16,
           "name": "FlowLabel",
@@ -56986,7 +56852,7 @@
         },
         {
           "type": "text",
-          "id": "CmdPalSub",
+          "id": "odK9e",
           "x": 280,
           "y": 18,
           "name": "FlowSub",
@@ -56998,7 +56864,7 @@
         },
         {
           "type": "rectangle",
-          "id": "CmdPalRule",
+          "id": "ux9Bs",
           "x": 40,
           "y": 46,
           "name": "FlowRule",
@@ -57008,7 +56874,7 @@
         },
         {
           "type": "frame",
-          "id": "CmdPalV1",
+          "id": "VB4rn",
           "x": 40,
           "y": 64,
           "name": "Variant 1 - Default State",
@@ -57020,46 +56886,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "V1Topbar",
-              "x": 0,
-              "y": 0,
-              "name": "Topbar",
-              "width": 1440,
-              "height": 56,
-              "fill": "$card",
-              "stroke": "$border",
-              "strokeWidth": 1,
-              "gap": 16,
-              "padding": [
-                0,
-                20
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "V1Logo",
-                  "name": "LogoBox",
-                  "width": 32,
-                  "height": 32,
-                  "fill": "$accent-indigo",
-                  "cornerRadius": 8
-                },
-                {
-                  "type": "text",
-                  "id": "V1Title",
-                  "name": "AppTitle",
-                  "fill": "$text-primary",
-                  "content": "PiDash",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "V1Overlay",
+              "id": "M6C92r",
               "x": 0,
               "y": 0,
               "name": "Overlay",
@@ -57067,18 +56894,17 @@
               "height": 900,
               "fill": "#00000080",
               "layout": "vertical",
-              "justifyContent": "flex-start",
-              "alignItems": "center",
               "padding": [
                 120,
                 0,
                 0,
                 0
               ],
+              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "V1Palette",
+                  "id": "q1SPxf",
                   "name": "CommandPalette",
                   "width": 640,
                   "fill": "$card",
@@ -57086,11 +56912,10 @@
                   "stroke": "$accent-indigo",
                   "strokeWidth": 2,
                   "layout": "vertical",
-                  "gap": 0,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "V1SearchBox",
+                      "id": "XCua9",
                       "name": "SearchInput",
                       "width": "fill_container",
                       "height": 56,
@@ -57103,7 +56928,7 @@
                       "children": [
                         {
                           "type": "icon",
-                          "id": "V1SearchIcon",
+                          "id": "rmf1X",
                           "name": "SearchIcon",
                           "width": 20,
                           "height": 20,
@@ -57113,7 +56938,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "V1Placeholder",
+                          "id": "a7RzC",
                           "name": "Placeholder",
                           "fill": "$text-muted",
                           "content": "Search agents, repos, PRs, files...",
@@ -57123,7 +56948,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V1Shortcut",
+                          "id": "heBNU",
+                          "name": "Spacer",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mP1KS",
                           "name": "ShortcutBadge",
                           "height": 24,
                           "fill": "$bg",
@@ -57136,7 +56968,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "V1ShortcutLabel",
+                              "id": "qR2oA",
                               "name": "ShortcutLabel",
                               "fill": "$text-muted",
                               "content": "Ctrl+K",
@@ -57150,44 +56982,51 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V1Divider1",
-                      "name": "Divider",
+                      "id": "bx3cE",
+                      "name": "Divider1",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V1Recent",
+                      "id": "Kl62K",
                       "name": "RecentSection",
                       "width": "fill_container",
                       "layout": "vertical",
-                      "gap": 0,
                       "padding": [
                         8,
                         0
                       ],
                       "children": [
                         {
-                          "type": "text",
-                          "id": "V1RecentTitle",
-                          "name": "RecentTitle",
-                          "fill": "$text-secondary",
-                          "content": "RECENT",
-                          "fontFamily": "$font-ui",
-                          "fontSize": 11,
-                          "fontWeight": "600",
+                          "type": "frame",
+                          "id": "nBwCF",
+                          "name": "RecentTitleWrap",
+                          "width": "fill_container",
                           "padding": [
                             8,
                             16,
                             4,
                             16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DJtGJ",
+                              "name": "RecentTitle",
+                              "fill": "$text-secondary",
+                              "content": "RECENT",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V1Recent1",
-                          "name": "RecentItem1",
+                          "id": "BToIN",
+                          "name": "claude-code RecentItem",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -57199,17 +57038,17 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V1Recent1Icon",
+                              "id": "O2jf23",
                               "name": "ClockIcon",
                               "width": 14,
                               "height": 14,
-                              "icon": "clock",
+                              "icon": "history",
                               "library": "lucide",
                               "fill": "$text-muted"
                             },
                             {
                               "type": "text",
-                              "id": "V1Recent1Text",
+                              "id": "SzJgr",
                               "name": "RecentText",
                               "fill": "$text-primary",
                               "content": "claude-code",
@@ -57221,8 +57060,8 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V1Recent2",
-                          "name": "RecentItem2",
+                          "id": "U0aaJ6",
+                          "name": "PR #15 RecentItem",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -57234,17 +57073,17 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V1Recent2Icon",
+                              "id": "zqIjS",
                               "name": "ClockIcon",
                               "width": 14,
                               "height": 14,
-                              "icon": "clock",
+                              "icon": "history",
                               "library": "lucide",
                               "fill": "$text-muted"
                             },
                             {
                               "type": "text",
-                              "id": "V1Recent2Text",
+                              "id": "S0qP5",
                               "name": "RecentText",
                               "fill": "$text-primary",
                               "content": "PR #15",
@@ -57256,8 +57095,8 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V1Recent3",
-                          "name": "RecentItem3",
+                          "id": "BBEoS",
+                          "name": "main branch RecentItem",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -57269,17 +57108,17 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V1Recent3Icon",
+                              "id": "ptRGr",
                               "name": "ClockIcon",
                               "width": 14,
                               "height": 14,
-                              "icon": "clock",
+                              "icon": "history",
                               "library": "lucide",
                               "fill": "$text-muted"
                             },
                             {
                               "type": "text",
-                              "id": "V1Recent3Text",
+                              "id": "TUC9t",
                               "name": "RecentText",
                               "fill": "$text-primary",
                               "content": "main branch",
@@ -57293,44 +57132,51 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V1Divider2",
-                      "name": "Divider",
+                      "id": "dPknJ",
+                      "name": "Divider2",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V1Actions",
+                      "id": "RL3DP",
                       "name": "ActionsSection",
                       "width": "fill_container",
                       "layout": "vertical",
-                      "gap": 0,
                       "padding": [
                         8,
                         0
                       ],
                       "children": [
                         {
-                          "type": "text",
-                          "id": "V1ActionsTitle",
-                          "name": "ActionsTitle",
-                          "fill": "$text-secondary",
-                          "content": "QUICK ACTIONS",
-                          "fontFamily": "$font-ui",
-                          "fontSize": 11,
-                          "fontWeight": "600",
+                          "type": "frame",
+                          "id": "jtS4A",
+                          "name": "ActionsTitleWrap",
+                          "width": "fill_container",
                           "padding": [
                             8,
                             16,
                             4,
                             16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "mT7DT",
+                              "name": "ActionsTitle",
+                              "fill": "$text-secondary",
+                              "content": "QUICK ACTIONS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V1Action1",
-                          "name": "ActionItem1",
+                          "id": "gCHdo",
+                          "name": "Open Settings Action",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -57342,8 +57188,8 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V1Action1Icon",
-                              "name": "SettingsIcon",
+                              "id": "vXb3n",
+                              "name": "ActionIcon",
                               "width": 14,
                               "height": 14,
                               "icon": "settings",
@@ -57352,7 +57198,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "V1Action1Text",
+                              "id": "V3sOQ",
                               "name": "ActionText",
                               "fill": "$text-primary",
                               "content": "Open Settings",
@@ -57362,12 +57208,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V1Action1Spacer",
-                              "width": "fill_container"
+                              "id": "MbzRj",
+                              "name": "Spacer",
+                              "width": "fill_container",
+                              "height": 1
                             },
                             {
                               "type": "text",
-                              "id": "V1Action1Shortcut",
+                              "id": "B2kD0l",
                               "name": "Shortcut",
                               "fill": "$text-muted",
                               "content": "Ctrl+,",
@@ -57379,8 +57227,8 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V1Action2",
-                          "name": "ActionItem2",
+                          "id": "M7Yx7",
+                          "name": "Switch to Terminal Action",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -57392,8 +57240,8 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V1Action2Icon",
-                              "name": "TerminalIcon",
+                              "id": "m3cQp",
+                              "name": "ActionIcon",
                               "width": 14,
                               "height": 14,
                               "icon": "terminal",
@@ -57402,22 +57250,24 @@
                             },
                             {
                               "type": "text",
-                              "id": "V1Action2Text",
+                              "id": "eUuij",
                               "name": "ActionText",
                               "fill": "$text-primary",
-                              "content": "Switch to Terminal View",
+                              "content": "Switch to Terminal",
                               "fontFamily": "$font-ui",
                               "fontSize": 13,
                               "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
-                              "id": "V1Action2Spacer",
-                              "width": "fill_container"
+                              "id": "iTBKf",
+                              "name": "Spacer",
+                              "width": "fill_container",
+                              "height": 1
                             },
                             {
                               "type": "text",
-                              "id": "V1Action2Shortcut",
+                              "id": "JWTb7",
                               "name": "Shortcut",
                               "fill": "$text-muted",
                               "content": "Ctrl+2",
@@ -57437,7 +57287,7 @@
         },
         {
           "type": "frame",
-          "id": "CmdPalV2",
+          "id": "VKzKZ",
           "x": 1560,
           "y": 64,
           "name": "Variant 2 - Active Search",
@@ -57449,82 +57299,25 @@
           "children": [
             {
               "type": "frame",
-              "id": "V2Topbar",
-              "name": "Topbar",
+              "id": "f7hlb1",
               "x": 0,
               "y": 0,
-              "width": 1440,
-              "height": 56,
-              "fill": "$card",
-              "stroke": "$border",
-              "strokeWidth": 1,
-              "gap": 16,
-              "padding": [
-                0,
-                20
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "V2Logo",
-                  "name": "LogoBox",
-                  "width": 32,
-                  "height": 32,
-                  "fill": "$accent-indigo",
-                  "cornerRadius": 8
-                },
-                {
-                  "type": "text",
-                  "id": "V2Title",
-                  "name": "AppTitle",
-                  "fill": "$text-primary",
-                  "content": "PiDash",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                },
-                {
-                  "type": "rectangle",
-                  "id": "V2Sep",
-                  "name": "Sep",
-                  "fill": "$border",
-                  "width": 1,
-                  "height": 24
-                },
-                {
-                  "type": "text",
-                  "id": "V2Repo",
-                  "name": "RepoName",
-                  "fill": "$text-secondary",
-                  "content": "pi-dash",
-                  "fontFamily": "$font-mono",
-                  "fontSize": 13
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "V2Overlay",
               "name": "Overlay",
-              "x": 0,
-              "y": 0,
               "width": 1440,
               "height": 900,
               "fill": "#00000080",
               "layout": "vertical",
-              "justifyContent": "flex-start",
-              "alignItems": "center",
               "padding": [
                 120,
                 0,
                 0,
                 0
               ],
+              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "V2Palette",
+                  "id": "BHdZs",
                   "name": "CommandPalette",
                   "width": 640,
                   "fill": "$card",
@@ -57535,7 +57328,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "V2Box",
+                      "id": "Odolg",
                       "name": "SearchInput",
                       "width": "fill_container",
                       "height": 56,
@@ -57548,7 +57341,7 @@
                       "children": [
                         {
                           "type": "icon",
-                          "id": "V2SI",
+                          "id": "UW1yX",
                           "name": "SearchIcon",
                           "width": 20,
                           "height": 20,
@@ -57558,7 +57351,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "V2ST",
+                          "id": "E7kyb",
                           "name": "SearchText",
                           "fill": "$text-primary",
                           "content": "claude",
@@ -57568,7 +57361,7 @@
                         },
                         {
                           "type": "rectangle",
-                          "id": "V2Cursor",
+                          "id": "nEmGR",
                           "name": "Cursor",
                           "fill": "$accent-indigo",
                           "width": 2,
@@ -57576,13 +57369,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V2Sp",
+                          "id": "mF8Dm",
                           "name": "Spacer",
-                          "width": "fill_container"
+                          "width": "fill_container",
+                          "height": 1
                         },
                         {
                           "type": "frame",
-                          "id": "V2SB",
+                          "id": "LGErP",
                           "name": "ShortcutBadge",
                           "height": 24,
                           "fill": "$bg",
@@ -57595,12 +57389,13 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "V2SL",
+                              "id": "mL2iH",
                               "name": "Label",
                               "fill": "$text-muted",
                               "content": "Ctrl+K",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -57608,15 +57403,16 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V2Div1",
+                      "id": "vOS6A",
+                      "name": "Divider",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V2Results",
-                      "name": "Results",
+                      "id": "LctWD",
+                      "name": "ResultsSection",
                       "width": "fill_container",
                       "layout": "vertical",
                       "padding": [
@@ -57625,24 +57421,32 @@
                       ],
                       "children": [
                         {
-                          "type": "text",
-                          "id": "V2RT",
-                          "name": "ResultsTitle",
-                          "fill": "$text-secondary",
-                          "content": "RESULTS",
-                          "fontFamily": "$font-ui",
-                          "fontSize": 11,
-                          "fontWeight": "600",
+                          "type": "frame",
+                          "id": "ULDoi",
+                          "name": "ResultsTitleWrap",
+                          "width": "fill_container",
                           "padding": [
                             8,
                             16,
                             4,
                             16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WASt2",
+                              "name": "ResultsTitle",
+                              "fill": "$text-secondary",
+                              "content": "RESULTS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V2AItem",
+                          "id": "LSOlR",
                           "name": "claude-code Card",
                           "width": "fill_container",
                           "height": 44,
@@ -57652,11 +57456,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V2AIB",
+                              "id": "egplG",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -57667,7 +57470,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V2AIC",
+                                  "id": "DxgEV",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -57679,14 +57482,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V2ATB",
+                              "id": "skWoo",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V2ATL",
+                                  "id": "L2Neyc",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude-code",
@@ -57696,12 +57499,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V2ATD",
+                                  "id": "In2q4",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "Running · 2h active · /projects/pi-dash",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -57709,7 +57513,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V2BItem",
+                          "id": "X0XQvO",
                           "name": "claude-agent Card",
                           "width": "fill_container",
                           "height": 44,
@@ -57719,11 +57523,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V2BIB",
+                              "id": "SdfIV",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -57734,7 +57537,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V2BIC",
+                                  "id": "PKtmb",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -57746,14 +57549,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V2BTB",
+                              "id": "X9Q21J",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V2BTL",
+                                  "id": "lI5go",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude-agent",
@@ -57763,12 +57566,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V2BTD",
+                                  "id": "HGW9q",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "Available · /usr/local/bin/claude",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -57776,7 +57580,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V2CItem",
+                          "id": "sAiKv",
                           "name": "claude-integration branch Card",
                           "width": "fill_container",
                           "height": 44,
@@ -57786,11 +57590,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V2CIB",
+                              "id": "omrhx",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -57801,7 +57604,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V2CIC",
+                                  "id": "R1P7Ji",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -57813,14 +57616,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V2CTB",
+                              "id": "GlL0X",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V2CTL",
+                                  "id": "y5779A",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude-integration branch",
@@ -57830,12 +57633,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V2CTD",
+                                  "id": "t3S5bv",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "feature · 3 commits ahead",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -57843,7 +57647,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V2DItem",
+                          "id": "RxveY",
                           "name": "claude.config.json Card",
                           "width": "fill_container",
                           "height": 44,
@@ -57853,11 +57657,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V2DIB",
+                              "id": "o5lWMG",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -57868,7 +57671,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V2DIC",
+                                  "id": "jwaAP",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -57880,14 +57683,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V2DTB",
+                              "id": "vQVdq",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V2DTL",
+                                  "id": "Hax05",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude.config.json",
@@ -57897,12 +57700,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V2DTD",
+                                  "id": "nsPY4",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "Modified · +12 -3",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -57918,7 +57722,7 @@
         },
         {
           "type": "frame",
-          "id": "CmdPalV3",
+          "id": "qXvoP",
           "x": 3080,
           "y": 64,
           "name": "Variant 3 - No Results",
@@ -57930,82 +57734,25 @@
           "children": [
             {
               "type": "frame",
-              "id": "V3Topbar",
-              "name": "Topbar",
+              "id": "JRxOF",
               "x": 0,
               "y": 0,
-              "width": 1440,
-              "height": 56,
-              "fill": "$card",
-              "stroke": "$border",
-              "strokeWidth": 1,
-              "gap": 16,
-              "padding": [
-                0,
-                20
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "V3Logo",
-                  "name": "LogoBox",
-                  "width": 32,
-                  "height": 32,
-                  "fill": "$accent-indigo",
-                  "cornerRadius": 8
-                },
-                {
-                  "type": "text",
-                  "id": "V3Title",
-                  "name": "AppTitle",
-                  "fill": "$text-primary",
-                  "content": "PiDash",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                },
-                {
-                  "type": "rectangle",
-                  "id": "V3Sep",
-                  "name": "Sep",
-                  "fill": "$border",
-                  "width": 1,
-                  "height": 24
-                },
-                {
-                  "type": "text",
-                  "id": "V3Repo",
-                  "name": "RepoName",
-                  "fill": "$text-secondary",
-                  "content": "pi-dash",
-                  "fontFamily": "$font-mono",
-                  "fontSize": 13
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "V3Overlay",
               "name": "Overlay",
-              "x": 0,
-              "y": 0,
               "width": 1440,
               "height": 900,
               "fill": "#00000080",
               "layout": "vertical",
-              "justifyContent": "flex-start",
-              "alignItems": "center",
               "padding": [
                 120,
                 0,
                 0,
                 0
               ],
+              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "V3Palette",
+                  "id": "USnub",
                   "name": "CommandPalette",
                   "width": 640,
                   "fill": "$card",
@@ -58016,7 +57763,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "V3Box",
+                      "id": "k2SzI5",
                       "name": "SearchInput",
                       "width": "fill_container",
                       "height": 56,
@@ -58029,7 +57776,7 @@
                       "children": [
                         {
                           "type": "icon",
-                          "id": "V3SI",
+                          "id": "frlZs",
                           "name": "SearchIcon",
                           "width": 20,
                           "height": 20,
@@ -58039,7 +57786,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "V3ST",
+                          "id": "M8lmw",
                           "name": "SearchText",
                           "fill": "$text-primary",
                           "content": "xyznotfound",
@@ -58049,7 +57796,7 @@
                         },
                         {
                           "type": "rectangle",
-                          "id": "V3Cursor",
+                          "id": "BesV6",
                           "name": "Cursor",
                           "fill": "$accent-indigo",
                           "width": 2,
@@ -58057,13 +57804,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V3Sp",
+                          "id": "DNUvz",
                           "name": "Spacer",
-                          "width": "fill_container"
+                          "width": "fill_container",
+                          "height": 1
                         },
                         {
                           "type": "frame",
-                          "id": "V3SB",
+                          "id": "UDnJF",
                           "name": "ShortcutBadge",
                           "height": 24,
                           "fill": "$bg",
@@ -58076,12 +57824,13 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "V3SL",
+                              "id": "m2J8S",
                               "name": "Label",
                               "fill": "$text-muted",
                               "content": "Ctrl+K",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -58089,14 +57838,15 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V3Div1",
+                      "id": "TB1wI",
+                      "name": "Divider",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V3Empty",
+                      "id": "j1EBXi",
                       "name": "EmptyState",
                       "width": "fill_container",
                       "layout": "vertical",
@@ -58109,7 +57859,7 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "V3EmptyIcon",
+                          "id": "FQZV3",
                           "name": "IconBox",
                           "width": 48,
                           "height": 48,
@@ -58120,7 +57870,7 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V3EmptyI",
+                              "id": "K5Vfsh",
                               "name": "SearchX",
                               "width": 24,
                               "height": 24,
@@ -58132,7 +57882,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "V3EmptyTitle",
+                          "id": "esmwX",
                           "name": "Title",
                           "fill": "$text-primary",
                           "content": "No results found",
@@ -58142,15 +57892,16 @@
                         },
                         {
                           "type": "text",
-                          "id": "V3EmptyDesc",
+                          "id": "amMzj",
                           "name": "Desc",
                           "fill": "$text-muted",
-                          "content": "No agents, repos, or files match \"xyznotfound\"",
+                          "textGrowth": "fixed-width",
+                          "width": 400,
+                          "content": "No agents, repos, or files match “xyznotfound”",
+                          "textAlign": "center",
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
-                          "textAlign": "center",
-                          "textGrowth": "fixed-width",
-                          "width": 400
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -58162,7 +57913,7 @@
         },
         {
           "type": "frame",
-          "id": "CmdPalV4",
+          "id": "o6FCxi",
           "x": 4600,
           "y": 64,
           "name": "Variant 4 - Keyboard Navigation",
@@ -58174,82 +57925,25 @@
           "children": [
             {
               "type": "frame",
-              "id": "V4Topbar",
-              "name": "Topbar",
+              "id": "l2PMd",
               "x": 0,
               "y": 0,
-              "width": 1440,
-              "height": 56,
-              "fill": "$card",
-              "stroke": "$border",
-              "strokeWidth": 1,
-              "gap": 16,
-              "padding": [
-                0,
-                20
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "V4Logo",
-                  "name": "LogoBox",
-                  "width": 32,
-                  "height": 32,
-                  "fill": "$accent-indigo",
-                  "cornerRadius": 8
-                },
-                {
-                  "type": "text",
-                  "id": "V4Title",
-                  "name": "AppTitle",
-                  "fill": "$text-primary",
-                  "content": "PiDash",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                },
-                {
-                  "type": "rectangle",
-                  "id": "V4Sep",
-                  "name": "Sep",
-                  "fill": "$border",
-                  "width": 1,
-                  "height": 24
-                },
-                {
-                  "type": "text",
-                  "id": "V4Repo",
-                  "name": "RepoName",
-                  "fill": "$text-secondary",
-                  "content": "pi-dash",
-                  "fontFamily": "$font-mono",
-                  "fontSize": 13
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "V4Overlay",
               "name": "Overlay",
-              "x": 0,
-              "y": 0,
               "width": 1440,
               "height": 900,
               "fill": "#00000080",
               "layout": "vertical",
-              "justifyContent": "flex-start",
-              "alignItems": "center",
               "padding": [
                 120,
                 0,
                 0,
                 0
               ],
+              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "V4Palette",
+                  "id": "eQhzI",
                   "name": "CommandPalette",
                   "width": 640,
                   "fill": "$card",
@@ -58260,7 +57954,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "V4Box",
+                      "id": "A6A0bp",
                       "name": "SearchInput",
                       "width": "fill_container",
                       "height": 56,
@@ -58273,7 +57967,7 @@
                       "children": [
                         {
                           "type": "icon",
-                          "id": "V4SI",
+                          "id": "aoCdY",
                           "name": "SearchIcon",
                           "width": 20,
                           "height": 20,
@@ -58283,7 +57977,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "V4ST",
+                          "id": "wxiLl",
                           "name": "SearchText",
                           "fill": "$text-primary",
                           "content": "claude",
@@ -58293,7 +57987,7 @@
                         },
                         {
                           "type": "rectangle",
-                          "id": "V4Cursor",
+                          "id": "ykYDo",
                           "name": "Cursor",
                           "fill": "$accent-indigo",
                           "width": 2,
@@ -58301,13 +57995,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V4Sp",
+                          "id": "mcUpb",
                           "name": "Spacer",
-                          "width": "fill_container"
+                          "width": "fill_container",
+                          "height": 1
                         },
                         {
                           "type": "frame",
-                          "id": "V4SB",
+                          "id": "tGZWt",
                           "name": "ShortcutBadge",
                           "height": 24,
                           "fill": "$bg",
@@ -58320,12 +58015,13 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "V4SL",
+                              "id": "qmjiN",
                               "name": "Label",
                               "fill": "$text-muted",
                               "content": "Ctrl+K",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -58333,15 +58029,16 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V4Div1",
+                      "id": "ujWid",
+                      "name": "Divider1",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V4Results",
-                      "name": "Results",
+                      "id": "tsmIO",
+                      "name": "ResultsSection",
                       "width": "fill_container",
                       "layout": "vertical",
                       "padding": [
@@ -58350,41 +58047,49 @@
                       ],
                       "children": [
                         {
-                          "type": "text",
-                          "id": "V4RT",
-                          "name": "ResultsTitle",
-                          "fill": "$text-secondary",
-                          "content": "RESULTS  ·  ↑↓ navigate  ·  ↵ select",
-                          "fontFamily": "$font-ui",
-                          "fontSize": 11,
-                          "fontWeight": "600",
+                          "type": "frame",
+                          "id": "dHL63",
+                          "name": "ResultsTitleWrap",
+                          "width": "fill_container",
                           "padding": [
                             8,
                             16,
                             4,
                             16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "t2O9G",
+                              "name": "ResultsTitle",
+                              "fill": "$text-secondary",
+                              "content": "RESULTS  ·  ↑↓ navigate  ·  ↵ select",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V4Item1",
-                          "name": "claude-code Card",
+                          "id": "vsfKV",
+                          "name": "claude-code Highlighted",
                           "width": "fill_container",
                           "height": 44,
+                          "fill": "$state-hover",
+                          "cornerRadius": 6,
+                          "stroke": "$accent-indigo",
+                          "strokeWidth": 1,
                           "gap": 12,
                           "padding": [
                             0,
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "$state-hover",
-                          "stroke": "$accent-indigo",
-                          "strokeWidth": 1,
-                          "cornerRadius": 6,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V4IB1",
+                              "id": "nf3US",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -58395,7 +58100,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V4IC1",
+                                  "id": "uSzhF",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -58407,15 +58112,15 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V4TB1",
+                              "id": "XLKW1",
                               "name": "TextBox",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 1,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V4TL1",
+                                  "id": "lVuEr",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude-code",
@@ -58425,18 +58130,19 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V4TD1",
+                                  "id": "s4Rqtw",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "Running · 2h active · /projects/pi-dash",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
                             {
                               "type": "icon",
-                              "id": "V4Enter1",
+                              "id": "W2T1S",
                               "name": "EnterIcon",
                               "width": 14,
                               "height": 14,
@@ -58448,7 +58154,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V4AItem",
+                          "id": "Qkr9X",
                           "name": "claude-agent Card",
                           "width": "fill_container",
                           "height": 44,
@@ -58458,11 +58164,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V4AIB",
+                              "id": "NxrB6",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -58473,7 +58178,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V4AIC",
+                                  "id": "SuT30",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -58485,14 +58190,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V4ATB",
+                              "id": "dUEhu",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V4ATL",
+                                  "id": "aoujJ",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude-agent",
@@ -58502,12 +58207,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V4ATD",
+                                  "id": "TD251",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "Available · /usr/local/bin/claude",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -58515,7 +58221,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V4BItem",
+                          "id": "aqzVv",
                           "name": "claude-integration branch Card",
                           "width": "fill_container",
                           "height": 44,
@@ -58525,11 +58231,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V4BIB",
+                              "id": "WNW5j",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -58540,7 +58245,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V4BIC",
+                                  "id": "ki4C0",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -58552,14 +58257,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V4BTB",
+                              "id": "N9SBf",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V4BTL",
+                                  "id": "TpHOg",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude-integration branch",
@@ -58569,12 +58274,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V4BTD",
+                                  "id": "Meatw",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "feature · 3 commits ahead",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -58582,7 +58288,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "V4CItem",
+                          "id": "R0QBjC",
                           "name": "claude.config.json Card",
                           "width": "fill_container",
                           "height": 44,
@@ -58592,11 +58298,10 @@
                             16
                           ],
                           "alignItems": "center",
-                          "fill": "#00000000",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "V4CIB",
+                              "id": "R1Bzf",
                               "name": "IconBox",
                               "width": 28,
                               "height": 28,
@@ -58607,7 +58312,7 @@
                               "children": [
                                 {
                                   "type": "icon",
-                                  "id": "V4CIC",
+                                  "id": "dN9dW",
                                   "name": "Icon",
                                   "width": 14,
                                   "height": 14,
@@ -58619,14 +58324,14 @@
                             },
                             {
                               "type": "frame",
-                              "id": "V4CTB",
+                              "id": "lpirW",
                               "name": "TextBox",
                               "layout": "vertical",
                               "gap": 1,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "V4CTL",
+                                  "id": "wNbt8",
                                   "name": "Title",
                                   "fill": "$text-primary",
                                   "content": "claude.config.json",
@@ -58636,12 +58341,13 @@
                                 },
                                 {
                                   "type": "text",
-                                  "id": "V4CTD",
+                                  "id": "g7TTJi",
                                   "name": "Desc",
                                   "fill": "$text-muted",
                                   "content": "Modified · +12 -3",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 11
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -58651,14 +58357,15 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V4Div2",
+                      "id": "nMCSw",
+                      "name": "Divider2",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V4Footer",
+                      "id": "r825B",
                       "name": "Footer",
                       "width": "fill_container",
                       "height": 32,
@@ -58671,40 +58378,50 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "V4F1",
+                          "id": "IedX9",
+                          "name": "Position",
                           "fill": "$text-muted",
-                          "content": "2 of 4",
+                          "content": "1 of 4",
                           "fontFamily": "$font-mono",
-                          "fontSize": 11
+                          "fontSize": 11,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
-                          "id": "V4FSp",
-                          "width": "fill_container"
+                          "id": "Fn6Gb",
+                          "name": "Spacer",
+                          "width": "fill_container",
+                          "height": 1
                         },
                         {
                           "type": "text",
-                          "id": "V4F2",
+                          "id": "HH8Z2",
+                          "name": "NavHint",
                           "fill": "$text-muted",
                           "content": "↑↓ nav",
                           "fontFamily": "$font-mono",
-                          "fontSize": 11
+                          "fontSize": 11,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
-                          "id": "V4F3",
+                          "id": "fSmX6",
+                          "name": "OpenHint",
                           "fill": "$text-muted",
                           "content": "↵ open",
                           "fontFamily": "$font-mono",
-                          "fontSize": 11
+                          "fontSize": 11,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
-                          "id": "V4F4",
+                          "id": "SFLWL",
+                          "name": "CloseHint",
                           "fill": "$text-muted",
                           "content": "esc close",
                           "fontFamily": "$font-mono",
-                          "fontSize": 11
+                          "fontSize": 11,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -58716,7 +58433,7 @@
         },
         {
           "type": "frame",
-          "id": "CmdPalV5",
+          "id": "GB42o",
           "x": 6120,
           "y": 64,
           "name": "Variant 5 - Empty State",
@@ -58728,82 +58445,25 @@
           "children": [
             {
               "type": "frame",
-              "id": "V5Topbar",
-              "name": "Topbar",
+              "id": "cO8tu",
               "x": 0,
               "y": 0,
-              "width": 1440,
-              "height": 56,
-              "fill": "$card",
-              "stroke": "$border",
-              "strokeWidth": 1,
-              "gap": 16,
-              "padding": [
-                0,
-                20
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "V5Logo",
-                  "name": "LogoBox",
-                  "width": 32,
-                  "height": 32,
-                  "fill": "$accent-indigo",
-                  "cornerRadius": 8
-                },
-                {
-                  "type": "text",
-                  "id": "V5Title",
-                  "name": "AppTitle",
-                  "fill": "$text-primary",
-                  "content": "PiDash",
-                  "fontFamily": "$font-ui",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                },
-                {
-                  "type": "rectangle",
-                  "id": "V5Sep",
-                  "name": "Sep",
-                  "fill": "$border",
-                  "width": 1,
-                  "height": 24
-                },
-                {
-                  "type": "text",
-                  "id": "V5Repo",
-                  "name": "RepoName",
-                  "fill": "$text-secondary",
-                  "content": "pi-dash",
-                  "fontFamily": "$font-mono",
-                  "fontSize": 13
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "V5Overlay",
               "name": "Overlay",
-              "x": 0,
-              "y": 0,
               "width": 1440,
               "height": 900,
               "fill": "#00000080",
               "layout": "vertical",
-              "justifyContent": "flex-start",
-              "alignItems": "center",
               "padding": [
                 120,
                 0,
                 0,
                 0
               ],
+              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "V5Palette",
+                  "id": "d8EzM",
                   "name": "CommandPalette",
                   "width": 640,
                   "fill": "$card",
@@ -58814,7 +58474,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "V5Box",
+                      "id": "y2H9NJ",
                       "name": "SearchInput",
                       "width": "fill_container",
                       "height": 56,
@@ -58827,33 +58487,34 @@
                       "children": [
                         {
                           "type": "icon",
-                          "id": "V5SI",
+                          "id": "rEQ1t",
                           "name": "SearchIcon",
                           "width": 20,
                           "height": 20,
                           "icon": "search",
                           "library": "lucide",
-                          "fill": "$accent-indigo"
+                          "fill": "$text-muted"
                         },
                         {
                           "type": "text",
-                          "id": "V5ST",
-                          "name": "SearchText",
-                          "fill": "$text-primary",
-                          "content": "",
+                          "id": "eucre",
+                          "name": "Placeholder",
+                          "fill": "$text-muted",
+                          "content": "Search agents, repos, PRs, files...",
                           "fontFamily": "$font-ui",
                           "fontSize": 15,
                           "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
-                          "id": "V5Sp",
+                          "id": "e0Fph",
                           "name": "Spacer",
-                          "width": "fill_container"
+                          "width": "fill_container",
+                          "height": 1
                         },
                         {
                           "type": "frame",
-                          "id": "V5SB",
+                          "id": "FjQOa",
                           "name": "ShortcutBadge",
                           "height": 24,
                           "fill": "$bg",
@@ -58866,12 +58527,13 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "V5SL",
+                              "id": "GyC4K",
                               "name": "Label",
                               "fill": "$text-muted",
                               "content": "Ctrl+K",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -58879,15 +58541,16 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "V5Div1",
+                      "id": "QJTjZ",
+                      "name": "Divider1",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V5Empty",
-                      "name": "EmptyContent",
+                      "id": "F6ALD",
+                      "name": "EmptyState",
                       "width": "fill_container",
                       "layout": "vertical",
                       "gap": 12,
@@ -58899,7 +58562,7 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "V5EmptyIcon",
+                          "id": "BZUrl",
                           "name": "IconBox",
                           "width": 48,
                           "height": 48,
@@ -58910,8 +58573,8 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V5EmptyI",
-                              "name": "Search",
+                              "id": "A0ROq",
+                              "name": "SearchIcon",
                               "width": 24,
                               "height": 24,
                               "icon": "search",
@@ -58922,7 +58585,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "V5EmptyTitle",
+                          "id": "D99nC1",
                           "name": "Title",
                           "fill": "$text-primary",
                           "content": "Start typing to search",
@@ -58932,28 +58595,30 @@
                         },
                         {
                           "type": "text",
-                          "id": "V5EmptyDesc",
+                          "id": "LrOQn",
                           "name": "Desc",
                           "fill": "$text-muted",
+                          "textGrowth": "fixed-width",
+                          "width": 400,
                           "content": "Search across agents, repos, PRs, branches, and files",
+                          "textAlign": "center",
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
-                          "textAlign": "center",
-                          "textGrowth": "fixed-width",
-                          "width": 400
+                          "fontWeight": "normal"
                         }
                       ]
                     },
                     {
                       "type": "rectangle",
-                      "id": "V5Div2",
+                      "id": "P6LIlE",
+                      "name": "Divider2",
                       "fill": "$border",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "V5Actions",
+                      "id": "hkYyZ",
                       "name": "ActionsSection",
                       "width": "fill_container",
                       "layout": "vertical",
@@ -58963,25 +58628,33 @@
                       ],
                       "children": [
                         {
-                          "type": "text",
-                          "id": "V5AT",
-                          "name": "ActionsTitle",
-                          "fill": "$text-secondary",
-                          "content": "QUICK ACTIONS",
-                          "fontFamily": "$font-ui",
-                          "fontSize": 11,
-                          "fontWeight": "600",
+                          "type": "frame",
+                          "id": "GTZo2",
+                          "name": "ActionsTitleWrap",
+                          "width": "fill_container",
                           "padding": [
                             8,
                             16,
                             4,
                             16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "A52Ar",
+                              "name": "ActionsTitle",
+                              "fill": "$text-secondary",
+                              "content": "QUICK ACTIONS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V5A1",
-                          "name": "Action1",
+                          "id": "N8qiqW",
+                          "name": "Open Settings Action",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -58993,7 +58666,8 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V5A1I",
+                              "id": "OPkrt",
+                              "name": "ActionIcon",
                               "width": 14,
                               "height": 14,
                               "icon": "settings",
@@ -59002,31 +58676,37 @@
                             },
                             {
                               "type": "text",
-                              "id": "V5A1T",
+                              "id": "HYcEj",
+                              "name": "ActionText",
                               "fill": "$text-primary",
                               "content": "Open Settings",
                               "fontFamily": "$font-ui",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
-                              "id": "V5A1S",
-                              "width": "fill_container"
+                              "id": "WN1WD",
+                              "name": "Spacer",
+                              "width": "fill_container",
+                              "height": 1
                             },
                             {
                               "type": "text",
-                              "id": "V5A1K",
+                              "id": "rIfeR",
+                              "name": "Shortcut",
                               "fill": "$text-muted",
                               "content": "Ctrl+,",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V5A2",
-                          "name": "Action2",
+                          "id": "Kxq9R",
+                          "name": "Switch to Terminal Action",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -59038,7 +58718,8 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V5A2I",
+                              "id": "M72Dc2",
+                              "name": "ActionIcon",
                               "width": 14,
                               "height": 14,
                               "icon": "terminal",
@@ -59047,31 +58728,37 @@
                             },
                             {
                               "type": "text",
-                              "id": "V5A2T",
+                              "id": "q0YG2U",
+                              "name": "ActionText",
                               "fill": "$text-primary",
                               "content": "Switch to Terminal",
                               "fontFamily": "$font-ui",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
-                              "id": "V5A2S",
-                              "width": "fill_container"
+                              "id": "t0ek1u",
+                              "name": "Spacer",
+                              "width": "fill_container",
+                              "height": 1
                             },
                             {
                               "type": "text",
-                              "id": "V5A2K",
+                              "id": "UiP4Y",
+                              "name": "Shortcut",
                               "fill": "$text-muted",
                               "content": "Ctrl+2",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "V5A3",
-                          "name": "Action3",
+                          "id": "W3z2Y",
+                          "name": "Add Agent Action",
                           "width": "fill_container",
                           "height": 36,
                           "gap": 12,
@@ -59083,7 +58770,8 @@
                           "children": [
                             {
                               "type": "icon",
-                              "id": "V5A3I",
+                              "id": "tk1am",
+                              "name": "ActionIcon",
                               "width": 14,
                               "height": 14,
                               "icon": "plus",
@@ -59092,24 +58780,30 @@
                             },
                             {
                               "type": "text",
-                              "id": "V5A3T",
+                              "id": "yttS8",
+                              "name": "ActionText",
                               "fill": "$text-primary",
                               "content": "Add Agent",
                               "fontFamily": "$font-ui",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
-                              "id": "V5A3S",
-                              "width": "fill_container"
+                              "id": "BjFyY",
+                              "name": "Spacer",
+                              "width": "fill_container",
+                              "height": 1
                             },
                             {
                               "type": "text",
-                              "id": "V5A3K",
+                              "id": "l9bIX",
+                              "name": "Shortcut",
                               "fill": "$text-muted",
                               "content": "Ctrl+L",
                               "fontFamily": "$font-mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -59118,6 +58812,282 @@
                   ]
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "VjCRp",
+      "x": 23540,
+      "y": -8564,
+      "name": "BottomBar",
+      "reusable": true,
+      "width": 1440,
+      "height": 40,
+      "fill": "$card",
+      "stroke": "$border",
+      "strokeWidth": {
+        "top": 1
+      },
+      "gap": 16,
+      "padding": [
+        0,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Y9Iha",
+          "name": "AgentStatus",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "t63NlB",
+              "name": "StatusDot",
+              "fill": "#000000",
+              "width": 8,
+              "height": 8
+            },
+            {
+              "type": "text",
+              "id": "d8dJe",
+              "name": "AgentName",
+              "fill": "$text-primary",
+              "content": "omp",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "NwpPR",
+              "name": "AgentTask",
+              "fill": "$text-secondary",
+              "content": "Building API endpoints",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "XLLih",
+          "name": "Workspace",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "TDZjS",
+              "name": "FolderIcon",
+              "width": 14,
+              "height": 14,
+              "icon": "folder",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            },
+            {
+              "type": "text",
+              "id": "LMHqe",
+              "name": "CwdPath",
+              "fill": "$text-secondary",
+              "content": "/projects/pi-dash",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "VyKuK",
+              "name": "BranchChip",
+              "fill": "#000000",
+              "content": "main",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PRSpu",
+          "name": "Metrics",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "kGyep",
+              "name": "CpuMetric",
+              "fill": "$text-secondary",
+              "content": "CPU 23%",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Ks3pD",
+              "name": "RamMetric",
+              "fill": "$text-secondary",
+              "content": "RAM 4.2GB",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "hyHp6",
+              "name": "AlertIcon",
+              "width": 14,
+              "height": 14,
+              "icon": "bell",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "G4ENVU",
+      "x": 25060,
+      "y": -8564,
+      "name": "BottomBar",
+      "reusable": true,
+      "width": 1440,
+      "height": 40,
+      "fill": "$card",
+      "stroke": "$border",
+      "strokeWidth": {
+        "top": 1
+      },
+      "gap": 16,
+      "padding": [
+        0,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "CUt4t",
+          "name": "AgentStatus",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "n0phm",
+              "name": "StatusDot",
+              "fill": "#000000",
+              "width": 8,
+              "height": 8
+            },
+            {
+              "type": "text",
+              "id": "KkT8t",
+              "name": "AgentName",
+              "fill": "$text-primary",
+              "content": "omp",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "u5x6s",
+              "name": "AgentTask",
+              "fill": "$text-secondary",
+              "content": "Building API endpoints",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Wm5fH",
+          "name": "Workspace",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "eMdjC",
+              "name": "FolderIcon",
+              "width": 14,
+              "height": 14,
+              "icon": "folder",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            },
+            {
+              "type": "text",
+              "id": "VPbAN",
+              "name": "CwdPath",
+              "fill": "$text-secondary",
+              "content": "/projects/pi-dash",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "BP9Ar",
+              "name": "BranchChip",
+              "fill": "#000000",
+              "content": "main",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qzh2K",
+          "name": "Metrics",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "TUjIm",
+              "name": "CpuMetric",
+              "fill": "$text-secondary",
+              "content": "CPU 23%",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "U9LqME",
+              "name": "RamMetric",
+              "fill": "$text-secondary",
+              "content": "RAM 4.2GB",
+              "fontFamily": "Geist Mono",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "QaQmv",
+              "name": "AlertIcon",
+              "width": 14,
+              "height": 14,
+              "icon": "bell",
+              "library": "lucide",
+              "fill": "$text-secondary"
             }
           ]
         }
