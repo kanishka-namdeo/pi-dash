@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { Search, History, Settings, Terminal, Plus, CornerDownLeft, SearchX } from 'lucide-react';
+import { Search, History, Settings, Terminal, Plus, CornerDownLeft, SearchX, LayoutDashboard, GitBranch, Bot, GitPullRequest } from 'lucide-react';
 import { useCommandPalette } from '../hooks/useCommandPalette';
 import type { SearchItem } from '../lib/searchIndex';
 
@@ -11,6 +11,11 @@ const ICON_MAP: Record<string, typeof Search> = {
   plus: Plus,
   'search-x': SearchX,
   'corner-down-left': CornerDownLeft,
+  'layout-dashboard': LayoutDashboard,
+  'git-branch': GitBranch,
+  bot: Bot,
+  repo: Search,
+  'git-pull-request': GitPullRequest,
 };
 
 function getIcon(name: string) {
