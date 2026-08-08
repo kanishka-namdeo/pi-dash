@@ -8,6 +8,7 @@ import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
 import { useGitHub } from '@/context/GitHubContext';
 import { useSettingsContext } from '../../context/SettingsContext';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import type { PlanStep, Agent } from '@/types/dashboard';
 import type { ViewMode } from '@/types/pip';
 import { TopBar } from './Topbar';
@@ -21,6 +22,7 @@ import { AgentDetailPanel } from './AgentDetailPanel';
 import { RateLimitAlert } from '../github/RateLimitAlert';
 import { AgentDisconnected } from '../ui/AgentDisconnected';
 import { GitHubAuthExpired } from '../github/GitHubAuthExpired';
+import { ProjectSetupFlow } from '../project-setup/ProjectSetupFlow';
 
 // Mock plan data
 const mockSteps: PlanStep[] = [
@@ -44,6 +46,27 @@ export function Dashboard() {
   const [addAgentOpen, setAddAgentOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [collapsedPanels, setCollapsedPanels] = useState<Set<string>>(new Set());
+  const [disconnectedAgent, setDisconnectedAgent] = useState<string | null>(null);
+  const [showProjectSetup, setShowProjectSetup] = useState(false);
+  const { layout } = useResponsiveLayout();
+
+  // Smart auto-collapse panels based on viewport width
+  useEffect(() => {
+    setCollapsedPanels(prev => {
+      const next = new Set(prev);
+      const width = window.innerWidth;
+
+      if (width < 1300) {
+        next.add('activity');
+        next.add('plan');
+      } else if (width < 1400) {
+        next.add('plan');
+      }
+      // At 1440px+: don't auto-expand — respect user's manual collapse
+
+      return next;
+    });
+  }, [layout]);
 
   const toggleCollapse = useCallback((panel: string) => {
     setCollapsedPanels(prev => {
@@ -121,7 +144,7 @@ export function Dashboard() {
 
   // Ctrl+L shortcut: launch first available agent
   useEffect(() => {
-    const unsub = window.api.onShortcut?.((action: string) => {
+    const unsub = window.api?.onShortcut?.((action: string) => {
       if (action === 'launchAgent') {
         const firstAvailable = availableAgents.find(a => !runningSessions.some(s => s.agentId === a.id));
         if (firstAvailable) {
@@ -129,7 +152,7 @@ export function Dashboard() {
         }
       }
     });
-    return unsub;
+    return () => unsub?.();
   }, [availableAgents, runningSessions, handleLaunch]);
 
   const handleReconnect = () => {
@@ -171,6 +194,17 @@ export function Dashboard() {
       })()
     : undefined;
 
+  if (showProjectSetup) {
+    return (
+      <ProjectSetupFlow
+        flowMode="condensed"
+        onComplete={() => {
+          setShowProjectSetup(false);
+          refreshAgents();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
@@ -186,6 +220,16 @@ export function Dashboard() {
         onClearFeed={clear}
         onAddAgent={() => setAddAgentOpen(true)}
       />
+      <div className="flex items-center px-6 py-2" style={{ borderBottom: '1px solid var(--border)' }}>
+        <button
+          onClick={() => setShowProjectSetup(true)}
+          className="px-3 py-1.5 text-sm rounded-md transition-colors"
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}
+        >
+          + Add Project
+        </button>
+      </div>
+
 
       <div className="flex-1 flex overflow-hidden">
         <FleetPanel
@@ -200,7 +244,11 @@ export function Dashboard() {
           onToggleCollapse={() => toggleCollapse('fleet')}
         />
 
-        <TerminalPanel agentId={selectedAgentId} agentName={selectedAgent?.name} onClose={() => setSelectedAgentId(null)} />
+        <TerminalPanel
+          agentId={selectedAgentId}
+          agentName={selectedAgent?.name}
+          onClose={() => setSelectedAgentId(null)}
+        />
 
         <ActivityFeed
           events={events}
