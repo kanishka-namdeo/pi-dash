@@ -12,6 +12,7 @@ import { registerGitHubPRsHandlers } from './main/ipc/github-prs-handlers'
 import { SettingsService } from './main/settings/settings-service'
 import { KeyboardShortcutManager } from './main/keyboard/keyboard-shortcut-manager'
 import { NotificationManager } from './main/notifications/notification-manager'
+import { registerSearchHandlers } from './main/ipc/search-handlers'
 import { registerSettingsHandlers } from './main/ipc/settings-handlers'
 
 let tray: Tray | null = null
@@ -61,6 +62,7 @@ app.whenReady().then(() => {
   registerGitHubIssuesHandlers()
   registerGitHubPRsHandlers()
   settingsService = new SettingsService()
+  registerSearchHandlers(settingsService);
   const shortcutManager = new KeyboardShortcutManager(settingsService)
   shortcutManager.register()
   const notificationManager = new NotificationManager(settingsService)

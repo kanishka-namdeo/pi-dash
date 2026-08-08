@@ -1,6 +1,9 @@
 import { globalShortcut, BrowserWindow, app } from 'electron';
 import type { SettingsService } from '../settings/settings-service';
 import type { SettingsSchema } from '../settings/settings-types';
+import { createLogger } from '../logger';
+
+const log = createLogger('keyboard');
 
 type KeyboardSettings = SettingsSchema['keyboard'];
 
@@ -26,6 +29,7 @@ export class KeyboardShortcutManager {
     this.registerShortcut(kb.navigation.dashboardView, 'dashboardView');
     this.registerShortcut(kb.navigation.terminalView, 'terminalView');
     this.registerShortcut(kb.navigation.toggleSidebar, 'toggleSidebar');
+    this.registerShortcut(kb.navigation.openCommandPalette, 'openCommandPalette');
   }
 
   private registerShortcut(accelerator: string, action: string): void {
@@ -34,14 +38,13 @@ export class KeyboardShortcutManager {
         this.handleAction(action);
       });
     } catch (error) {
-      console.warn(`Failed to register shortcut ${accelerator}:`, error);
+      log.warn('Failed to register shortcut %s: %o', accelerator, error);
     }
   }
 
   private handleAction(action: string): void {
     const win = BrowserWindow.getAllWindows()[0];
     if (!win) return;
-
     switch (action) {
       case 'openSettings':
         win.webContents.send('navigate', '/settings');
@@ -54,6 +57,9 @@ export class KeyboardShortcutManager {
         break;
       case 'quitApp':
         app.quit();
+        break;
+      case 'openCommandPalette':
+        win.webContents.send('shortcut', 'openCommandPalette');
         break;
       default:
         // Forward other actions to renderer
