@@ -4648,47 +4648,38 @@
         {
           "type": "frame",
           "id": "DFecf",
-          "x": 1560,
-          "y": 64,
-          "name": "Agent Detail View",
+          "x": 1040,
+          "y": 0,
+          "name": "AgentDetailPanel",
+          "context": "Slide-out panel 400px wide on right side of dashboard",
           "clip": true,
-          "width": 1440,
+          "width": 400,
           "height": 900,
-          "fill": "$bg",
+          "fill": "$card",
+          "stroke": "$border",
+          "strokeWidth": {
+            "left": 1
+          },
           "layout": "vertical",
           "children": [
             {
               "type": "frame",
               "id": "Wmtrr",
-              "name": "HeaderBar",
+              "name": "PanelHeader",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$bg",
               "stroke": "$border",
               "strokeWidth": {
                 "bottom": 1
               },
-              "gap": 16,
+              "gap": 12,
               "padding": [
-                0,
-                24
+                12,
+                16
               ],
               "alignItems": "center",
               "children": [
-                {
-                  "id": "WoJyi",
-                  "type": "ref",
-                  "ref": "gpstW",
-                  "name": "BackBtn",
-                  "width": 36,
-                  "height": 36,
-                  "cornerRadius": 8,
-                  "descendants": {
-                    "Fjt4d": {
-                      "icon": "arrow-left"
-                    }
-                  }
-                },
                 {
                   "type": "frame",
                   "id": "ziuzl",
@@ -4746,7 +4737,7 @@
                   "type": "frame",
                   "id": "C3ZBPz",
                   "name": "RightInfo",
-                  "gap": 24,
+                  "gap": 8,
                   "alignItems": "center",
                   "children": [
                     {
@@ -4787,198 +4778,129 @@
                       "fontWeight": "normal"
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HqACk",
+                  "name": "CloseBtn",
+                  "width": 24,
+                  "height": 24,
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "hK3WZ",
+                      "name": "CloseIcon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    }
+                  ]
                 }
               ]
             },
             {
               "type": "frame",
-              "id": "Vl7EB",
-              "name": "TerminalArea",
+              "id": "GVJwo",
+              "name": "PanelTabs",
               "width": "fill_container",
-              "height": "fill_container",
-              "fill": "$card",
+              "stroke": "$border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "padding": [
+                0,
+                16
+              ],
               "children": [
                 {
-                  "type": "frame",
-                  "id": "PN0aC",
-                  "name": "TerminalContent",
+                  "type": "text",
+                  "id": "w0Mg8x",
+                  "name": "FilesTab",
+                  "fill": "$text-primary",
+                  "stroke": "$accent-indigo",
+                  "strokeWidth": {
+                    "bottom": 2
+                  },
+                  "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "height": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
-                  "padding": 16,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "S5Vdz",
-                      "name": "Line",
-                      "fill": "$accent-blue",
-                      "content": "$ pnpm build:ts",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "HAurO",
-                      "name": "Line",
-                      "fill": "$accent-emerald",
-                      "content": "✓ Compiled successfully",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "Iumnu",
-                      "name": "Line",
-                      "fill": "$text-muted",
-                      "content": " ",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "NLeK1",
-                      "name": "Line",
-                      "fill": "$accent-blue",
-                      "content": "$ npm test -- --watch",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "vFTKd",
-                      "name": "Line",
-                      "fill": "$text-primary",
-                      "content": "PASS  src/hooks/useSession.test.tsx",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "yBBjl",
-                      "name": "Line",
-                      "fill": "$text-primary",
-                      "content": "PASS  src/lib/sessionStore.test.ts",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "I6xM57",
-                      "name": "Line",
-                      "fill": "$text-muted",
-                      "content": " ",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "pNp90",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "content": "Test Suites: 2 passed, 2 total",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "ZLQCS",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "content": "Tests:       8 passed, 8 total",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "nO17c",
-                      "name": "Line",
-                      "fill": "$text-muted",
-                      "content": " ",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "DglXh",
-                      "name": "Line",
-                      "fill": "$accent-blue",
-                      "content": "$ git status",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "bE8fQ",
-                      "name": "Line",
-                      "fill": "$text-primary",
-                      "content": "On branch feature/api",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "newC8",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "content": "Changes not staged for commit:",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "hfQvf",
-                      "name": "Line",
-                      "fill": "$accent-emerald",
-                      "content": "  modified:   src/components/Dashboard.tsx",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "NypxC",
-                      "name": "Line",
-                      "fill": "$accent-emerald",
-                      "content": "  modified:   src/hooks/useSession.ts",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "xjrfv",
-                      "name": "Line",
-                      "fill": "$text-muted",
-                      "content": " ",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "UsVw7",
-                      "name": "Line",
-                      "fill": "$text-primary",
-                      "content": "$ _",
-                      "fontFamily": "$font-mono",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
+                  "content": "Files",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "medium"
+                },
+                {
+                  "type": "text",
+                  "id": "fhcDZ",
+                  "name": "MessagesTab",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Messages",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "vRP1w",
+                  "name": "TerminalTab",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Terminal",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s2qM7",
+              "name": "PanelContent",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y8rEuv",
+                  "name": "FileItem1",
+                  "fill": "$text-primary",
+                  "content": "src/components/Dashboard.tsx",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "Yxyz8",
+                  "name": "FileItem2",
+                  "fill": "$text-primary",
+                  "content": "src/hooks/useSession.ts",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "JfCIw",
+                  "name": "FileItem3",
+                  "fill": "$text-primary",
+                  "content": "src/lib/sessionStore.ts",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             }
