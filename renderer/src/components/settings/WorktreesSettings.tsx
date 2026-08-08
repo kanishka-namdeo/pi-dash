@@ -2,11 +2,9 @@ import { useSettingsContext } from '../../context/SettingsContext'
 import { SectionCard } from './SectionCard'
 import { SettingsRow, RowSeparator } from './SettingsRow'
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '../ui/select'
-import { Switch } from '../ui/switch'
 import { Input } from '../ui/input'
 
 const BRANCH_NAMING_PATTERNS = ['issue-{number}', 'branch-{name}', 'custom-{id}'] as const
-const MAX_CONCURRENT_OPTIONS = [5, 10, 15, 20] as const
 
 export function WorktreesSettings() {
   const { settings, set, isLoading } = useSettingsContext()
@@ -59,13 +57,6 @@ export function WorktreesSettings() {
       </SectionCard>
 
       <SectionCard title="Behavior">
-        <SettingsRow label="Auto-cleanup merged worktrees" description="Remove worktrees after PR is merged">
-          <Switch
-            checked={worktrees.autoCleanup}
-            onCheckedChange={(v) => set('worktrees.autoCleanup', v)}
-          />
-        </SettingsRow>
-        <RowSeparator />
         <SettingsRow label="Branch naming pattern" description="Pattern for auto-generated branch names">
           <Select
             value={worktrees.branchNamingPattern}
@@ -84,23 +75,6 @@ export function WorktreesSettings() {
           </Select>
         </SettingsRow>
         <RowSeparator />
-        <SettingsRow label="Max concurrent worktrees" description="Limit number of active worktrees">
-          <Select
-            value={String(worktrees.maxConcurrent)}
-            onValueChange={(v) => set('worktrees.maxConcurrent', Number(v))}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {MAX_CONCURRENT_OPTIONS.map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </SettingsRow>
       </SectionCard>
     </div>
   )

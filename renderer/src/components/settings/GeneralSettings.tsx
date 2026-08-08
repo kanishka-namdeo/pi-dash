@@ -40,23 +40,6 @@ export function GeneralSettings() {
             </SelectContent>
           </Select>
         </SettingsRow>
-        <RowSeparator />
-        <SettingsRow label="Language" description="Display language">
-          <Select value={general.language} onValueChange={(v) => set('general.language', v)}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="es">Español</SelectItem>
-              <SelectItem value="fr">Français</SelectItem>
-              <SelectItem value="de">Deutsch</SelectItem>
-              <SelectItem value="ja">日本語</SelectItem>
-              <SelectItem value="zh">中文</SelectItem>
-            </SelectContent>
-          </Select>
-        </SettingsRow>
-        <RowSeparator />
         <SettingsRow label="Font Size" description="UI text scaling">
           <Select value={general.fontSize} onValueChange={(v) => set('general.fontSize', v)}>
             <SelectTrigger className="w-[140px]">
