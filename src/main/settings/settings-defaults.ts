@@ -8,7 +8,6 @@ export function getDefaultSettings(): SettingsSchema {
   return {
     general: {
       theme: 'dark',
-      language: 'en',
       fontSize: 'medium',
       launchOnBoot: false,
       restoreSession: true,
@@ -16,12 +15,6 @@ export function getDefaultSettings(): SettingsSchema {
       defaultWorkingDirectory: '~/projects',
       autoDetectOnLaunch: true,
       maxConcurrentAgents: 8,
-    },
-    github: {
-      authMethod: 'pat',
-      autoCreateWorktree: false,
-      defaultPRTemplate: 'default',
-      autoLinkCommits: true,
     },
     notifications: {
       agentStarted: true,
@@ -69,9 +62,7 @@ export function getDefaultSettings(): SettingsSchema {
     },
     worktrees: {
       directory: '~/.pidash/worktrees',
-      autoCleanup: false,
       branchNamingPattern: 'issue-{number}',
-      maxConcurrent: 10,
     },
     advanced: {
       developerMode: false,

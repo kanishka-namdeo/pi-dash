@@ -36,9 +36,9 @@ describe('SettingsService', () => {
   });
 
   it('persists changes across instances', () => {
-    service.set('general.language', 'fr');
+    service.set('general.restoreSession', false);
     const service2 = new SettingsService();
-    expect(service2.get('general.language')).toBe('fr');
+    expect(service2.get('general.restoreSession')).toBe(false);
   });
 
   it('resets to defaults', () => {

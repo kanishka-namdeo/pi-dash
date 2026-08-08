@@ -3,7 +3,6 @@
 export interface SettingsSchema {
   general: {
     theme: 'dark' | 'light' | 'system';
-    language: string;
     fontSize: 'small' | 'medium' | 'large';
     launchOnBoot: boolean;
     restoreSession: boolean;
@@ -11,12 +10,6 @@ export interface SettingsSchema {
     defaultWorkingDirectory: string;
     autoDetectOnLaunch: boolean;
     maxConcurrentAgents: number;
-  };
-  github: {
-    authMethod: 'pat' | 'oauth';
-    autoCreateWorktree: boolean;
-    defaultPRTemplate: string;
-    autoLinkCommits: boolean;
   };
   notifications: {
     agentStarted: boolean;
@@ -64,9 +57,7 @@ export interface SettingsSchema {
   };
   worktrees: {
     directory: string;
-    autoCleanup: boolean;
     branchNamingPattern: string;
-    maxConcurrent: number;
   };
   advanced: {
     developerMode: boolean;
