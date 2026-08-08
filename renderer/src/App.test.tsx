@@ -41,6 +41,7 @@ beforeEach(() => {
   Object.defineProperty(window, 'api', {
     value: {
       getOnboardingStatus: mockGetOnboardingStatus,
+      getProjects: vi.fn().mockResolvedValue([{ path: '/test/project', name: 'Test Project', addedAt: '2024-01-01', lastOpenedAt: '2024-01-01', selectedAgents: [], isGitRepo: true }]),
       github: {
         auth: {
           getState: vi.fn().mockResolvedValue({ isAuthenticated: false, user: null, method: null }),
@@ -69,6 +70,11 @@ beforeEach(() => {
       agentGitHub: {
         assign: vi.fn().mockResolvedValue({ success: true }),
       },
+      search: {
+        getRecent: vi.fn().mockResolvedValue([]),
+        query: vi.fn().mockResolvedValue([]),
+      },
+      onShortcut: vi.fn(),
     },
     writable: true,
   });
