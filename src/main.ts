@@ -14,11 +14,9 @@ import { KeyboardShortcutManager } from './main/keyboard/keyboard-shortcut-manag
 import { NotificationManager } from './main/notifications/notification-manager'
 import { registerSearchHandlers } from './main/ipc/search-handlers'
 import { registerSettingsHandlers } from './main/ipc/settings-handlers'
-import { authService } from './main/github/auth-service'
 
 let tray: Tray | null = null
 let settingsService: SettingsService
-let isQuiting = false
 
 const isDev = !app.isPackaged
 
@@ -28,10 +26,8 @@ Menu.setApplicationMenu(null)
 
 function createWindow(): void {
   const win = new BrowserWindow({
-    width: 1440,
-    height: 900,
-    minWidth: 1200,
-    minHeight: 700,
+    width: 1200,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -39,7 +35,6 @@ function createWindow(): void {
     }
   })
   win.on('close', (event) => {
-    if (isQuiting) return;
     const minimizeToTray = settingsService.get('general.minimizeToTray') as boolean
     if (minimizeToTray && tray) {
       event.preventDefault()
@@ -64,6 +59,7 @@ app.whenReady().then(() => {
   registerGitHubDataHandlers()
   registerAgentGitHubHandlers()
   registerGitHubIssuesHandlers()
+  registerGitHubPRsHandlers()
   registerProjectHandlers()
   settingsService = new SettingsService()
   registerSearchHandlers(settingsService);
@@ -93,15 +89,7 @@ app.whenReady().then(() => {
 })
 
 app.on('before-quit', () => {
-  isQuiting = true
-  try {
-    sessionManager.destroyAll()
-  } catch (err) {
-    console.error('Failed to destroy sessions on quit', err)
-  }
-  authService.cleanup()
-  tray?.destroy()
-  tray = null
+  sessionManager.destroyAll()
 })
 
 app.on('window-all-closed', () => {
