@@ -84,6 +84,10 @@ export function KeyboardShortcutsSettings() {
         <SettingsRow label="Toggle Sidebar">
           <ShortcutKeys accel={navigation.toggleSidebar} />
         </SettingsRow>
+        <RowSeparator />
+        <SettingsRow label="Command Palette">
+          <ShortcutKeys accel={navigation.openCommandPalette} />
+        </SettingsRow>
       </SectionCard>
     </div>
   )
