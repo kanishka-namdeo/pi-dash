@@ -6,7 +6,7 @@
 
 **Architecture:** Monolithic state machine with 17 screen components, separate `projects.json` persistence, IPC handlers for project CRUD and git operations, integrates sequentially after OnboardingFlow.
 
-**Tech Stack:** React, TypeScript, Electron IPC, simple-json (for projects.json), simple-git (for clone operations)
+**Tech Stack:** React, TypeScript, Electron IPC, simple-git (for clone operations)
 
 ## Global Constraints
 
@@ -17,6 +17,22 @@
 - Design file reference: `design/pidash-ui.pen` node `UsyjJ`
 
 ---
+
+### Task 0: Install Dependencies
+
+- [ ] **Step 1: Install simple-git**
+
+```bash
+pnpm add simple-git
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add package.json pnpm-lock.yaml
+git commit -m "chore: add simple-git for clone operations"
+```
+
 
 ## File Structure
 
@@ -576,6 +592,7 @@ git commit -m "feat: add git operations for clone and repo detection"
 
 ```typescript
 // src/main/ipc-handlers.ts (add to existing file)
+import { ipcMain, dialog } from 'electron';
 import { getProjects, addProject, updateProject, removeProject, getRecentProjects } from './project-manager';
 import { isGitRepo, cloneRepository } from './git-operations';
 
@@ -584,23 +601,23 @@ export function registerProjectHandlers(): void {
     return await getProjects();
   });
 
-  ipcMain.handle('add-project', async (event, project) => {
+  ipcMain.handle('add-project', async (_event, project) => {
     return await addProject(project);
   });
 
-  ipcMain.handle('update-project', async (event, path, updates) => {
+  ipcMain.handle('update-project', async (_event, path, updates) => {
     return await updateProject(path, updates);
   });
 
-  ipcMain.handle('remove-project', async (event, path) => {
+  ipcMain.handle('remove-project', async (_event, path) => {
     return await removeProject(path);
   });
 
-  ipcMain.handle('get-recent-projects', async (event, limit) => {
+  ipcMain.handle('get-recent-projects', async (_event, limit) => {
     return await getRecentProjects(limit);
   });
 
-  ipcMain.handle('is-git-repo', async (event, path) => {
+  ipcMain.handle('is-git-repo', async (_event, path) => {
     return await isGitRepo(path);
   });
 
@@ -610,13 +627,30 @@ export function registerProjectHandlers(): void {
     });
     return result;
   });
+
+  ipcMain.handle('show-open-dialog', async (_event, options) => {
+    return await dialog.showOpenDialog(options);
+  });
 }
 ```
 
-- [ ] **Step 2: Expose API in preload**
+- [ ] **Step 2: Call registerProjectHandlers in main.ts**
+
+```typescript
+// src/main.ts (add import and call)
+import { registerProjectHandlers } from './main/ipc-handlers';
+
+// In app.whenReady() callback, after other handler registrations:
+registerProjectHandlers();
+```
+
+- [ ] **Step 3: Expose API in preload**
 
 ```typescript
 // src/preload.ts (add to existing contextBridge.exposeInMainWorld call)
+import { ipcRenderer, contextBridge } from 'electron';
+
+// Inside the exposeInMainWorld call, add:
 getProjects: () => ipcRenderer.invoke('get-projects'),
 addProject: (project) => ipcRenderer.invoke('add-project', project),
 updateProject: (path, updates) => ipcRenderer.invoke('update-project', path, updates),
@@ -624,17 +658,20 @@ removeProject: (path) => ipcRenderer.invoke('remove-project', path),
 getRecentProjects: (limit) => ipcRenderer.invoke('get-recent-projects', limit),
 isGitRepo: (path) => ipcRenderer.invoke('is-git-repo', path),
 cloneRepository: (url, dest, branch) => ipcRenderer.invoke('clone-repository', url, dest, branch),
+showOpenDialog: (options) => ipcRenderer.invoke('show-open-dialog', options),
 onCloneProgress: (callback) => {
-  const subscription = (event, progress) => callback(progress);
+  const subscription = (_event, progress) => callback(progress);
   ipcRenderer.on('clone-progress', subscription);
   return () => ipcRenderer.removeListener('clone-progress', subscription);
 },
 ```
 
-- [ ] **Step 3: Update TypeScript declarations**
+- [ ] **Step 4: Update TypeScript declarations**
 
 ```typescript
-// renderer/src/types/global.d.ts (add to existing Window interface)
+// renderer/src/types/global.d.ts (add to existing Window['api'] interface)
+import type { Project, CloneError } from './project-setup';
+
 getProjects(): Promise<Project[]>;
 addProject(project: Project): Promise<void>;
 updateProject(path: string, updates: Partial<Project>): Promise<void>;
@@ -642,15 +679,17 @@ removeProject(path: string): Promise<void>;
 getRecentProjects(limit?: number): Promise<Project[]>;
 isGitRepo(path: string): Promise<boolean>;
 cloneRepository(url: string, dest: string, branch?: string): Promise<{ success: boolean; error?: CloneError }>;
+showOpenDialog(options: { properties: string[] }): Promise<{ canceled: boolean; filePaths: string[] }>;
 onCloneProgress(callback: (progress: number) => void): () => void;
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/ipc-handlers.ts src/preload.ts renderer/src/types/global.d.ts
+git add src/main/ipc-handlers.ts src/main.ts src/preload.ts renderer/src/types/global.d.ts
 git commit -m "feat: register project setup IPC handlers"
 ```
+
 
 ---
 
@@ -728,8 +767,13 @@ Expected: FAIL with "Cannot find module"
 ```typescript
 // renderer/src/hooks/useProjectSetupState.ts
 import { useState, useCallback } from 'react';
-import path from 'path';
 import type { ScreenName, ProjectSetupState } from '../types/project-setup';
+
+function basename(filePath: string): string {
+  const normalized = filePath.replace(/\\/g, '/');
+  const parts = normalized.split('/');
+  return parts[parts.length - 1] || filePath;
+}
 
 function getInitialState(flowMode: 'full' | 'condensed'): ProjectSetupState {
   return {
@@ -760,13 +804,13 @@ export function useProjectSetupState(flowMode: 'full' | 'condensed' = 'full') {
     setState(prev => ({
       ...prev,
       projectPath,
-      projectName: path.basename(projectPath),
+      projectName: basename(projectPath),
     }));
   }, []);
 
   const updateSelectedAgents = useCallback((agents: string[]) => {
     setState(prev => ({ ...prev, selectedAgents: agents }));
-  });
+  }, []);
 
   const complete = useCallback(async (onComplete?: () => void) => {
     try {
@@ -898,14 +942,216 @@ export function ProjectSelectionScreen({ flowMode, navigate, updateProject }: Sc
 }
 ```
 
-- [ ] **Step 2: Create remaining 5 screens** (follow same pattern, refer to design file `UsyjJ` for exact UI)
+- [ ] **Step 2: Create ProjectSelectionGitHubConnectedScreen**
 
-Screens to create:
-- `ProjectSelectionGitHubConnectedScreen` — shows "✓ Connected as octocat" badge, clone button
-- `RecentProjectsScreen` — lists projects with "Open" buttons
-- `RecentProjectsEmptyScreen` — empty state with "Browse Folder" / "Create New"
-- `RecentProjectsLoadingScreen` — skeleton placeholders + spinner
-- `ProjectAlreadyAddedScreen` — warning icon, "Open in Dashboard" / "Choose Different"
+```typescript
+// renderer/src/components/project-setup/screens/ProjectSelectionGitHubConnectedScreen.tsx
+import { useState } from 'react';
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+  updateProject: (path: string) => void;
+}
+
+export function ProjectSelectionGitHubConnectedScreen({ navigate, updateProject }: ScreenProps) {
+  const [repoUrl, setRepoUrl] = useState('https://github.com/');
+
+  const handleClone = () => {
+    if (repoUrl) {
+      navigate('clone-repository');
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[560px] space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold">Add Existing Project</h1>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-sm">
+            <span>✓</span>
+            <span>Connected as octocat</span>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <input
+            type="text"
+            value={repoUrl}
+            onChange={(e) => setRepoUrl(e.target.value)}
+            placeholder="https://github.com/owner/repo"
+            className="w-full h-12 px-4 bg-card border border-border rounded-lg"
+          />
+          <button onClick={handleClone} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">
+            Clone
+          </button>
+          <button onClick={() => navigate('github-repo-picker')} className="w-full h-12 text-muted-foreground text-sm">
+            Connect Different Account
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 3: Create RecentProjectsScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/RecentProjectsScreen.tsx
+import { useState, useEffect } from 'react';
+import type { ScreenName, Project } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+  updateProject: (path: string) => void;
+}
+
+export function RecentProjectsScreen({ navigate, updateProject }: ScreenProps) {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    window.api.getRecentProjects(10).then(setProjects);
+  }, []);
+
+  const handleOpen = (projectPath: string) => {
+    updateProject(projectPath);
+    navigate('project-loading');
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[560px] space-y-6">
+        <h1 className="text-3xl font-bold text-center">Select Project</h1>
+        <div className="space-y-2">
+          {projects.map(project => (
+            <div key={project.path} className="flex items-center gap-3 p-4 bg-card border border-border rounded-lg">
+              <div className="flex-1">
+                <p className="font-medium">{project.name}</p>
+                <p className="text-sm text-muted-foreground">{project.path}</p>
+              </div>
+              <button onClick={() => handleOpen(project.path)} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm">
+                Open
+              </button>
+            </div>
+          ))}
+        </div>
+        <button onClick={() => navigate('project-selection')} className="w-full h-12 border border-border rounded-lg text-muted-foreground">
+          + Open Other...
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 4: Create RecentProjectsEmptyScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/RecentProjectsEmptyScreen.tsx
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+}
+
+export function RecentProjectsEmptyScreen({ navigate }: ScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[400px] space-y-6 text-center">
+        <div className="w-16 h-16 bg-card border border-border rounded-xl flex items-center justify-center mx-auto">
+          <span className="text-2xl text-muted-foreground">📁</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">No Recent Projects</h1>
+          <p className="text-muted-foreground">You haven't opened any projects yet</p>
+        </div>
+        <div className="space-y-3">
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">
+            Browse Folder
+          </button>
+          <button onClick={() => navigate('clone-repository')} className="w-full h-12 border border-border rounded-lg text-muted-foreground">
+            Create New
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 5: Create RecentProjectsLoadingScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/RecentProjectsLoadingScreen.tsx
+export function RecentProjectsLoadingScreen() {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[560px] space-y-6">
+        <h1 className="text-3xl font-bold text-center">Recent Projects</h1>
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="p-4 bg-card border border-border rounded-lg space-y-2">
+              <div className="h-4 bg-muted rounded animate-pulse w-1/3" />
+              <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" />
+          <p className="text-sm text-muted-foreground">Loading projects...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 6: Create ProjectAlreadyAddedScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/ProjectAlreadyAddedScreen.tsx
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  projectPath: string | null;
+  navigate: (screen: ScreenName) => void;
+  complete: (onComplete?: () => void) => void;
+}
+
+export function ProjectAlreadyAddedScreen({ projectPath, navigate, complete }: ScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[480px] space-y-6 text-center">
+        <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto">
+          <span className="text-3xl">⚠</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">Project Already Added</h1>
+          <p className="text-muted-foreground">This project is already in your dashboard</p>
+        </div>
+        <div className="p-4 bg-card rounded-lg">
+          <p className="text-sm text-muted-foreground font-mono">{projectPath}</p>
+        </div>
+        <div className="space-y-3">
+          <button onClick={() => complete()} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">
+            Open in Dashboard
+          </button>
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 text-muted-foreground">
+            Choose Different Project
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add renderer/src/components/project-setup/screens/
+git commit -m "feat: add entry and local path screen components"
+```
 
 - [ ] **Step 3: Commit**
 
@@ -1048,9 +1294,187 @@ export function CloningProgressScreen({ projectPath, githubRepoUrl, navigate }: 
 }
 ```
 
-- [ ] **Step 3: Create remaining 4 screens** (CloneRepositoryValidationErrorScreen, CloneErrorScreen, CloneErrorDestinationExistsScreen, GitHubRepoPickerScreen)
+- [ ] **Step 3: Create CloneRepositoryValidationErrorScreen**
 
-- [ ] **Step 4: Commit**
+```typescript
+// renderer/src/components/project-setup/screens/CloneRepositoryValidationErrorScreen.tsx
+import { useState } from 'react';
+import type { ScreenName, ValidationErrors } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+  updateProject: (path: string) => void;
+  validationErrors: Record<string, string>;
+}
+
+export function CloneRepositoryValidationErrorScreen({ navigate, updateProject, validationErrors }: ScreenProps) {
+  const [url, setUrl] = useState('');
+  const [branch, setBranch] = useState('main');
+  const [dest, setDest] = useState('');
+
+  const handleSubmit = () => {
+    if (url && dest) {
+      updateProject(dest);
+      navigate('cloning-progress');
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[560px] space-y-6">
+        <h1 className="text-3xl font-bold text-center">Clone Repository</h1>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Repository URL</label>
+            <input value={url} onChange={(e) => setUrl(e.target.value)} className="w-full h-12 px-4 bg-card border border-destructive rounded-lg" />
+            {validationErrors.repoUrl && <p className="text-sm text-destructive mt-1">{validationErrors.repoUrl}</p>}
+          </div>
+          <div>
+            <label className="text-sm font-medium">Branch</label>
+            <input value={branch} onChange={(e) => setBranch(e.target.value)} className="w-full h-12 px-4 bg-card border border-border rounded-lg" />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Destination</label>
+            <input value={dest} onChange={(e) => setDest(e.target.value)} className="w-full h-12 px-4 bg-card border border-border rounded-lg" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          <button onClick={handleSubmit} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">Clone</button>
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 text-muted-foreground">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 4: Create CloneErrorScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/CloneErrorScreen.tsx
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  cloneError: string | null;
+  navigate: (screen: ScreenName) => void;
+}
+
+export function CloneErrorScreen({ cloneError, navigate }: ScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[480px] space-y-6 text-center">
+        <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
+          <span className="text-3xl text-destructive">✕</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">Clone Failed</h1>
+          <p className="text-destructive">{cloneError || 'An unknown error occurred'}</p>
+          <p className="text-sm text-muted-foreground">The repository may be private, empty, or the URL is incorrect.</p>
+        </div>
+        <div className="space-y-3">
+          <button onClick={() => navigate('clone-repository')} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">Try Again</button>
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 text-muted-foreground">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 5: Create CloneErrorDestinationExistsScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/CloneErrorDestinationExistsScreen.tsx
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  projectPath: string | null;
+  navigate: (screen: ScreenName) => void;
+}
+
+export function CloneErrorDestinationExistsScreen({ projectPath, navigate }: ScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[480px] space-y-6 text-center">
+        <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto">
+          <span className="text-3xl">⚠</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">Directory Already Exists</h1>
+          <p className="text-muted-foreground">The destination folder already contains files.</p>
+        </div>
+        <div className="p-4 bg-card rounded-lg">
+          <p className="text-sm text-muted-foreground font-mono">{projectPath}</p>
+        </div>
+        <div className="space-y-3">
+          <button onClick={() => navigate('clone-repository')} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">Choose Different Location</button>
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 text-muted-foreground">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 6: Create GitHubRepoPickerScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/GitHubRepoPickerScreen.tsx
+import { useState } from 'react';
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+}
+
+export function GitHubRepoPickerScreen({ navigate }: ScreenProps) {
+  const [repoUrl, setRepoUrl] = useState('');
+  const [error, setError] = useState('');
+
+  const handleConnect = () => {
+    if (!repoUrl || !/^[\w-]+\/[\w-]+$/.test(repoUrl)) {
+      setError('Please enter a valid repository (e.g. octocat/hello-world)');
+      return;
+    }
+    navigate('clone-repository');
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[560px] space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold">Connect GitHub Repository</h1>
+          <p className="text-muted-foreground">Sign in to access private repositories and clone directly from GitHub.</p>
+        </div>
+        <button className="w-full h-12 bg-card border border-border rounded-lg font-medium flex items-center justify-center gap-2">
+          <span>🔗</span> Connect to GitHub
+        </button>
+        <div className="flex items-center gap-4">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-sm text-muted-foreground">or enter a public repo URL below</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={repoUrl}
+            onChange={(e) => { setRepoUrl(e.target.value); setError(''); }}
+            placeholder="owner/repo"
+            className="w-full h-12 px-4 bg-card border border-border rounded-lg"
+          />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+        </div>
+        <div className="space-y-3">
+          <button onClick={handleConnect} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">Connect</button>
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 text-muted-foreground">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 7: Commit**
 
 ```bash
 git add renderer/src/components/project-setup/screens/
@@ -1198,9 +1622,70 @@ export function SelectAgentsScreen({ selectedAgents, updateSelectedAgents, navig
 }
 ```
 
-- [ ] **Step 4: Create NotAGitRepositoryScreen and NoAgentsFoundScreen**
+- [ ] **Step 4: Create NotAGitRepositoryScreen**
 
-- [ ] **Step 5: Commit**
+```typescript
+// renderer/src/components/project-setup/screens/NotAGitRepositoryScreen.tsx
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+}
+
+export function NotAGitRepositoryScreen({ navigate }: ScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[480px] space-y-6 text-center">
+        <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto">
+          <span className="text-3xl">⚠</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">Not a Git Repository</h1>
+          <p className="text-muted-foreground">This folder doesn't appear to be a git repository.</p>
+        </div>
+        <div className="space-y-3">
+          <button onClick={() => navigate('scanning-for-agents')} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">Continue Anyway</button>
+          <button onClick={() => navigate('project-selection')} className="w-full h-12 text-muted-foreground">Choose Different Folder</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 5: Create NoAgentsFoundScreen**
+
+```typescript
+// renderer/src/components/project-setup/screens/NoAgentsFoundScreen.tsx
+import type { ScreenName } from '../../../types/project-setup';
+
+interface ScreenProps {
+  navigate: (screen: ScreenName) => void;
+  complete: (onComplete?: () => void) => void;
+}
+
+export function NoAgentsFoundScreen({ navigate, complete }: ScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-background">
+      <div className="w-[480px] space-y-6 text-center">
+        <div className="w-16 h-16 bg-card border border-border rounded-xl flex items-center justify-center mx-auto">
+          <span className="text-2xl text-muted-foreground">🔍</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">No Agents Detected</h1>
+          <p className="text-muted-foreground">We couldn't find any AI coding agents in this project.</p>
+        </div>
+        <div className="space-y-3">
+          <button onClick={() => navigate('select-agents')} className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium">Add Agent Manually</button>
+          <button onClick={() => complete()} className="w-full h-12 text-muted-foreground">Skip for Now</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add renderer/src/components/project-setup/screens/
@@ -1291,11 +1776,17 @@ git commit -m "feat: add ProjectSetupFlow orchestrator component"
 
 ```typescript
 // renderer/src/App.tsx (modify existing App component)
+import { useState, useEffect, useCallback } from 'react';
 import { ProjectSetupFlow } from './components/project-setup/ProjectSetupFlow';
 
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [projectCount, setProjectCount] = useState<number | null>(null);
+
+  const refreshProjectCount = useCallback(async () => {
+    const projects = await window.api.getProjects();
+    setProjectCount(projects.length);
+  }, []);
 
   useEffect(() => {
     let ignored = false;
@@ -1304,13 +1795,12 @@ function App() {
         if (ignored) return;
         setOnboardingCompleted(status);
       });
-      window.api.getProjects().then((projects) => {
+      refreshProjectCount().then(() => {
         if (ignored) return;
-        setProjectCount(projects.length);
       });
     }
     return () => { ignored = true; };
-  }, []);
+  }, [refreshProjectCount]);
 
   if (onboardingCompleted === null || projectCount === null) {
     return null;
@@ -1321,7 +1811,7 @@ function App() {
   }
 
   if (projectCount === 0) {
-    return <ProjectSetupFlow flowMode="full" onComplete={() => setProjectCount(1)} />;
+    return <ProjectSetupFlow flowMode="full" onComplete={refreshProjectCount} />;
   }
 
   return (
