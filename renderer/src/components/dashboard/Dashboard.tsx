@@ -7,6 +7,7 @@ import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
 import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
 import { useGitHub } from '@/context/GitHubContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 import type { PlanStep, Agent } from '@/types/dashboard';
 import type { ViewMode } from '@/types/pip';
 import { TopBar } from './Topbar';
@@ -38,6 +39,7 @@ export function Dashboard() {
   const { mode, setMode } = useDashboardMode();
   const { actions: pipActions } = usePiPContext();
   const { isAuthenticated, authExpired, clearAuthExpired, login } = useGitHub();
+  const { settings } = useSettingsContext();
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [addAgentOpen, setAddAgentOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
@@ -94,13 +96,20 @@ export function Dashboard() {
     const agent = availableAgents.find(a => a.id === agentId);
     if (!agent) return;
 
+    const maxConcurrent = settings?.general.maxConcurrentAgents ?? 8;
+    if (runningSessions.length >= maxConcurrent) {
+      toast.error(`Max ${maxConcurrent} concurrent agents reached`);
+      return;
+    }
+
     try {
-      const result = await window.api.session.create(agentId, agent.cwd);
+      const cwd = agent.cwd || settings?.general.defaultWorkingDirectory || await window.api.cwd();
+      const result = await window.api.session.create(agentId, cwd);
       if ('error' in result) {
         toast.error(`Failed to start ${agentId}: ${result.error}`);
         return;
       }
-      ctx.registerSession(agentId, result.pid, agent.cwd);
+      ctx.registerSession(agentId, result.pid, cwd);
       setSelectedAgentId(agentId);
     } catch (error) {
       console.error('Failed to launch agent:', error);
