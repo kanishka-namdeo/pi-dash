@@ -2660,6 +2660,7 @@
               "name": "ContentArea",
               "width": "fill_container",
               "height": "fill_container",
+              "layout": "vertical",
               "children": [
                 {
                   "type": "frame",
@@ -4685,6 +4686,10 @@
                   "id": "ziuzl",
                   "name": "AgentInfo",
                   "gap": 12,
+                  "padding": [
+                    12,
+                    16
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -4898,6 +4903,57 @@
                   "name": "FileItem3",
                   "fill": "$text-primary",
                   "content": "src/lib/sessionStore.ts",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TJuaR",
+              "name": "PanelTabs",
+              "width": "fill_container",
+              "padding": [
+                0,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "khxrZ",
+                  "name": "FilesTab",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Files",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "mXVjf",
+                  "name": "MessagesTab",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Messages",
+                  "textAlign": "center",
+                  "fontFamily": "Geist",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "kcg3B",
+                  "name": "TerminalTab",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Terminal",
+                  "textAlign": "center",
                   "fontFamily": "Geist",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -6507,8 +6563,9 @@
           "id": "s1QzWe",
           "x": 6120,
           "y": 64,
-          "name": "Terminal View",
+          "name": "Terminal View (deprecated)",
           "context": "viewMode 'terminal' — full-screen terminal of the main agent, opened via TopBar Terminal toggle. Floating toggle returns to dashboard (renderer currently lacks this exit).",
+          "enabled": false,
           "clip": true,
           "width": 1440,
           "height": 900,
@@ -59010,6 +59067,1823 @@
               "icon": "bell",
               "library": "lucide",
               "fill": "$text-secondary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "bWhqn",
+      "x": 26580,
+      "y": -8564,
+      "name": "PiP Container",
+      "clip": true,
+      "width": 1440,
+      "height": 900,
+      "fill": "$bg",
+      "children": [
+        {
+          "id": "b6oSJ5",
+          "type": "ref",
+          "ref": "m3JfU",
+          "name": "TopBar",
+          "x": 0,
+          "y": 0,
+          "width": 1440
+        },
+        {
+          "type": "frame",
+          "id": "Y47uT2",
+          "name": "MainTerminal",
+          "width": 1440,
+          "height": 844,
+          "fill": "#0f0f0f",
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "UphHW",
+              "name": "Line0",
+              "fill": "$text-secondary",
+              "content": "> command output line 0",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "p6Cp2",
+              "name": "Line1",
+              "fill": "$text-secondary",
+              "content": "> command output line 1",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "onGfP",
+              "name": "Line2",
+              "fill": "$text-secondary",
+              "content": "> command output line 2",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "pYWfa",
+              "name": "Line3",
+              "fill": "$text-secondary",
+              "content": "> command output line 3",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "kvLWm",
+              "name": "Line4",
+              "fill": "$text-secondary",
+              "content": "> command output line 4",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "AFjin",
+              "name": "Line5",
+              "fill": "$text-secondary",
+              "content": "> command output line 5",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "cOtOE",
+              "name": "Line6",
+              "fill": "$text-secondary",
+              "content": "> command output line 6",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "xw3Ct",
+              "name": "Line7",
+              "fill": "$text-secondary",
+              "content": "> command output line 7",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Q3Mitm",
+              "name": "Line8",
+              "fill": "$text-secondary",
+              "content": "> command output line 8",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "H1qW1K",
+              "name": "Line9",
+              "fill": "$text-secondary",
+              "content": "> command output line 9",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "r9IHav",
+              "name": "Line10",
+              "fill": "$text-secondary",
+              "content": "> command output line 10",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "YofGI",
+              "name": "Line11",
+              "fill": "$text-secondary",
+              "content": "> command output line 11",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "id": "W2wxpa",
+          "type": "ref",
+          "ref": "xUtjx",
+          "name": "Overlay-claude-code",
+          "width": 500,
+          "height": 350
+        },
+        {
+          "id": "tJz1c",
+          "type": "ref",
+          "ref": "xUtjx",
+          "name": "Overlay-cursor",
+          "width": 450,
+          "height": 300
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "xUtjx",
+      "x": 28100,
+      "y": -8564,
+      "name": "Agent Overlay",
+      "reusable": true,
+      "width": 600,
+      "height": 400,
+      "fill": "$card",
+      "cornerRadius": 8,
+      "stroke": "$border",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "DCuEa",
+          "name": "OverlayHeader",
+          "height": 36,
+          "gap": 8,
+          "padding": [
+            8,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "F5j5Xh",
+              "name": "StatusDot",
+              "fill": "#000000",
+              "width": 8,
+              "height": 8
+            },
+            {
+              "type": "text",
+              "id": "RvFWK",
+              "name": "AgentName",
+              "fill": "$text-primary",
+              "content": "claude-code",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "sJUxo",
+              "name": "Spacer",
+              "width": "fill_container",
+              "height": "fit_content(0)"
+            },
+            {
+              "type": "icon",
+              "id": "F8xmV",
+              "name": "ResizeIcon",
+              "width": 14,
+              "height": 14,
+              "icon": "maximize",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            },
+            {
+              "type": "icon",
+              "id": "N6cwy",
+              "name": "CloseIcon",
+              "width": 14,
+              "height": 14,
+              "icon": "x",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PUrEb",
+          "name": "TerminalContent",
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "#0f0f0f",
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "WcSmC",
+              "name": "Line0",
+              "fill": "$text-secondary",
+              "content": "> overlay output 0",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Hdjsg",
+              "name": "Line1",
+              "fill": "$text-secondary",
+              "content": "> overlay output 1",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "ywaTY",
+              "name": "Line2",
+              "fill": "$text-secondary",
+              "content": "> overlay output 2",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "pZOzs",
+              "name": "Line3",
+              "fill": "$text-secondary",
+              "content": "> overlay output 3",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "FPPhw",
+              "name": "Line4",
+              "fill": "$text-secondary",
+              "content": "> overlay output 4",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "lWgyi",
+              "name": "Line5",
+              "fill": "$text-secondary",
+              "content": "> overlay output 5",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "b0r7m0",
+              "name": "Line6",
+              "fill": "$text-secondary",
+              "content": "> overlay output 6",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "w58V5X",
+              "name": "Line7",
+              "fill": "$text-secondary",
+              "content": "> overlay output 7",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "O0ObBE",
+      "x": 28780,
+      "y": -8564,
+      "name": "BranchesTab",
+      "clip": true,
+      "width": 1440,
+      "height": 900,
+      "fill": "$bg",
+      "children": [
+        {
+          "type": "frame",
+          "id": "NQAlP",
+          "name": "Header",
+          "width": "fill_container",
+          "gap": 16,
+          "padding": [
+            16,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Z95h9",
+              "name": "Title",
+              "fill": "$text-primary",
+              "content": "Branches",
+              "fontFamily": "Geist",
+              "fontSize": 18,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "XLQhK",
+              "name": "Spacer",
+              "width": "fill_container",
+              "height": "fit_content(0)"
+            },
+            {
+              "type": "text",
+              "id": "wRKzq",
+              "name": "SearchBox",
+              "fill": "$text-secondary",
+              "content": "Search branches...",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "qSMcO",
+              "name": "RefreshIcon",
+              "width": 16,
+              "height": 16,
+              "icon": "refresh-cw",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ZlwLz",
+          "name": "BranchList",
+          "width": "fill_container",
+          "layout": "vertical",
+          "padding": [
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "fUNuy",
+              "name": "Branch-main",
+              "gap": 12,
+              "padding": [
+                12,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "zEvPj",
+                  "name": "BranchIcon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "git-branch",
+                  "library": "lucide",
+                  "fill": "#000000"
+                },
+                {
+                  "type": "frame",
+                  "id": "lJOvz",
+                  "name": "Info",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "i7Afx2",
+                      "name": "BranchName",
+                      "fill": "$text-primary",
+                      "content": "main",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Kk5JI",
+                      "name": "CommitCount",
+                      "fill": "$text-secondary",
+                      "content": "0 commits · 2h ago",
+                      "fontFamily": "Geist",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ZY9hw",
+                  "name": "Spacer",
+                  "width": "fill_container",
+                  "height": "fit_content(0)"
+                },
+                {
+                  "type": "text",
+                  "id": "D2EAqs",
+                  "name": "ActiveBadge",
+                  "fill": "#000000",
+                  "content": "active",
+                  "fontFamily": "Geist",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "k5myoc",
+              "name": "Branch-feature/auth",
+              "gap": 12,
+              "padding": [
+                12,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "oQBcI",
+                  "name": "BranchIcon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "git-branch",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "frame",
+                  "id": "npnQI",
+                  "name": "Info",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c9HcF0",
+                      "name": "BranchName",
+                      "fill": "$text-primary",
+                      "content": "feature/auth",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OMsOk",
+                      "name": "CommitCount",
+                      "fill": "$text-secondary",
+                      "content": "12 commits · 1d ago",
+                      "fontFamily": "Geist",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ewlgT",
+                  "name": "Spacer",
+                  "width": "fill_container",
+                  "height": "fit_content(0)"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bF19v",
+              "name": "Branch-feature/api",
+              "gap": 12,
+              "padding": [
+                12,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "EE659",
+                  "name": "BranchIcon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "git-branch",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "frame",
+                  "id": "akRfy",
+                  "name": "Info",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "SBPKJ",
+                      "name": "BranchName",
+                      "fill": "$text-primary",
+                      "content": "feature/api",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "nyWHI",
+                      "name": "CommitCount",
+                      "fill": "$text-secondary",
+                      "content": "8 commits · 3d ago",
+                      "fontFamily": "Geist",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xhO5f",
+                  "name": "Spacer",
+                  "width": "fill_container",
+                  "height": "fit_content(0)"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "c5T722",
+              "name": "Branch-fix/tests",
+              "gap": 12,
+              "padding": [
+                12,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Bvo15",
+                  "name": "BranchIcon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "git-branch",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "frame",
+                  "id": "RDKz1",
+                  "name": "Info",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wN7PW",
+                      "name": "BranchName",
+                      "fill": "$text-primary",
+                      "content": "fix/tests",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Jbbqx",
+                      "name": "CommitCount",
+                      "fill": "$text-secondary",
+                      "content": "3 commits · 5d ago",
+                      "fontFamily": "Geist",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "WN3bD",
+                  "name": "Spacer",
+                  "width": "fill_container",
+                  "height": "fit_content(0)"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ZGJUr",
+      "x": 30300,
+      "y": -8564,
+      "name": "RateLimitAlert",
+      "reusable": true,
+      "width": 1440,
+      "height": 48,
+      "fill": "#1a1a0a",
+      "gap": 16,
+      "padding": [
+        0,
+        24
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "jF9bP",
+          "name": "WarningIcon",
+          "width": 16,
+          "height": 16,
+          "icon": "alert-triangle",
+          "library": "lucide",
+          "fill": "#f59e0b"
+        },
+        {
+          "type": "text",
+          "id": "iDeui",
+          "name": "AlertText",
+          "fill": "$text-secondary",
+          "content": "API Rate Limit: 4,500/5,000 remaining · Resets in 45 minutes",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "Kcj18",
+          "name": "ProgressBar",
+          "width": 200,
+          "height": 4,
+          "fill": "#333333",
+          "cornerRadius": 2,
+          "children": [
+            {
+              "type": "frame",
+              "id": "pvCth",
+              "name": "ProgressFill",
+              "width": 180,
+              "height": 4,
+              "fill": "#f59e0b",
+              "cornerRadius": 2
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MxuzE",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": "fit_content(0)"
+        },
+        {
+          "type": "icon",
+          "id": "aZ58c",
+          "name": "DismissIcon",
+          "width": 14,
+          "height": 14,
+          "icon": "x",
+          "library": "lucide",
+          "fill": "$text-secondary"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Vjoyb",
+      "x": 31820,
+      "y": -8564,
+      "name": "PRComposer",
+      "width": 700,
+      "height": 600,
+      "fill": "$card",
+      "cornerRadius": 12,
+      "stroke": "$border",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "NT4n9",
+          "name": "DialogHeader",
+          "gap": 12,
+          "padding": [
+            16,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "e5yHk",
+              "name": "DialogTitle",
+              "fill": "$text-primary",
+              "content": "Create Pull Request",
+              "fontFamily": "Geist",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "ycCXK",
+              "name": "Spacer",
+              "width": "fill_container",
+              "height": "fit_content(0)"
+            },
+            {
+              "type": "icon",
+              "id": "eau7j",
+              "name": "CloseIcon",
+              "width": 16,
+              "height": 16,
+              "icon": "x",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PFnfN",
+          "name": "DialogBody",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": 24,
+          "children": [
+            {
+              "type": "text",
+              "id": "JAHEL",
+              "name": "TitleLabel",
+              "fill": "$text-secondary",
+              "content": "Title",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "VzA6f",
+              "name": "TitleInput",
+              "width": "fill_container",
+              "height": 40,
+              "fill": "$bg",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center"
+            },
+            {
+              "type": "text",
+              "id": "J79WVq",
+              "name": "TitlePlaceholder",
+              "fill": "$text-secondary",
+              "content": "PR title",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "sx4XV",
+              "name": "DescLabel",
+              "fill": "$text-secondary",
+              "content": "Description",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "LxrJ7",
+              "name": "DescArea",
+              "width": "fill_container",
+              "height": 150,
+              "fill": "$bg",
+              "cornerRadius": 6,
+              "padding": 12
+            },
+            {
+              "type": "text",
+              "id": "FcME9",
+              "name": "DescPlaceholder",
+              "fill": "$text-secondary",
+              "content": "Add a description...",
+              "fontFamily": "Geist Mono",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "MaMKi",
+              "name": "BaseLabel",
+              "fill": "$text-secondary",
+              "content": "Base Branch",
+              "fontFamily": "Geist",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "ezk2Y",
+              "name": "BaseSelect",
+              "width": "fill_container",
+              "height": 40,
+              "fill": "$bg",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center"
+            },
+            {
+              "type": "text",
+              "id": "RV5XR",
+              "name": "BaseValue",
+              "fill": "$text-primary",
+              "content": "main",
+              "fontFamily": "Geist Mono",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YzI75",
+          "name": "DialogFooter",
+          "gap": 12,
+          "padding": [
+            16,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "w3qq6t",
+              "name": "Spacer",
+              "width": "fill_container",
+              "height": "fit_content(0)"
+            },
+            {
+              "type": "frame",
+              "id": "kHXFG",
+              "name": "CancelBtn",
+              "width": 100,
+              "height": 36,
+              "fill": "#00000000",
+              "cornerRadius": 6,
+              "stroke": "$border",
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center"
+            },
+            {
+              "type": "text",
+              "id": "QY4XO",
+              "name": "CancelLabel",
+              "fill": "$text-secondary",
+              "content": "Cancel",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "DFiof",
+              "name": "CreateBtn",
+              "width": 120,
+              "height": 36,
+              "fill": "#000000",
+              "cornerRadius": 6,
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center"
+            },
+            {
+              "type": "text",
+              "id": "s0pMl",
+              "name": "CreateLabel",
+              "fill": "#ffffff",
+              "content": "Create PR",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "P3ZKR",
+      "x": 32600,
+      "y": -8564,
+      "name": "SettingsRow",
+      "reusable": true,
+      "width": 600,
+      "height": 56,
+      "gap": 16,
+      "padding": [
+        0,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "L96lMF",
+          "name": "Left",
+          "layout": "vertical",
+          "gap": 2,
+          "children": [
+            {
+              "type": "text",
+              "id": "wSY4z",
+              "name": "RowLabel",
+              "fill": "$text-primary",
+              "content": "Setting Label",
+              "fontFamily": "Geist",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "P1zfsH",
+              "name": "RowDesc",
+              "fill": "$text-secondary",
+              "content": "Setting description text",
+              "fontFamily": "Geist",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "sVpIe",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": "fit_content(0)"
+        },
+        {
+          "type": "frame",
+          "id": "G7RESJ",
+          "name": "Control",
+          "width": 120,
+          "height": 32,
+          "fill": "$bg",
+          "cornerRadius": 6
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "sH9js",
+      "x": 33280,
+      "y": -8564,
+      "name": "SectionCard",
+      "reusable": true,
+      "width": 600,
+      "height": 200,
+      "fill": "$card",
+      "cornerRadius": 8,
+      "stroke": "$border",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "oGR60",
+          "name": "SectionTitle",
+          "fill": "$text-primary",
+          "content": "Section Title",
+          "fontFamily": "Geist",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "x5ViCq",
+          "name": "SectionDesc",
+          "fill": "$text-secondary",
+          "content": "Section description text",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "UU6xF",
+          "name": "Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "$bg",
+          "cornerRadius": 4
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "VI3F3",
+      "x": 33960,
+      "y": -8564,
+      "name": "KeyCap",
+      "reusable": true,
+      "width": 36,
+      "height": 32,
+      "fill": "$border",
+      "cornerRadius": 6,
+      "layout": "vertical",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "aqUVg",
+          "name": "KeyLabel",
+          "fill": "$text-primary",
+          "content": "⌘",
+          "fontFamily": "Geist Mono",
+          "fontSize": 12,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Gj5Vi",
+      "x": 34076,
+      "y": -8564,
+      "name": "GlobalSettingsEffect",
+      "reusable": true,
+      "width": 360,
+      "height": 48,
+      "fill": "$card",
+      "cornerRadius": 8,
+      "stroke": "#000000",
+      "gap": 12,
+      "padding": [
+        0,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "QdgVf",
+          "name": "CheckIcon",
+          "width": 16,
+          "height": 16,
+          "icon": "check-circle",
+          "library": "lucide",
+          "fill": "#000000"
+        },
+        {
+          "type": "text",
+          "id": "Qcx3B",
+          "name": "EffectText",
+          "fill": "$text-primary",
+          "content": "Settings synced across all agents",
+          "fontFamily": "Geist",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "l0Bic8",
+      "x": 34516,
+      "y": -8564,
+      "name": "Logo Explorations",
+      "context": "Logo concept board — five directions from the current π-in-tile mark. Marks generated as SVG into the reusable Mark frames; small 20px instances show the in-app favicon/avatar treatment.",
+      "width": 1480,
+      "fill": "$bg",
+      "layout": "vertical",
+      "gap": 28,
+      "padding": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "ksBHw",
+          "name": "BoardHeader",
+          "layout": "vertical",
+          "gap": 6,
+          "children": [
+            {
+              "type": "text",
+              "id": "tPZ5T",
+              "name": "Eyebrow",
+              "fill": "$text-muted",
+              "content": "BRAND EXPLORATION · PI DASH",
+              "fontFamily": "$font-mono",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 2
+            },
+            {
+              "type": "text",
+              "id": "LoYR1",
+              "name": "Title",
+              "fill": "$text-primary",
+              "content": "PiDash logo directions",
+              "fontFamily": "$font-ui",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "X3V0U0",
+              "name": "Subtitle",
+              "fill": "$text-secondary",
+              "content": "Five concepts built on the existing dark register (Geist, indigo). Small marks = the 20px in-app treatment; current logo is π in an indigo tile.",
+              "fontFamily": "$font-ui",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "xF25v",
+          "name": "ConceptRow",
+          "width": "fill_container",
+          "gap": 20,
+          "children": [
+            {
+              "type": "frame",
+              "id": "sIU0J",
+              "name": "Terminal π",
+              "context": "Concept card: The π bar is a terminal input cursor and the right leg ends in a > prompt caret. Speaks directly to PiDash's terminal + session core.",
+              "width": "fill_container",
+              "fill": "$card",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "eThF4",
+                  "name": "CardHead",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Y6WhHc",
+                      "name": "Num",
+                      "fill": "$text-muted",
+                      "content": "01",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "haefQ",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "Terminal π",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "UOICF",
+                  "name": "Mark",
+                  "context": "Generated SVG mark for concept Terminal π",
+                  "reusable": true,
+                  "clip": true,
+                  "width": 96,
+                  "height": 96,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "w85OW9",
+                      "x": 5.8466,
+                      "y": 7.4692,
+                      "geometry": "M77.2415 17.37032l-73.82388 0c-1.33173-0.1737-3.18456-1.44753-3.41616-3.47406l0-7.52714 0-2.89506c-0.0579-1.85283 1.62123-3.47406 3.35826-3.47406l73.93968 0c1.67913 0 3.41616 1.44753 3.58987 3.18456l0 8.27985c0 4.11098-1.91074 5.90591-3.64777 5.90591z",
+                      "fill": "#2A4AD1",
+                      "width": 80.8893,
+                      "height": 17.3703
+                    },
+                    {
+                      "type": "path",
+                      "id": "VOIjU",
+                      "x": 73.2449,
+                      "y": 57.2642,
+                      "geometry": "M5.0953 0.81062c-0.63692-0.57901-1.27383-0.81062-2.37395-0.81062-1.56333 0-2.72135 1.04222-2.72135 2.77925 0 1.27383 0 2.72135 1.10011 3.93727l7.35345 7.64295-7.35345 7.41133c-1.04221 1.10012-1.10011 2.31604-1.10011 3.70568 0 1.96863 0.98431 3.12665 2.43184 3.12665 1.44753 0 2.48975-0.63691 3.01086-1.15802l10.19059-10.19059c1.33173-1.21592 1.67912-3.93728 0.1158-5.4427l-10.65379-11.0012z",
+                      "fill": "#2A4AD1",
+                      "width": 16.7837,
+                      "height": 28.6031
+                    },
+                    {
+                      "type": "path",
+                      "id": "iG1Mp",
+                      "x": 24.0289,
+                      "y": 24.8396,
+                      "geometry": "M41.97828 0l0 42.2678c0.11581 5.269 0.98432 9.03256 4.9216 9.20626 0.81061 0.1158 2.08444-0.23161 2.14234-0.2895l0 0.0579c-1.56332 1.50543-3.01086 4.34258-3.01086 6.65863 0 1.10012 0.0579 1.91074 0.28951 2.95295-0.52111 0-1.10012 0.05791-1.79493 0-10.2485 0-14.59108-7.00603-14.59108-19.16525l-0.0579-41.68879-15.80699 0-1.67913 56.51146c0 2.02654-1.96864 4.40049-4.40049 4.34258l-3.64777 0c-2.48975 0.05791-4.16888-1.96864-4.34258-4.34258l2.02654-56.51146 12.73824 0",
+                      "fill": "#2A4AD1",
+                      "width": 49.0422,
+                      "height": 60.8798
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "MbjOl",
+                  "name": "Wordmark",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "L2M63B",
+                      "type": "ref",
+                      "ref": "UOICF",
+                      "name": "MarkSmall",
+                      "width": 20,
+                      "height": 20
+                    },
+                    {
+                      "type": "text",
+                      "id": "x3OFRi",
+                      "name": "WordmarkText",
+                      "fill": "$text-primary",
+                      "content": "PiDash",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "ug7Pd",
+                  "name": "Rationale",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The π bar is a terminal input cursor and the right leg ends in a > prompt caret. Speaks directly to PiDash's terminal + session core.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "R13B1J",
+              "name": "Pulse π",
+              "context": "Concept card: The π's horizontal bar is a heartbeat line. Agent activity at a glance — monitoring made literal.",
+              "width": "fill_container",
+              "fill": "$card",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "P0Fmom",
+                  "name": "CardHead",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "g2dvW",
+                      "name": "Num",
+                      "fill": "$text-muted",
+                      "content": "02",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "AtCRq",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "Pulse π",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QOfKA",
+                  "name": "Mark",
+                  "context": "Generated SVG mark for concept Pulse π",
+                  "reusable": true,
+                  "clip": true,
+                  "width": 96,
+                  "height": 96,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "Dj8cO",
+                      "x": 9.0609,
+                      "y": 4.8559,
+                      "geometry": "M77.33913 66.24812c0.64 0.384 0-7.744-2.88001 0.192-1.28 3.52-3.776 6.72-7.616 6.97601-3.84 0.256-5.376-1.98401-6.464-5.952-1.792-6.4-0.70399-17.664 0.51201-35.008l16.448 0c0.448 0.064 0.768-0.256 0.76799-0.832l0-8.96c0-0.448-0.256-0.768-0.76799-0.768l-30.464 0c-0.256 0-0.51201 0.128-0.51201 0.32l-2.75199 8-6.33601-29.056c-0.384-1.536-2.688-1.536-2.94399-0.064l-6.08 23.296-25.92001 0-0.06399 0c-1.344 0-2.624 1.408-2.17601 2.94399 0.256 0.96 1.088 1.92 2.56 1.85601l7.10401 0c-2.624 2.816-4.736 6.4-6.01601 10.87999-0.128 0.384 0.192 0.768 0.512 0.83201l1.664 0.576c0.32 0.128 0.576 0.128 0.768-0.19201 2.048-2.88 7.168-8.448 17.856-9.02399 0.256 12.48-0.704 22.464-6.78399 32.64-1.92 3.392-5.632 7.23199-5.63201 12.544 0.064 4.544 2.624 8.70399 7.488 8.70399 5.824 0 9.152-4.672 10.816-14.59199 1.664-9.152 2.56-25.216 2.30401-45.12l2.752-10.624 6.07999 27.328c0.384 1.728 2.688 1.536 2.944 0.128l3.776-10.816 2.68801 0c-0.576 7.168-1.536 16.576-2.17601 28.864-0.384 12.92799 1.408 24.768 13.12 24.768 5.44 0.064 13.44-1.984 16.06401-18.04801 0.128-1.6 0.128-1.66399-0.64-1.792z",
+                      "fill": "#284ED0",
+                      "width": 78.1071,
+                      "height": 86.1521
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "B5ZCh",
+                  "name": "Wordmark",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "NVhMn",
+                      "type": "ref",
+                      "ref": "QOfKA",
+                      "name": "MarkSmall",
+                      "width": 20,
+                      "height": 20
+                    },
+                    {
+                      "type": "text",
+                      "id": "ysIUf",
+                      "name": "WordmarkText",
+                      "fill": "$text-primary",
+                      "content": "PiDash",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "D3nYq",
+                  "name": "Rationale",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The π's horizontal bar is a heartbeat line. Agent activity at a glance — monitoring made literal.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "FevtV",
+              "name": "Tile + status dot",
+              "context": "Concept card: Keeps the current indigo tile but adds a live agent-status dot: online / offline / working at a glance, even at 20px.",
+              "width": "fill_container",
+              "fill": "$card",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "LTfgq",
+                  "name": "CardHead",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "AijUF",
+                      "name": "Num",
+                      "fill": "$text-muted",
+                      "content": "03",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "q2BHWv",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "Tile + status dot",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "CDHMe",
+                  "name": "Mark",
+                  "context": "Generated SVG mark for concept Tile + status dot",
+                  "reusable": true,
+                  "clip": true,
+                  "width": 96,
+                  "height": 96,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "Jv1Eu",
+                      "x": 6.0181,
+                      "y": 5.8734,
+                      "geometry": "M69.78662 0l-55.9566 0c-7.23327 0-13.83002 6.13381-13.83002 13.36709l0 57.63471c0 7.23328 5.67089 13.25136 13.59856 13.25137l56.13019 0c7.40688 0 14.23508-5.15008 14.46655-13.3671l0-57.40325c-0.05786-7.5226-7.40686-13.48282-14.40868-13.48282z",
+                      "fill": "#3F4BCA",
+                      "width": 84.1953,
+                      "height": 84.2532
+                    },
+                    {
+                      "type": "path",
+                      "id": "WoNxs",
+                      "x": 27.7179,
+                      "y": 31.5081,
+                      "geometry": "M11.51537 6.24955c-0.40507 11.74683-0.86799 14.75588-4.80289 20.07957-1.44666 2.14104-2.31465 3.2405-2.25678 5.03435 0.05787 1.96745 1.44666 4.51356 4.80289 4.51356 4.33996 0 5.49729-4.16636 6.19168-12.26763 0.46293-4.4557 0.81013-11.63111 0.92586-17.35985l8.15913 0c-0.3472 4.4557-1.09946 14.17722-1.27305 17.88065-0.17359 6.59674 1.79385 11.86256 7.46473 11.86256 5.09223 0.28934 8.0434-3.7613 9.20073-10.5895l-2.14105-0.57867c-0.81013 2.66184-2.19892 4.45569-5.03436 4.4557-5.09223-0.1736-3.47197-8.0434-2.66184-22.97288l8.91139 0 0-6.30741-27.37071 0c-6.94394 0-10.18445 3.64557-11.6311 11.34177l2.08318 0.1736c1.09946-2.77758 3.29837-5.32369 9.43219-5.26582z",
+                      "fill": "#FFFFFF",
+                      "width": 39.9277,
+                      "height": 36.0073
+                    },
+                    {
+                      "type": "path",
+                      "id": "e39l7X",
+                      "x": 69.3816,
+                      "y": 15.3056,
+                      "geometry": "M5.49728 0c-3.00903 0-5.49728 2.54611-5.49728 5.49729 0 2.95118 2.14104 5.32369 5.43942 5.32369 3.00903 0 5.61301-2.08318 5.61302-5.20796 0-3.12477-2.37252-5.61302-5.55516-5.61302z",
+                      "fill": "#1CBD7B",
+                      "width": 11.0524,
+                      "height": 10.821
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "g63QEk",
+                  "name": "Wordmark",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "nc848",
+                      "type": "ref",
+                      "ref": "CDHMe",
+                      "name": "MarkSmall",
+                      "width": 20,
+                      "height": 20
+                    },
+                    {
+                      "type": "text",
+                      "id": "KDAgu",
+                      "name": "WordmarkText",
+                      "fill": "$text-primary",
+                      "content": "PiDash",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Y4Xb2y",
+                  "name": "Rationale",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Keeps the current indigo tile but adds a live agent-status dot: online / offline / working at a glance, even at 20px.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "CeppF",
+              "name": "Split pane π",
+              "context": "Concept card: The π doubles as a dashboard window — title bar and pane dividers. The product shape is the letterform.",
+              "width": "fill_container",
+              "fill": "$card",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JElCx",
+                  "name": "CardHead",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "J4DbRd",
+                      "name": "Num",
+                      "fill": "$text-muted",
+                      "content": "04",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dHE9m",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "Split pane π",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fhXyO",
+                  "name": "Mark",
+                  "context": "Generated SVG mark for concept Split pane π",
+                  "reusable": true,
+                  "clip": true,
+                  "width": 96,
+                  "height": 96,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "sHSVD",
+                      "x": 5.9148,
+                      "y": 21.9871,
+                      "geometry": "M83.42709 0l-82.7458 0c-0.37161 0.12387-0.68129 0.43355-0.68129 0.74323l0 65.09419c0 0.37161 0.30968 0.68129 0.68129 0.68129l29.04774 0c0.37161 0 0.80516-0.30968 0.80516-0.6813l0.12387-38.46193 22.91614 0 0 38.46193c0 0.37162 0.24774 0.80516 0.68129 0.80516l29.23354 0c0.37161-0.06193 0.74322-0.3716 0.74322-0.74322l0-65.09419c0-0.37161-0.30968-0.80516-0.80516-0.80516z m-54.8129 64.59871l-26.63225 0 0-37.22323 26.50838 0 0.12387 37.22323 0 0z m0-39.20516l-26.63225 0 0-23.47355 26.63225 0 0 23.47355z m25.02194 0l-22.97807 0 0-23.47355 22.97807 0 0 23.47355z m28.61419 39.20516l-26.63226 0 0-37.22323 26.50839 0 0 37.22322 0.12387 0 0 0.00001z m0-39.20516l-26.63226 0 0-23.47355 26.50839 0 0 23.47355 0.12387 0z",
+                      "fill": "#2A48BF",
+                      "width": 84.2323,
+                      "height": 66.6426
+                    },
+                    {
+                      "type": "path",
+                      "id": "WAUza",
+                      "x": 5.9069,
+                      "y": 7.2397,
+                      "geometry": "M0.68918 11.34095l82.68388 0c0.37161 0 0.80515-0.24774 0.80515-0.68129l0-9.90968c0-0.37161-0.30968-0.74323-0.74322-0.74323l-82.74581 0c-0.37161-0.06193-0.68129 0.30968-0.68129 0.80516l0 9.84775c-0.06194 0.37161 0.24774 0.68129 0.68129 0.68129z",
+                      "fill": "#2A48BF",
+                      "width": 84.1782,
+                      "height": 11.3409
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vSZiy",
+                  "name": "Wordmark",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "kKjO5",
+                      "type": "ref",
+                      "ref": "fhXyO",
+                      "name": "MarkSmall",
+                      "width": 20,
+                      "height": 20
+                    },
+                    {
+                      "type": "text",
+                      "id": "s2yTu",
+                      "name": "WordmarkText",
+                      "fill": "$text-primary",
+                      "content": "PiDash",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "yGHWx",
+                  "name": "Rationale",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The π doubles as a dashboard window — title bar and pane dividers. The product shape is the letterform.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "h5LsQ5",
+              "name": "Agent network",
+              "context": "Concept card: Four agent nodes wired into a π. Detected agents working as one, from onboarding to multi-agent sessions.",
+              "width": "fill_container",
+              "fill": "$card",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "uZO2P",
+                  "name": "CardHead",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "J2QAk",
+                      "name": "Num",
+                      "fill": "$text-muted",
+                      "content": "05",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "g35Dd",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "Agent network",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "X89VJ",
+                  "name": "Mark",
+                  "context": "Generated SVG mark for concept Agent network",
+                  "reusable": true,
+                  "clip": true,
+                  "width": 96,
+                  "height": 96,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "aOuMN",
+                      "x": 7.4182,
+                      "y": 5.1273,
+                      "geometry": "M67.74546 5.56363l-51.92727 0c-0.98182-2.94545-4.03637-5.56363-7.85455-5.56363-4.47273 0-7.96364 3.49091-7.96364 8.07272 0 4.58182 3.6 8.29091 7.96364 8.29091 3.70909 0 6.98182-2.29091 7.85455-6.10908l10.79999 0 0 44.18181-12.32727 15.81819c-1.09091-0.32727-2.07273-0.65454-3.27272-0.65454-4.25455 0-8.07273 3.38182-8.07273 8.1818 0 4.47273 3.38182 7.74547 7.96363 7.74547 4.58182 0 8.18181-3.27274 8.18182-7.74547 0-1.52727-0.32727-2.94545-1.2-4.25453l13.63637-17.45455 0-45.81818 18.21818 0 0 45.92727 13.63636 17.45456c-0.76364 1.09091-1.41818 2.72726-1.41818 4.14543 0 4.36365 3.27273 7.74547 7.96364 7.74547 4.36364 0 7.96363-3.16364 7.96363-7.85453 0-4.14546-3.38181-7.96364-7.63636-7.96364-0.98181 0-2.07272 0.21817-3.05454 0.65454l-12.76365-16.25457 0-43.85453 10.80001 0c0.87273 3.27273 3.70909 6.10908 7.74545 6.10908 3.92728 0 7.74546-2.83636 7.85455-7.96363 0-4.69091-3.6-8.29091-7.74546-8.29091-3.05454 0-4.58182 1.30909-5.8909 2.61818-0.54546 0.65454-0.98182 1.52728-1.3091 2.61818l1.85455 0.21818z",
+                      "fill": "#3E3ED7",
+                      "width": 80.8364,
+                      "height": 85.5273
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YqP5r",
+                  "name": "Wordmark",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "OQjAb",
+                      "type": "ref",
+                      "ref": "X89VJ",
+                      "name": "MarkSmall",
+                      "width": 20,
+                      "height": 20
+                    },
+                    {
+                      "type": "text",
+                      "id": "o24qk",
+                      "name": "WordmarkText",
+                      "fill": "$text-primary",
+                      "content": "PiDash",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "IgJAb",
+                  "name": "Rationale",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Four agent nodes wired into a π. Detected agents working as one, from onboarding to multi-agent sessions.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
             }
           ]
         }
