@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import simpleGit from 'simple-git';
 import log from './logger';
-import type { CloneError } from '../../renderer/src/types/project-setup';
+import type { CloneError } from '../shared/project-setup-types';
 
 export async function isGitRepo(repoPath: string): Promise<boolean> {
   try {
@@ -30,10 +30,10 @@ export async function cloneRepository(
 
     const git = simpleGit();
 
-    await git.clone(url, dest, {
-      '--branch': branch,
-      '--progress': true,
-    });
+    await git.clone(url, dest, [
+      '--branch', branch,
+      '--progress',
+    ]);
 
     onProgress?.(100);
     return { success: true };

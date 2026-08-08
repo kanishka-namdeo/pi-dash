@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { AgentConfig, SessionInfo } from './shared/types';
-import type { Project, CloneError } from '../renderer/src/types/project-setup';
+import type { Project, CloneError } from './shared/project-setup-types';
 
 export type SessionAPI = {
   create: (agentId: string, cwd: string) => Promise<{ pid: number; state: string } | { error: string }>;

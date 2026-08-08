@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { getProjects, addProject, updateProject, removeProject, getRecentProjects } from '../project-manager';
-import type { Project } from '../../renderer/src/types/project-setup';
+import type { Project } from '../../shared/project-setup-types';
 import fs from 'fs';
 import path from 'path';
 vi.mock('electron', () => ({

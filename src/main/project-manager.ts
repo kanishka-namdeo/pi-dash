@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
 import log from './logger';
-import type { Project } from '../../renderer/src/types/project-setup';
+import type { Project } from '../shared/project-setup-types';
 
 const DEFAULT_PROJECTS_FILE = path.join(app.getPath('userData'), 'projects.json');
 
