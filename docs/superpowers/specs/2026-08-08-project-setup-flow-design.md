@@ -13,6 +13,7 @@ The Project Setup Flow is a guided onboarding experience that runs after the ini
 - **OnboardingFlow** (existing): First-run agent detection and configuration
 - **Project Setup Flow** (new): Runs sequentially after onboarding to set up the first project
 - **Trigger**: Automatically runs after onboarding if no projects exist in `projects.json`
+- **Completion**: Project setup is considered "done" when `projects.json` contains at least one project. No separate flag is stored — the presence of projects is the signal.
 
 ### Flow Modes
 
@@ -174,8 +175,8 @@ Clone Path:
   cloning-progress → (success) → scanning-for-agents
   cloning-progress → (error) → clone-error
   clone-error → (retry) → clone-repository
-  clone-error → (cancel) → project-selection
   clone-error-destination-exists → (choose different) → clone-repository
+  clone-error-destination-exists → (cancel) → project-selection
 
 GitHub Path:
   github-repo-picker → (connect) → project-selection-github-connected
@@ -302,10 +303,9 @@ interface ScreenProps {
 **10. CloneErrorScreen**
 - Generic clone error with retry option
 - Transitions: retry → `clone-repository`, cancel → `project-selection`
-
 **11. CloneErrorDestinationExistsScreen**
 - Error when destination folder already exists
-- Transitions: choose different → `clone-repository`
+- Transitions: choose different → `clone-repository`, cancel → `project-selection`
 
 #### GitHub Path (1 screen)
 
@@ -370,8 +370,7 @@ interface Project {
 }
 ```
 
-**File location:** `{appData}/projects.json`
-
+**File location:** `{appData}/projects.json` where `appData = app.getPath('userData')` (Electron's user data directory).
 ### Operations
 
 - `getProjects(): Project[]` — Read all projects
@@ -379,6 +378,101 @@ interface Project {
 - `updateProject(path: string, updates: Partial<Project>): void` — Update project
 - `removeProject(path: string): void` — Remove project
 - `getRecentProjects(limit?: number): Project[]` — Get projects sorted by lastOpenedAt
+
+### Implementation Details
+
+**Folder picker:** Uses Electron's `dialog.showOpenDialog({ properties: ['openDirectory'] })` from the main process, invoked via IPC.
+
+**Clone progress streaming:** The `cloneRepository` IPC handler sends progress updates via `webContents.send('clone-progress', progress)` events. The renderer listens for these events to update the progress bar.
+
+```typescript
+// Main process
+ipcMain.handle('clone-repository', async (event, url, dest, branch) => {
+  const result = await cloneRepository(url, dest, branch, (progress) => {
+    event.sender.send('clone-progress', progress);
+  });
+  return result;
+});
+
+// Renderer
+useEffect(() => {
+  const unsubscribe = window.api.onCloneProgress((progress) => {
+    setState(prev => ({ ...prev, cloneProgress: progress }));
+  });
+  return unsubscribe;
+}, []);
+```
+
+**`project-loading` screen behavior:** This screen checks if the selected path is a git repository by calling `window.api.isGitRepo(path)`. The progress bar is a UX animation (not tied to actual operations). After the check completes (or after 2 seconds, whichever is first), it transitions to `scanning-for-agents` or `not-a-git-repository`.
+
+**`scanning-for-agents` timing:** Fixed 1.5-second timeout (not based on actual scanning). This is a UX transition to show the user something is happening before displaying the agent selection screen.
+
+**`no-agents-found` "Add Manually" action:** Opens the `ManualAddScreen` component from the onboarding flow in a modal dialog. This reuses the existing manual agent add UI.
+
+**`lastOpenedAt` update:** Updated every time the dashboard loads a project (via `updateProject(path, { lastOpenedAt: new Date().toISOString() })`).
+
+**`removeProject` UI:** Accessible via a context menu on the Recent Projects screen (right-click → "Remove Project"). Also available in Dashboard project settings.
+
+**`projects.json` corruption handling:** If the file is malformed or unreadable, the app logs an error and treats it as empty (no projects). The file is recreated on the next `addProject` call.
+
+**`complete()` implementation:**
+```typescript
+const complete = useCallback(async () => {
+  try {
+    await window.api.addProject({
+      path: state.projectPath!,
+      name: state.projectName!,
+      addedAt: new Date().toISOString(),
+      lastOpenedAt: new Date().toISOString(),
+      selectedAgents: state.selectedAgents,
+      githubUrl: state.githubRepoUrl || undefined,
+      isGitRepo: await window.api.isGitRepo(state.projectPath!),
+    });
+    onComplete?.();
+  } catch (error) {
+    if (error.message === 'PROJECT_ALREADY_EXISTS') {
+      navigate('project-already-added');
+    } else {
+      // Show generic error toast
+    }
+  }
+}, [state, onComplete, navigate]);
+```
+
+**`project-already-added` trigger:** This screen is shown when `addProject` throws `PROJECT_ALREADY_EXISTS`. This can happen during `complete()` or when the user tries to add a project that's already in the list.
+
+**`recent-projects-loading` trigger:** This screen shows when the Recent Projects screen mounts and is fetching the project list from `projects.json`. It displays for a minimum of 300ms to avoid flicker, then transitions to `recent-projects` or `recent-projects-empty`.
+
+**`clone-error-destination-exists` cancel transition:** Cancel → `project-selection` (same as other clone error screens).
+
+**GitHub OAuth flow:** Reuses the existing GitHub OAuth integration from the app. The "Connect to GitHub" button triggers the same OAuth flow used elsewhere in the app. After successful connection, the user's GitHub repos are available for selection.
+
+**`select-agents` with 0 globally configured agents:** If onboarding found 0 agents, the flow skips `select-agents` and goes directly to `no-agents-found` from `scanning-for-agents`.
+
+**Shared UI components:** Reuses existing components from onboarding where possible:
+- `Spinner` — from `components/onboarding/ScanningScreen.tsx`
+- `ProgressBar` — from `components/onboarding/ScanningScreen.tsx`
+- `Button` — from `components/ui/button.tsx` (shadcn)
+- New components: `BackButton`, `AgentListRow` (specific to this flow)
+
+**Keyboard navigation:** All interactive elements are focusable via Tab. Enter/Space activates buttons. Escape cancels the flow (returns to dashboard). Focus is managed to stay within the flow modal when in condensed mode.
+
+**Design file node IDs:** Screens map to design nodes in `design/pidash-ui.pen` (node `UsyjJ`):
+- `ProjectSelectionScreen` → `qPcKV`
+- `RecentProjectsScreen` → `YFOTv`
+- `RecentProjectsEmptyScreen` → `Aftg7`
+- `CloneRepositoryScreen` → `w0Sri`
+- `CloningProgressScreen` → `a3Qb7`
+- `CloneErrorScreen` → `U6Gjh`
+- `CloneErrorDestinationExistsScreen` → `LUKvY`
+- `ProjectLoadingScreen` → `x3kDM`
+- `NotAGitRepositoryScreen` → `rgOjb`
+- `NoAgentsFoundScreen` → `BQRXs`
+- `ScanningForAgentsScreen` → `jmnlI` (added)
+- `SelectAgentsScreen` → `MR3Rx` (added)
+- `ProjectAlreadyAddedScreen` → `oUyJu` (added)
+- `RecentProjectsLoadingScreen` → `SWmfN` (added)
+- `CloneRepositoryValidationErrorScreen` → `Q6xwR` (added)
 
 ## Integration Points
 
