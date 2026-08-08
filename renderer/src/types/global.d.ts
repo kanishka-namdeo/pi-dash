@@ -100,6 +100,11 @@ declare global {
         import: (data: SettingsSchema) => Promise<{ success: true }>;
       };
       onShortcut: (callback: (action: string) => void) => () => void;
+      search: {
+        getRecent: () => Promise<Array<{ term: string; timestamp: number }>>;
+        addRecent: (term: string) => Promise<{ success: boolean; error?: string }>;
+        clearRecent: () => Promise<{ success: boolean }>;
+      };
     };
   }
 }

@@ -146,4 +146,11 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('shortcut', handler);
     return () => ipcRenderer.removeListener('shortcut', handler);
   },
+
+  // Search
+  search: {
+    getRecent: () => ipcRenderer.invoke('search:getRecent'),
+    addRecent: (term: string) => ipcRenderer.invoke('search:addRecent', term),
+    clearRecent: () => ipcRenderer.invoke('search:clearRecent'),
+  },
 });
