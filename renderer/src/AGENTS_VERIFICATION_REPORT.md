@@ -53,7 +53,7 @@
 **Claim:** `#0a0a0a` background, `#1a1a1a` cards, `#2a2a2a` borders
 
 **Verified:** ✓ Accurate. These exact hex values are used throughout:
-- `bg-[#0a0a0a]` in Dashboard, FleetPanel, ActivityFeed, MetricsFooter, etc.
+- `bg-[#0a0a0a]` in Dashboard, FleetPanel, ActivityFeed, BottomBar, etc.
 - `bg-[#1a1a1a]` in cards, buttons
 - `border-[#2a2a2a]` in borders
 
@@ -168,7 +168,7 @@
 | `AgentCard.tsx` | Individual agent card with status, progress, and action buttons | ✓ Accurate |
 | `AgentDetailPanel.tsx` | Slide-out panel with agent details, files, and messages | ✓ Accurate |
 | `ActivityFeed.tsx` | Live activity stream with action-colored badges | ✓ Accurate |
-| `MetricsFooter` | Progress, elapsed time, active agents, token count | ✓ Accurate (file is `MetricsFooter.tsx`) |
+| `BottomBar.tsx` | Persistent bottom bar with agent status, workspace context, metrics, and alerts | ✓ Accurate (replaces MetricsFooter) |
 | `PlanPanel.tsx` | Plan step timeline with progress bar | ✓ Accurate |
 
 #### 4.8 `components/views/` ✓
@@ -316,7 +316,7 @@ These files exist in `renderer/src/` but are not mentioned in `AGENTS.md`:
 - [x] `AgentCard.tsx`
 - [x] `AgentDetailPanel.tsx`
 - [x] `ActivityFeed.tsx`
-- [x] `MetricsFooter.tsx`
+- [x] `BottomBar.tsx`
 - [x] `PlanPanel.tsx`
 
 ### components/views/

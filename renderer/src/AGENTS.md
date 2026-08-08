@@ -2,7 +2,7 @@
 
 ## Purpose
 
-React 19 + TypeScript renderer for the Pi Dashboard Electron app. Implements the agent orchestration UI with live simulation, activity feed, plan tracking, Picture-in-Picture terminal overlays, and an onboarding flow for agent discovery.
+React 19 + TypeScript renderer for the Pi Dashboard Electron app. Implements the agent orchestration UI with live simulation, activity feed, plan tracking, Picture-in-Picture terminal overlays, onboarding flow for agent discovery, and GitHub integration (auth, repos, issues, PRs, branches, worktrees).
 
 ## Ownership
 
@@ -36,8 +36,13 @@ React 19 + TypeScript renderer for the Pi Dashboard Electron app. Implements the
   - `useOnboardingState` — Onboarding screen navigation and agent selection
   - `useElapsedTimer` — Elapsed time counter with start/stop/reset
   - `useDashboardMode` — Dashboard mode state (`auto` | `supervised` | `manual`)
+  - `useGitHubAuth` — GitHub authentication state and actions
+  - `useRepos` — Repository list and active repo management
+  - `useGitHubActivity` — GitHub activity feed (issues, PRs)
 - `context/` — React context providers
   - `PiPContext.tsx` — Provides PiP state and actions to the overlay tree
+  - `SessionContext.tsx` — Provides session state and actions
+  - `GitHubContext.tsx` — Provides GitHub auth, repos, data, and auth-expired state to the tree
 - `components/pip/` — Picture-in-picture terminal overlay system
   - `PiPContainer.tsx` — Grid container for main terminal + overlays
   - `MainTerminal.tsx` — Renders Dashboard or TerminalView based on main agent selection
@@ -46,16 +51,16 @@ React 19 + TypeScript renderer for the Pi Dashboard Electron app. Implements the
 - `components/terminal/` — Terminal view component
   - `TerminalView.tsx` — xterm.js terminal with session binding, fit addon, and resize observer
 - `components/dashboard/` — Dashboard layout components
-  - `Dashboard.tsx` — Main dashboard orchestrator (combines all panels, hooks, and navigation)
+  - `Dashboard.tsx` — Main dashboard orchestrator (combines all panels, hooks, navigation, and overlay states for agent disconnected / GitHub auth expired)
   - `Topbar.tsx` — Mode selector, pause/stop/new-task controls, worktrees link
   - `FleetPanel.tsx` — Agent list sidebar with launch and PiP actions
   - `AgentCard.tsx` — Individual agent card with status, progress, and action buttons
   - `AgentDetailPanel.tsx` — Slide-out panel with agent details, files, and messages
   - `ActivityFeed.tsx` — Live activity stream with action-colored badges
-  - `MetricsFooter` — Elapsed time, active agents, total commands
+  - `BottomBar.tsx` — Persistent bottom bar with agent status, workspace context, metrics, and alerts (replaces MetricsFooter)
   - `PlanPanel.tsx` — Plan step timeline with progress bar
 - `components/views/` — Detail views (routed pages)
-  - `WorktreeView.tsx` — Worktree management page (mock data)
+  - `WorktreeView.tsx` — Worktree management page with empty state and conflict overlay
   - `CompletedWorkView.tsx` — Agent completed work with file changes and commits
   - `AgentDetailView.tsx` — Full-page terminal view for a single agent
 - `components/onboarding/` — Onboarding flow screens
@@ -66,6 +71,18 @@ React 19 + TypeScript renderer for the Pi Dashboard Electron app. Implements the
   - `ReadyScreen.tsx` — Final confirmation before entering dashboard
   - `NoAgentsScreen.tsx` — Fallback when no agents detected, with popular agent links
   - `ManualAddScreen.tsx` — Path validation and agent identification flow
+- `components/github/` — GitHub integration UI
+  - `GitHubPanel.tsx` — Main GitHub panel orchestrator
+  - `GitHubSettings.tsx` — Auth (PAT/OAuth) and repo configuration
+  - `IssuesTab.tsx` — Issues list for active repo
+  - `PRsTab.tsx` — Pull requests list for active repo
+  - `BranchesTab.tsx` — Branches list for active repo
+  - `CreateWorktreeDialog.tsx` — Create worktree from branch/issue
+  - `PRComposer.tsx` — Create/update pull requests
+  - `PRFeedbackPanel.tsx` — PR review comments and status
+  - `GitHubAuthExpired.tsx` — Full-screen overlay for expired GitHub authentication with re-auth and PAT options
+- `data/` — Static and mock data
+  - `mockData.ts` — Mock data for development/testing
 - `components/ui/` — shadcn/ui primitives + custom UI
   - **Layout**: `scroll-area`, `resizable`, `sidebar`, `accordion`, `collapsible`
   - **Navigation**: `tabs`, `breadcrumb`, `menubar`, `navigation-menu`
@@ -74,7 +91,7 @@ React 19 + TypeScript renderer for the Pi Dashboard Electron app. Implements the
   - **Feedback**: `alert`, `progress`, `skeleton`, `spinner`, `sonner` (toast), `badge`, `tooltip`
   - **Data Display**: `table`, `avatar`, `card`, `separator`, `chart`
   - **Actions**: `button`
-  - **Custom**: `PiLogo.tsx` (π logo), `AgentIcon.tsx` (gradient agent icons)
+  - **Custom**: `PiLogo.tsx` (π logo), `AgentIcon.tsx` (gradient agent icons), `AgentDisconnected.tsx` (agent disconnected overlay), `WorktreeConflict.tsx` (worktree merge conflict overlay), `EmptyStatePanel.tsx` (reusable empty state)
   - **Hook**: `use-mobile.tsx` (responsive breakpoint detection)
 - `lib/` — Utilities, persistence, parsers
   - `sessionStore.ts` — localStorage save/load for session history
