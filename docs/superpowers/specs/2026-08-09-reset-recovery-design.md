@@ -46,20 +46,42 @@ SettingsScreen
 ```ts
 // src/main/ipc-handlers.ts — add new handlers
 
-// Export: combine agents + projects into single object
+// Export: show save dialog, write file
 ipcMain.handle('export-config', async () => {
+  const { dialog } = await import('electron');
+  const result = await dialog.showSaveDialog({
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+    defaultPath: `pi-dash-backup-${Date.now()}.json`,
+  });
+  
+  if (result.canceled || !result.filePath) return { success: false };
+  
   const agents = await loadAgents();
   const projects = await getProjects();
-  return {
+  const config = {
     version: 1,
     exportedAt: new Date().toISOString(),
     agents,
     projects,
   };
+  
+  await fs.writeFile(result.filePath, JSON.stringify(config, null, 2));
+  return { success: true };
 });
 
-// Import: restore from exported object
-ipcMain.handle('import-config', async (_event, config: ExportedConfig) => {
+// Import: show open dialog, read file, restore
+ipcMain.handle('import-config', async () => {
+  const { dialog } = await import('electron');
+  const result = await dialog.showOpenDialog({
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+    properties: ['openFile'],
+  });
+  
+  if (result.canceled || result.filePaths.length === 0) return { success: false };
+  
+  const content = await fs.readFile(result.filePaths[0], 'utf-8');
+  const config = JSON.parse(content) as ExportedConfig;
+  
   // Validate version
   if (config.version !== 1) {
     throw new Error('INCOMPATIBLE_VERSION');
@@ -71,41 +93,9 @@ ipcMain.handle('import-config', async (_event, config: ExportedConfig) => {
   // Clear and re-add projects
   const projectsPath = path.join(app.getPath('userData'), 'projects.json');
   await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: config.projects }, null, 2));
+  
+  return { success: true, config };
 });
-
-// Reset agents: clear agents.json, keep onboarding flag
-ipcMain.handle('reset-agents', async () => {
-  await saveAgents([]); // empty array clears the file
-});
-
-// Reset projects: clear projects.json
-ipcMain.handle('reset-projects', async () => {
-  const projectsPath = path.join(app.getPath('userData'), 'projects.json');
-  await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: [] }, null, 2));
-});
-
-// Full reset: clear both, reset onboarding
-ipcMain.handle('full-reset', async () => {
-  await saveAgents([]);
-  const projectsPath = path.join(app.getPath('userData'), 'projects.json');
-  await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: [] }, null, 2));
-  await resetOnboarding();
-});
-```
-
-**New function in `agent-store.ts`:**
-
-```ts
-// src/main/agent-store.ts
-export async function resetOnboarding(): Promise<void> {
-  const userDataPath = process.env.PI_DASH_USER_DATA || app.getPath('userData');
-  const storePath = path.join(userDataPath, STORE_FILE);
-  const store = await loadAgents();
-  store.onboardingCompleted = false;
-  const dir = path.dirname(storePath);
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(storePath, JSON.stringify(store, null, 2));
-}
 ```
 
 **New types:**
@@ -125,7 +115,7 @@ export interface ExportedConfig {
 ```ts
 // src/preload.ts
 exportConfig: () => ipcRenderer.invoke('export-config'),
-importConfig: (config: ExportedConfig) => ipcRenderer.invoke('import-config', config),
+importConfig: () => ipcRenderer.invoke('import-config'),
 resetAgents: () => ipcRenderer.invoke('reset-agents'),
 resetProjects: () => ipcRenderer.invoke('reset-projects'),
 fullReset: () => ipcRenderer.invoke('full-reset'),
@@ -147,53 +137,28 @@ export function ResetRecoverySettings() {
 
   const handleExport = async () => {
     try {
-      const config = await window.api.exportConfig();
-      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `pi-dash-backup-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      toast.success('Configuration exported');
+      const result = await window.api.exportConfig();
+      if (result.success) {
+        toast.success('Configuration exported');
+      }
     } catch (err) {
       toast.error('Failed to export configuration. Check disk space.');
     }
   };
 
   const handleImport = async () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      
-      try {
-        const text = await file.text();
-        const config = JSON.parse(text) as ExportedConfig;
-        
-        // Validate
-        if (!config.version || !config.agents || !config.projects) {
-          toast.error('Incompatible backup file format.');
-          return;
-        }
-        
-        // Show confirmation
-        const confirmed = await showImportConfirmation(config);
-        if (!confirmed) return;
-        
-        await window.api.importConfig(config);
+    try {
+      const result = await window.api.importConfig();
+      if (result.success) {
         toast.success('Configuration imported. Please restart the app.');
-      } catch (err) {
-        if (err instanceof SyntaxError) {
-          toast.error('Invalid backup file. Please select a valid JSON file.');
-        } else {
-          toast.error('Failed to import configuration. Check disk space.');
-        }
       }
-    };
-    input.click();
+    } catch (err) {
+      if (err instanceof Error && err.message === 'INCOMPATIBLE_VERSION') {
+        toast.error('Incompatible backup file format.');
+      } else {
+        toast.error('Failed to import configuration. Check disk space.');
+      }
+    }
   };
 
   return (
@@ -254,9 +219,10 @@ interface ResetActionProps {
 ```
 1. User navigates to Settings → Reset & Recovery
 2. User clicks "Export..."
-3. Browser downloads: pi-dash-backup-20260809-143022.json
-4. Toast: "Configuration exported"
-5. File contains:
+3. Native save dialog opens (showSaveDialog) → user chooses location
+4. File saved: pi-dash-backup-20260809-143022.json
+5. Toast: "Configuration exported"
+6. File contains:
    {
      "version": 1,
      "exportedAt": "2026-08-09T14:30:22.123Z",
@@ -264,14 +230,14 @@ interface ResetActionProps {
      "projects": [ ... ]
    }
 ```
-
 **Flow 2: Import Configuration**
 
 ```
 1. User navigates to Settings → Reset & Recovery
 2. User clicks "Import..."
-3. File picker opens → user selects backup.json
-4. Confirmation dialog:
+3. Native open dialog opens (showOpenDialog) → user selects backup.json
+4. Main process reads file, validates, returns config to renderer
+5. Renderer shows confirmation dialog:
    ┌─────────────────────────────────────┐
    │ Import Configuration                │
    ├─────────────────────────────────────┤
@@ -284,9 +250,9 @@ interface ResetActionProps {
    │                                     │
    │       [Cancel]  [Import]            │
    └─────────────────────────────────────┘
-5. User clicks "Import"
-6. Config restored
-7. Toast: "Configuration imported. Please restart the app."
+6. User clicks "Import"
+7. Renderer calls IPC to apply config
+8. Toast: "Configuration imported. Please restart the app."
 ```
 
 **Flow 3: Reset Agents**
