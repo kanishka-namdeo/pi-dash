@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { scanSystem, validateAgent, identifyAgent } from './agent-scanner';
+import { scanSystem, validateAgent, identifyAgent, findInPath } from './agent-scanner';
 import { loadAgents, saveAgents, completeOnboarding } from './agent-store';
 import { getProjects, addProject, updateProject, removeProject, getRecentProjects } from './project-manager';
 import { isGitRepo, cloneRepository } from './git-operations';
@@ -46,6 +46,10 @@ export function registerIpcHandlers(): void {
   });
   ipcMain.handle('get-cwd', () => {
     return process.cwd();
+  });
+  ipcMain.handle('find-agent-in-path', async (_event, binary: string) => {
+    const foundPath = await findInPath(binary);
+    return { found: foundPath !== null, path: foundPath || undefined };
   });
 }
 

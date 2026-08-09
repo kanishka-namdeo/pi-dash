@@ -87,7 +87,7 @@ declare global {
       getAgents: () => Promise<AgentConfig[]>;
       saveAgents: (agents: AgentConfig[]) => Promise<void>;
       completeOnboarding: () => Promise<void>;
-      getOnboardingStatus: () => Promise<boolean>;
+      findAgentInPath: (binary: string) => Promise<{ found: boolean; path?: string }>;
       openExternal: (url: string) => void;
       openDirectory: () => Promise<string | null>;
       getProjects(): Promise<Project[]>;

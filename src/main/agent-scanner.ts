@@ -118,7 +118,7 @@ export async function identifyAgent(agentPath: string): Promise<IdentificationRe
   };
 }
 
-async function findInPath(binary: string): Promise<string | null> {
+export async function findInPath(binary: string): Promise<string | null> {
   try {
     const cmd = process.platform === 'win32' ? `where ${binary}` : `which ${binary}`;
     const { stdout } = await execAsync(cmd, { timeout: 3000 });
