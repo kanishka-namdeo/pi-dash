@@ -19,6 +19,7 @@ export interface ScanResult {
 }
 
 export function useAgentScanner(options: UseAgentScannerOptions) {
+  const { mode, existingAgents, autoStart, onComplete, onError } = options;
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -58,14 +59,14 @@ export function useAgentScanner(options: UseAgentScannerOptions) {
       let validations: AgentValidation[] | undefined;
       let drift: DriftReport | undefined;
 
-      if (options.mode === 'incremental' && options.existingAgents) {
-        const existingIds = new Set(options.existingAgents.map(a => a.id));
+      if (mode === 'incremental' && existingAgents) {
+        const existingIds = new Set(existingAgents.map(a => a.id));
         newAgents = agents.filter(a => !existingIds.has(a.id));
       }
 
-      if (options.mode === 'revalidate' && options.existingAgents) {
+      if (mode === 'revalidate' && existingAgents) {
         validations = await Promise.all(
-          options.existingAgents.map(async (agent) => {
+          existingAgents.map(async (agent) => {
             const validation = await window.api.validateAgent(agent.path);
             if (validation.valid) {
               return { agent, status: 'valid' as const };
@@ -81,17 +82,18 @@ export function useAgentScanner(options: UseAgentScannerOptions) {
 
       if (controller.signal.aborted) return;
 
-      if (options.mode === 'background' && options.existingAgents) {
-        const existingIds = new Set(options.existingAgents.map(a => a.id));
+      if (mode === 'background' && existingAgents) {
+        const existingIds = new Set(existingAgents.map(a => a.id));
         const scannedIds = new Set(agents.map(a => a.id));
 
         const newAgentsList = agents.filter(a => !existingIds.has(a.id));
-        const missingAgentsList = options.existingAgents.filter(a => !scannedIds.has(a.id));
+        const missingAgentsList = existingAgents.filter(a => !scannedIds.has(a.id));
 
         const movedAgents: AgentValidation[] = [];
         const trulyMissing: AgentConfig[] = [];
 
         for (const agent of missingAgentsList) {
+          if (controller.signal.aborted) return;
           const found = await window.api.findAgentInPath(agent.name.toLowerCase());
           if (found.found && found.path) {
             movedAgents.push({ agent, status: 'moved', newPath: found.path });
@@ -119,15 +121,22 @@ export function useAgentScanner(options: UseAgentScannerOptions) {
       };
 
       setResult(scanResult);
-      options.onComplete?.(scanResult);
+      onComplete?.(scanResult);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Scan failed');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
     } finally {
       setIsScanning(false);
     }
-  }, [options]);
+  }, [mode, existingAgents, onComplete, onError]);
+
+  // Auto-start scan on mount when autoStart is true
+  useEffect(() => {
+    if (autoStart) {
+      scan();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- only on mount
 
   return { scan, isScanning, error, result };
 }

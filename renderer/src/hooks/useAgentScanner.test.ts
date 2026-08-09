@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAgentScanner } from './useAgentScanner';
 import type { AgentConfig } from '../../../src/shared/types';
 
@@ -314,6 +314,44 @@ describe('useAgentScanner', () => {
 
       // Should have result from second scan, not first
       expect(result.current.result?.agents[0].id).toBe('second');
+    });
+  });
+
+  describe('autoStart', () => {
+    it('automatically calls scan on mount when autoStart is true', async () => {
+      const mockAgents: AgentConfig[] = [
+        { id: 'auto', name: 'Auto', path: '/auto', icon: 'auto', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: mockAgents,
+        warnings: [],
+        locationsScanned: 2,
+        duration: 50,
+      });
+
+      const { result } = renderHook(() => useAgentScanner({ mode: 'initial', autoStart: true }));
+
+      await waitFor(() => {
+        expect(result.current.result?.agents).toEqual(mockAgents);
+      });
+
+      expect(window.api.scanAgents).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not auto-scan when autoStart is false', async () => {
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [],
+        warnings: [],
+        locationsScanned: 0,
+        duration: 0,
+      });
+
+      renderHook(() => useAgentScanner({ mode: 'initial', autoStart: false }));
+
+      // Give a tick for any potential auto-start to fire
+      await act(async () => {});
+
+      expect(window.api.scanAgents).not.toHaveBeenCalled();
     });
   });
 });
