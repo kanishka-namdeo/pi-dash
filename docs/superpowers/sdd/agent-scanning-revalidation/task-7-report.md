@@ -26,3 +26,39 @@ The QuickScanModal component:
 
 ## Concerns
 None.
+
+## P2 Fix Applied: Race Condition
+**Commit:** `473e71e4`
+
+**Issue:** The condition `existingAgents.length >= 0` was always true, causing `scan()` to fire with empty `existingAgents` before `getAgents()` resolved.
+
+**Fix:** Added `agentsLoaded` flag to gate the scan effect:
+```typescript
+const [agentsLoaded, setAgentsLoaded] = useState(false);
+
+useEffect(() => {
+  if (open) {
+    setAgentsLoaded(false);
+    window.api.getAgents().then((agents) => {
+      setExistingAgents(agents);
+      setAgentsLoaded(true);
+    });
+  }
+}, [open]);
+
+useEffect(() => {
+  if (open && agentsLoaded) {
+    scan();
+  }
+}, [open, agentsLoaded, scan]);
+```
+
+**Test improvement (commit `4c1e0642`):** Added delayed `scanAgents` mock so the scanning state is visible long enough to verify. Test now checks:
+1. Dialog title renders
+2. "Scanning for agents..." appears while scan is in progress
+3. "No new agents detected" appears after scan completes
+
+## P3 Findings (Deferred)
+- Use existing `Checkbox` component instead of raw `<input type="checkbox">`
+- Add more test coverage (error state, retry, add selected flow)
+- Remove `eslint-disable` by including `scan` in dependency array (now done)
