@@ -489,6 +489,198 @@ describe('useAgentScanner', () => {
       expect(result.current.result?.drift?.movedAgents?.[0].newPath).toBe('/new/path');
       expect(result.current.result?.drift?.missingAgents).toHaveLength(0);
     });
+
+    it('returns drift with only newAgents when all existing agents are still present', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+      ];
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'new-agent-1', name: 'New Agent 1', path: '/new/1', icon: 'new1', cwd: '/', source: 'detected' },
+        { id: 'new-agent-2', name: 'New Agent 2', path: '/new/2', icon: 'new2', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+      window.api.findAgentInPath = vi.fn().mockResolvedValue({ found: false });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'background', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.drift?.newAgents).toHaveLength(2);
+      expect(result.current.result?.drift?.newAgents?.map(a => a.id)).toEqual(['new-agent-1', 'new-agent-2']);
+      expect(result.current.result?.drift?.missingAgents).toHaveLength(0);
+      expect(result.current.result?.drift?.movedAgents).toHaveLength(0);
+    });
+
+    it('returns drift with only missingAgents when no new agents found', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'old-agent-1', name: 'Old Agent 1', path: '/old/1', icon: 'old1', cwd: '/', source: 'detected' },
+        { id: 'old-agent-2', name: 'Old Agent 2', path: '/old/2', icon: 'old2', cwd: '/', source: 'detected' },
+      ];
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+      window.api.findAgentInPath = vi.fn().mockResolvedValue({ found: false });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'background', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.drift?.newAgents).toHaveLength(0);
+      expect(result.current.result?.drift?.missingAgents).toHaveLength(2);
+      expect(result.current.result?.drift?.missingAgents?.map(a => a.id)).toEqual(['old-agent-1', 'old-agent-2']);
+      expect(result.current.result?.drift?.movedAgents).toHaveLength(0);
+    });
+
+    it('returns empty drift when all agents match', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'agent-1', name: 'Agent 1', path: '/path/1', icon: 'a1', cwd: '/', source: 'detected' },
+      ];
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'agent-1', name: 'Agent 1', path: '/path/1', icon: 'a1', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+      window.api.findAgentInPath = vi.fn().mockResolvedValue({ found: false });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'background', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.drift?.newAgents).toHaveLength(0);
+      expect(result.current.result?.drift?.missingAgents).toHaveLength(0);
+      expect(result.current.result?.drift?.movedAgents).toHaveLength(0);
+    });
+
+    it('handles empty existingAgents in background mode', async () => {
+      const existingAgents: AgentConfig[] = [];
+      const scannedAgents: AgentConfig[] = [
+        { id: 'new-agent-1', name: 'New Agent 1', path: '/new/1', icon: 'new1', cwd: '/', source: 'detected' },
+        { id: 'new-agent-2', name: 'New Agent 2', path: '/new/2', icon: 'new2', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+      window.api.findAgentInPath = vi.fn().mockResolvedValue({ found: false });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'background', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.drift?.newAgents).toHaveLength(2);
+      expect(result.current.result?.drift?.missingAgents).toHaveLength(0);
+      expect(result.current.result?.drift?.movedAgents).toHaveLength(0);
+    });
+
+    it('calls findAgentInPath for each missing agent', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'agent-1', name: 'Agent 1', path: '/path/1', icon: 'a1', cwd: '/', source: 'detected' },
+        { id: 'agent-2', name: 'Agent 2', path: '/path/2', icon: 'a2', cwd: '/', source: 'detected' },
+      ];
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+      window.api.findAgentInPath = vi.fn().mockResolvedValue({ found: false });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'background', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(window.api.findAgentInPath).toHaveBeenCalledTimes(2);
+      expect(window.api.findAgentInPath).toHaveBeenCalledWith('agent 1');
+      expect(window.api.findAgentInPath).toHaveBeenCalledWith('agent 2');
+    });
+
+    it('correctly categorizes mixed drift with new, missing, and moved agents', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'moved-agent', name: 'Moved Agent', path: '/old/path', icon: 'moved', cwd: '/', source: 'detected' },
+        { id: 'missing-agent', name: 'Missing Agent', path: '/missing/path', icon: 'missing', cwd: '/', source: 'detected' },
+      ];
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'new-agent', name: 'New Agent', path: '/new/path', icon: 'new', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+      window.api.findAgentInPath = vi.fn().mockImplementation(async (name: string) => {
+        if (name === 'moved agent') {
+          return { found: true, path: '/new/moved/path' };
+        }
+        return { found: false };
+      });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'background', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.drift?.newAgents).toHaveLength(1);
+      expect(result.current.result?.drift?.newAgents?.[0].id).toBe('new-agent');
+      
+      expect(result.current.result?.drift?.missingAgents).toHaveLength(1);
+      expect(result.current.result?.drift?.missingAgents?.[0].id).toBe('missing-agent');
+      
+      expect(result.current.result?.drift?.movedAgents).toHaveLength(1);
+      expect(result.current.result?.drift?.movedAgents?.[0].agent.id).toBe('moved-agent');
+      expect(result.current.result?.drift?.movedAgents?.[0].status).toBe('moved');
+      expect(result.current.result?.drift?.movedAgents?.[0].newPath).toBe('/new/moved/path');
+    });
   });
 
   describe('abort handling', () => {
