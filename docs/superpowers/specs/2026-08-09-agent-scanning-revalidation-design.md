@@ -334,7 +334,7 @@ export interface AppSettings {
 
 **No changes to `agents.json` or `projects.json` schema.** The existing `AgentConfig` and `AgentsStore` types remain unchanged. We only add new fields to settings for ignored drifts.
 
-**IPC surface — no new handlers needed.** The existing `scan-agents`, `validate-agent`, `identify-agent`, `get-agents`, `save-agents` are sufficient. All diff/validation logic lives in the renderer hook.
+**IPC surface — one new handler needed for moved-agent detection.** The existing `scan-agents`, `validate-agent`, `identify-agent`, `get-agents`, `save-agents` cover most cases. Added: `find-agent-in-path` — takes an agent name/id, searches system PATH, returns `{ found: boolean, path?: string }`. Used by `revalidate` and `background` modes to detect moved agents. All diff/validation logic lives in the renderer hook.
 
 ## Error Handling
 
@@ -407,6 +407,8 @@ export interface AppSettings {
 - `renderer/src/App.tsx` — add background scan on mount
 - `src/shared/types.ts` — add new types
 - `renderer/src/types/settings.ts` — add `ignoredDrifts` field
+- `src/main/ipc-handlers.ts` — add `find-agent-in-path` handler
+- `src/preload.ts` — expose `findAgentInPath` on `window.api`
 
 **Dependencies:**
 - None. Uses existing IPC surface.
