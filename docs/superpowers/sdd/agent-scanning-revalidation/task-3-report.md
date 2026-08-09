@@ -61,3 +61,29 @@
 
 ## Concerns
 None. Implementation follows the plan exactly, with the syntax error in the plan's code block (missing closing brace for `revalidate` block) corrected.
+
+
+---
+
+## Review Fixes Applied
+
+**Commit:** `b3dc40fe`
+
+### Fix 1: autoStart option (P1 — CRITICAL)
+- Added `useEffect` that calls `scan()` on mount when `autoStart: true`
+- Required for Task 7 (App.tsx background scan on mount)
+- Added 2 tests: autoStart true triggers scan, autoStart false does not
+
+### Fix 2: useCallback dependency (P2 — IMPORTANT)
+- Destructured `options` into primitives: `mode`, `existingAgents`, `autoStart`, `onComplete`, `onError`
+- Changed `useCallback` deps from `[options]` to `[mode, existingAgents, onComplete, onError]`
+- Prevents new object reference on every render from invalidating the callback
+
+### Fix 3: Abort check in background loop (P3 — MINOR)
+- Added `if (controller.signal.aborted) return;` inside the `for...of` loop over `missingAgentsList`
+- Ensures responsive cancellation during potentially slow sequential `findAgentInPath` calls
+
+### Updated Test Summary
+- **Total tests**: 13 (was 11)
+- **Passing**: 13
+- **New tests**: 2 (autoStart true/false)
