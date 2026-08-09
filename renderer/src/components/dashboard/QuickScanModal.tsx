@@ -12,6 +12,7 @@ interface QuickScanModalProps {
 
 export function QuickScanModal({ open, onOpenChange }: QuickScanModalProps) {
   const [existingAgents, setExistingAgents] = useState<AgentConfig[]>([]);
+  const [agentsLoaded, setAgentsLoaded] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const { scan, isScanning, result, error } = useAgentScanner({
@@ -21,15 +22,19 @@ export function QuickScanModal({ open, onOpenChange }: QuickScanModalProps) {
 
   useEffect(() => {
     if (open) {
-      window.api.getAgents().then(setExistingAgents);
+      setAgentsLoaded(false);
+      window.api.getAgents().then((agents) => {
+        setExistingAgents(agents);
+        setAgentsLoaded(true);
+      });
     }
   }, [open]);
 
   useEffect(() => {
-    if (open && existingAgents.length >= 0) {
+    if (open && agentsLoaded) {
       scan();
     }
-  }, [open, existingAgents]); // eslint-disable-line react-hooks/exhaustive-deps -- scan identity tied to existingAgents
+  }, [open, agentsLoaded, scan]);
 
   const handleAddSelected = async () => {
     const newAgents = result?.newAgents?.filter(a => selectedIds.has(a.id)) || [];
