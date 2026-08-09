@@ -73,14 +73,6 @@ export function KeyboardShortcutsSettings() {
       </SectionCard>
 
       <SectionCard title="NAVIGATION">
-        <SettingsRow label="Dashboard View">
-          <ShortcutKeys accel={navigation.dashboardView} />
-        </SettingsRow>
-        <RowSeparator />
-        <SettingsRow label="Terminal View">
-          <ShortcutKeys accel={navigation.terminalView} />
-        </SettingsRow>
-        <RowSeparator />
         <SettingsRow label="Toggle Sidebar">
           <ShortcutKeys accel={navigation.toggleSidebar} />
         </SettingsRow>

@@ -25,7 +25,6 @@ export type SearchIndexConfig = {
 
 const ROUTE_ITEMS: SearchItem[] = [
   { id: 'route-dashboard', type: 'route', title: 'Dashboard', description: 'Main fleet view', icon: 'layout-dashboard', iconColor: '$text-secondary', route: '/' },
-  { id: 'route-terminal', type: 'route', title: 'Terminal', description: 'Full-screen terminal', icon: 'terminal', iconColor: '$text-secondary', route: '/terminal' },
   { id: 'route-settings', type: 'route', title: 'Settings', description: 'App configuration', icon: 'settings', iconColor: '$text-secondary', route: '/settings' },
   { id: 'route-worktrees', type: 'route', title: 'Worktrees', description: 'Git worktree management', icon: 'git-branch', iconColor: '$text-secondary', route: '/worktrees' },
 ];

@@ -36,8 +36,6 @@ export interface SettingsSchema {
       previousAgent: string;
     };
     navigation: {
-      dashboardView: string;
-      terminalView: string;
       toggleSidebar: string;
       openCommandPalette: string;
     };

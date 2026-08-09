@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { Overlay, OverlaySize, PiPState, PiPActions, ViewMode } from '../types/pip';
+import type { Overlay, OverlaySize, PiPState, PiPActions } from '../types/pip';
 import { SIZE_PRESETS } from '../types/pip';
 
 export function usePiP(): { state: PiPState; actions: PiPActions } {
@@ -7,7 +7,6 @@ export function usePiP(): { state: PiPState; actions: PiPActions } {
     mainAgentId: null,
     overlays: [],
     nextZIndex: 10,
-    viewMode: 'dashboard',
   });
 
   const setMainAgent = useCallback((agentId: string | null) => {
@@ -103,16 +102,6 @@ export function usePiP(): { state: PiPState; actions: PiPActions } {
     }));
   }, []);
 
-  const toggleViewMode = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      viewMode: prev.viewMode === 'dashboard' ? 'terminal' : 'dashboard',
-    }));
-  }, []);
-
-  const setViewMode = useCallback((mode: ViewMode) => {
-    setState(prev => ({ ...prev, viewMode: mode }));
-  }, []);
 
   const actions: PiPActions = {
     setMainAgent,
@@ -122,8 +111,6 @@ export function usePiP(): { state: PiPState; actions: PiPActions } {
     updateOverlayPosition,
     updateOverlaySize,
     bringOverlayToFront,
-    toggleViewMode,
-    setViewMode,
   };
 
   return { state, actions };

@@ -4,51 +4,55 @@ import { toast } from 'sonner';
 import { useSessionContext } from '@/context/SessionContext';
 import { useAgents } from '@/hooks/useAgents';
 import { useRealActivityFeed } from '@/hooks/useRealActivityFeed';
-import { useDashboardMode } from '@/hooks/useDashboardMode';
 import { usePiPContext } from '@/context/PiPContext';
 import { useGitHub } from '@/context/GitHubContext';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
-import type { PlanStep, Agent } from '@/types/dashboard';
-import type { ViewMode } from '@/types/pip';
+import type { Agent } from '@/types/dashboard';
+import type { Project } from '@/types/project-setup';
 import { TopBar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
 import { TerminalPanel } from './TerminalPanel';
-import { PlanPanel } from './PlanPanel';
 import { ActivityFeed } from './ActivityFeed';
 import { BottomBar } from './BottomBar';
 import { AddAgentDialog } from './AddAgentDialog';
-import { AgentDetailPanel } from './AgentDetailPanel';
+import { ConfigureAgentsDialog } from './ConfigureAgentsDialog';
 import { RateLimitAlert } from '../github/RateLimitAlert';
 import { AgentDisconnected } from '../ui/AgentDisconnected';
 import { GitHubAuthExpired } from '../github/GitHubAuthExpired';
 import { ProjectSetupFlow } from '../project-setup/ProjectSetupFlow';
+import { OverlayManager } from '../pip/OverlayManager';
 
-// Mock plan data
-const mockSteps: PlanStep[] = [
-  { id: '1', number: 1, name: 'Scaffold project structure', agentId: 'omp', status: 'done', duration: '2m 14s' },
-  { id: '2', number: 2, name: 'Implement authentication', agentId: 'claude-code', status: 'done', duration: '5m 32s' },
-  { id: '3', number: 3, name: 'Build API endpoints', agentId: 'omp', status: 'active', duration: '3m 45s' },
-  { id: '4', number: 4, name: 'Write unit tests', agentId: 'codex', status: 'pending', duration: '' },
-  { id: '5', number: 5, name: 'Deploy to staging', agentId: 'aider', status: 'pending', duration: '' },
-];
 
 export function Dashboard() {
   const navigate = useNavigate();
   const ctx = useSessionContext();
   const { agents: availableAgents, refresh: refreshAgents } = useAgents();
   const { events, isPaused, pause, resume, clear } = useRealActivityFeed();
-  const { mode, setMode } = useDashboardMode();
   const { actions: pipActions } = usePiPContext();
-  const { isAuthenticated, authExpired, clearAuthExpired, login } = useGitHub();
+  const { isAuthenticated, authExpired, clearAuthExpired, login, activeRepo } = useGitHub();
   const { settings } = useSettingsContext();
-  const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [addAgentOpen, setAddAgentOpen] = useState(false);
+  const [configureAgentsOpen, setConfigureAgentsOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [collapsedPanels, setCollapsedPanels] = useState<Set<string>>(new Set());
   const [disconnectedAgent, setDisconnectedAgent] = useState<string | null>(null);
   const [showProjectSetup, setShowProjectSetup] = useState(false);
   const { layout } = useResponsiveLayout();
+  const [activeProject, setActiveProject] = useState<Project | null>(null);
+
+  // Load active project on mount
+  useEffect(() => {
+    window.api.getProjects().then(projects => {
+      if (projects.length > 0) {
+        // Use most recently opened project
+        const sorted = [...projects].sort((a, b) => 
+          new Date(b.lastOpenedAt).getTime() - new Date(a.lastOpenedAt).getTime()
+        );
+        setActiveProject(sorted[0]);
+      }
+    });
+  }, []);
 
   // Smart auto-collapse panels based on viewport width
   useEffect(() => {
@@ -58,9 +62,6 @@ export function Dashboard() {
 
       if (width < 1300) {
         next.add('activity');
-        next.add('plan');
-      } else if (width < 1400) {
-        next.add('plan');
       }
       // At 1440px+: don't auto-expand — respect user's manual collapse
 
@@ -116,6 +117,11 @@ export function Dashboard() {
   };
 
   const handleLaunch = async (agentId: string) => {
+    if (!activeProject) {
+      toast.error('Select a project before launching agents');
+      return;
+    }
+
     const agent = availableAgents.find(a => a.id === agentId);
     if (!agent) return;
 
@@ -126,7 +132,7 @@ export function Dashboard() {
     }
 
     try {
-      const cwd = agent.cwd || settings?.general.defaultWorkingDirectory || await window.api.cwd();
+      const cwd = agent.cwd || activeProject.path;
       const result = await window.api.session.create(agentId, cwd);
       if ('error' in result) {
         toast.error(`Failed to start ${agentId}: ${result.error}`);
@@ -142,10 +148,26 @@ export function Dashboard() {
     pipActions.addOverlay(agentId);
   };
 
+  const handleProjectChange = useCallback(async (project: Project) => {
+    if (activeProject?.path === project.path) return;
+    setActiveProject(project);
+    await window.api.updateProject(project.path, {
+      lastOpenedAt: new Date().toISOString(),
+    });
+  }, [activeProject]);
+
+  const handleAddProject = useCallback(() => {
+    setShowProjectSetup(true);
+  }, []);
+
   // Ctrl+L shortcut: launch first available agent
   useEffect(() => {
     const unsub = window.api?.onShortcut?.((action: string) => {
       if (action === 'launchAgent') {
+        if (!activeProject) {
+          toast.error('Select a project before launching agents');
+          return;
+        }
         const firstAvailable = availableAgents.find(a => !runningSessions.some(s => s.agentId === a.id));
         if (firstAvailable) {
           handleLaunch(firstAvailable.id);
@@ -153,9 +175,13 @@ export function Dashboard() {
       }
     });
     return () => unsub?.();
-  }, [availableAgents, runningSessions, handleLaunch]);
+  }, [availableAgents, runningSessions, handleLaunch, activeProject]);
 
   const handleReconnect = () => {
+    if (!activeProject) {
+      toast.error('Select a project before reconnecting agents');
+      return;
+    }
     if (disconnectedAgent) {
       handleLaunch(disconnectedAgent);
       setDisconnectedAgent(null);
@@ -171,9 +197,6 @@ export function Dashboard() {
 
   const hasAgents = availableAgents.length > 0;
 
-  // Compute progress from mock steps
-  const doneSteps = mockSteps.filter((s) => s.status === 'done').length;
-  const progress = Math.round((doneSteps / mockSteps.length) * 100);
   // Map a running session to Agent shape for the detail panel
   const sessionToAgent = (s: typeof runningSessions[number]): Agent => ({
     id: s.agentId,
@@ -198,9 +221,16 @@ export function Dashboard() {
     return (
       <ProjectSetupFlow
         flowMode="condensed"
-        onComplete={() => {
+        onComplete={async () => {
           setShowProjectSetup(false);
           refreshAgents();
+          const projects = await window.api.getProjects();
+          if (projects.length > 0) {
+            const sorted = [...projects].sort((a, b) =>
+              new Date(b.lastOpenedAt).getTime() - new Date(a.lastOpenedAt).getTime()
+            );
+            setActiveProject(sorted[0]);
+          }
         }}
       />
     );
@@ -210,36 +240,29 @@ export function Dashboard() {
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       {isAuthenticated && <RateLimitAlert />}
       <TopBar
-        mode={mode}
-        viewMode={viewMode}
         isFeedPaused={isPaused}
         hasMainAgent={runningSessions.length > 0}
-        onModeChange={setMode}
-        onSetViewMode={setViewMode}
+        activeProject={activeProject}
+        repoFullName={activeRepo?.fullName}
         onToggleFeedPause={handlePause}
         onClearFeed={clear}
-        onAddAgent={() => setAddAgentOpen(true)}
+        onProjectChange={handleProjectChange}
+        onAddProject={handleAddProject}
       />
-      <div className="flex items-center px-6 py-2" style={{ borderBottom: '1px solid var(--border)' }}>
-        <button
-          onClick={() => setShowProjectSetup(true)}
-          className="px-3 py-1.5 text-sm rounded-md transition-colors"
-          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}
-        >
-          + Add Project
-        </button>
-      </div>
 
 
       <div className="flex-1 flex overflow-hidden">
         <FleetPanel
           runningSessions={runningSessions}
           availableAgents={availableAgents}
+          hasActiveProject={activeProject !== null}
           onFocus={handleAgentClick}
           onLaunch={handleLaunch}
           onRestart={handleLaunch}
           onOpenAsOverlay={handleOpenAsOverlay}
           onAddAgent={() => setAddAgentOpen(true)}
+          onConfigureAgents={activeProject ? () => setConfigureAgentsOpen(true) : undefined}
+          selectedAgentIds={activeProject?.selectedAgents}
           isCollapsed={collapsedPanels.has('fleet')}
           onToggleCollapse={() => toggleCollapse('fleet')}
         />
@@ -260,12 +283,6 @@ export function Dashboard() {
         />
       </div>
 
-      <PlanPanel
-        steps={mockSteps}
-        progress={hasAgents ? progress : 0}
-        isCollapsed={collapsedPanels.has('plan')}
-        onToggleCollapse={() => toggleCollapse('plan')}
-      />
 
       <BottomBar />
 
@@ -275,11 +292,17 @@ export function Dashboard() {
         onAdded={refreshAgents}
       />
 
-      <AgentDetailPanel
-        agent={selectedAgent}
-        isOpen={selectedAgentId !== null}
-        onClose={() => setSelectedAgentId(null)}
-        onViewCompletedWork={(agentId) => navigate(`/completed/${agentId}`)}
+      <ConfigureAgentsDialog
+        open={configureAgentsOpen}
+        onOpenChange={setConfigureAgentsOpen}
+        activeProject={activeProject}
+        availableAgents={availableAgents}
+        onSaved={async (selectedAgents) => {
+          if (!activeProject) return;
+          await window.api.updateProject(activeProject.path, { selectedAgents });
+          setActiveProject({ ...activeProject, selectedAgents });
+          refreshAgents();
+        }}
       />
 
       {disconnectedAgent && (
@@ -296,6 +319,8 @@ export function Dashboard() {
           onUsePAT={() => { clearAuthExpired(); navigate('/settings/github'); }}
         />
       )}
+
+      <OverlayManager />
     </div>
   );
 }

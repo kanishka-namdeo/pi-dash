@@ -3,6 +3,15 @@ import type { SettingsService } from '../settings/settings-service';
 import type { SettingsSchema } from '../settings/settings-types';
 import { createLogger } from '../logger';
 
+// Extend App type to include isQuiting flag
+declare global {
+  namespace Electron {
+    interface App {
+      isQuiting?: boolean;
+    }
+  }
+}
+
 const log = createLogger('keyboard');
 
 type KeyboardSettings = SettingsSchema['keyboard'];
@@ -26,13 +35,12 @@ export class KeyboardShortcutManager {
     this.registerShortcut(kb.agents.previousAgent, 'previousAgent');
 
     // Navigation shortcuts
-    this.registerShortcut(kb.navigation.dashboardView, 'dashboardView');
-    this.registerShortcut(kb.navigation.terminalView, 'terminalView');
     this.registerShortcut(kb.navigation.toggleSidebar, 'toggleSidebar');
     this.registerShortcut(kb.navigation.openCommandPalette, 'openCommandPalette');
   }
 
-  private registerShortcut(accelerator: string, action: string): void {
+  private registerShortcut(accelerator: string | null | undefined, action: string): void {
+    if (!accelerator) return;
     try {
       globalShortcut.register(accelerator, () => {
         this.handleAction(action);
@@ -56,6 +64,7 @@ export class KeyboardShortcutManager {
         win.close();
         break;
       case 'quitApp':
+        app.isQuiting = true;
         app.quit();
         break;
       case 'openCommandPalette':

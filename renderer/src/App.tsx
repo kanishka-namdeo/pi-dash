@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, Component, type ReactNode, type ErrorInfo } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Dashboard } from './components/dashboard/Dashboard';
-import { TerminalView } from './components/terminal/TerminalView';
 import { AgentDetailView } from './components/views/AgentDetailView';
 import { WorktreeView } from './components/views/WorktreeView';
 import { CompletedWorkView } from './components/views/CompletedWorkView';
@@ -14,8 +13,6 @@ import { GlobalSettingsEffect } from './components/settings/GlobalSettingsEffect
 import { PiPProvider } from './context/PiPContext';
 import { GitHubProvider } from './context/GitHubContext';
 import { SessionProvider } from './context/SessionContext';
-import { PiPContainer } from './components/pip/PiPContainer';
-import { MainTerminal } from './components/pip/MainTerminal';
 import { OverlayManager } from './components/pip/OverlayManager';
 import { Toaster } from './components/ui/sonner';
 import { CommandPalette } from './components/CommandPalette';
@@ -120,37 +117,28 @@ function App() {
 
   return (
     <>
-      <SessionProvider>
-        <ErrorBoundary>
-        <GitHubProvider>
-          <PiPProvider>
-            <SettingsProvider>
-              <GlobalSettingsEffect />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route
-                    path="/terminal"
-                    element={
-                      <PiPContainer>
-                        <MainTerminal />
-                        <OverlayManager />
-                      </PiPContainer>
-                    }
-                  />
-                  <Route path="/agent/:agentId" element={<AgentDetailView />} />
-                  <Route path="/settings/*" element={<SettingsScreen />} />
-                  <Route path="/completed/:agentId" element={<CompletedWorkView />} />
-                  <Route path="/pr/:prNumber" element={<PRDetailView />} />
-                  <Route path="/worktrees" element={<WorktreeView />} />
-                </Routes>
-                <CommandPalette />
-              </BrowserRouter>
-            </SettingsProvider>
-          </PiPProvider>
-        </GitHubProvider>
-        </ErrorBoundary>
-      </SessionProvider>
+      <ErrorBoundary>
+        <SessionProvider>
+          <GitHubProvider>
+            <PiPProvider>
+              <SettingsProvider>
+                <GlobalSettingsEffect />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/agent/:agentId" element={<AgentDetailView />} />
+                    <Route path="/settings/*" element={<SettingsScreen />} />
+                    <Route path="/completed/:agentId" element={<CompletedWorkView />} />
+                    <Route path="/pr/:prNumber" element={<PRDetailView />} />
+                    <Route path="/worktrees" element={<WorktreeView />} />
+                  </Routes>
+                  <CommandPalette />
+                </BrowserRouter>
+              </SettingsProvider>
+            </PiPProvider>
+          </GitHubProvider>
+        </SessionProvider>
+      </ErrorBoundary>
       <Toaster />
     </>
   );

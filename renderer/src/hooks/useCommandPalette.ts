@@ -18,12 +18,19 @@ export function useCommandPalette() {
   const { repos, prs, branches } = useGitHub();
   const { agents } = useAgents();
   const inputRef = useRef<HTMLInputElement>(null);
+  const mountedRef = useRef(true);
+  useEffect(() => { return () => { mountedRef.current = false; }; }, []);
 
   useEffect(() => {
+    let ignored = false;
     if (!window.api) return;
-    window.api.search.getRecent().then(setRecentSearches).catch(err =>
+    window.api.search.getRecent().then((results) => {
+      if (ignored) return;
+      setRecentSearches(results);
+    }).catch(err =>
       log.error('command-palette', 'Failed to load recent searches', err)
     );
+    return () => { ignored = true; };
   }, []);
 
   useEffect(() => {
@@ -55,7 +62,6 @@ export function useCommandPalette() {
 
   const quickActions = useMemo((): SearchItem[] => [
     { id: 'action-settings', type: 'action', title: 'Open Settings', description: 'Ctrl+,', icon: 'settings', iconColor: '$text-muted', route: '/settings' },
-    { id: 'action-terminal', type: 'action', title: 'Switch to Terminal', description: 'Ctrl+2', icon: 'terminal', iconColor: '$text-muted', route: '/terminal' },
     { id: 'action-add-agent', type: 'action', title: 'Add Agent', description: 'Ctrl+L', icon: 'plus', iconColor: '$text-muted', route: '/settings/agents' },
   ], []);
 
@@ -87,6 +93,7 @@ export function useCommandPalette() {
       if (!agent) return;
       window.api.session.create(agentId, agent.cwd)
         .then(result => {
+          if (!mountedRef.current) return;
           if ('error' in result) {
             log.error('command-palette', `Failed to launch ${agentId}`, result.error);
             return;

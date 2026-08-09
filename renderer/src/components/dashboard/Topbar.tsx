@@ -3,43 +3,95 @@ import {
   Pause,
   Play,
   GitBranch,
-  LayoutDashboard,
-  Monitor,
   Trash2,
   Link,
   Bell,
   Settings,
   HelpCircle,
+  Plus,
+  ChevronDown,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Mode } from '@/types/dashboard';
-import type { ViewMode } from '@/types/pip';
+import { useState, useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Project } from '@/types/project-setup';
+
+function ProjectSwitcher({
+  activeProject,
+  onProjectChange,
+  onAddProject,
+}: {
+  activeProject: Project | null;
+  onProjectChange: (project: Project) => void;
+  onAddProject: () => void;
+}) {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    window.api.getProjects().then(setProjects);
+  }, []);
+
+  const handleSelect = (value: string) => {
+    if (value === '__add__') {
+      onAddProject();
+      return;
+    }
+    const project = projects.find(p => p.path === value);
+    if (project) onProjectChange(project);
+  };
+
+  return (
+    <Select value={activeProject?.path || ''} onValueChange={handleSelect}>
+      <SelectTrigger
+        className="border-0 bg-transparent shadow-none hover:opacity-80 p-0 h-auto gap-1"
+        style={{ color: 'var(--text-secondary)', fontSize: '14px', fontFamily: 'monospace', fontWeight: 500 }}
+      >
+        <SelectValue placeholder="pi-dash" />
+        <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+      </SelectTrigger>
+      <SelectContent>
+        {projects.map(p => (
+          <SelectItem key={p.path} value={p.path}>
+            {p.name}
+          </SelectItem>
+        ))}
+        <SelectSeparator />
+        <SelectItem value="__add__">
+          <span className="flex items-center gap-2">
+            <Plus className="w-3.5 h-3.5" />
+            Add Project
+          </span>
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
 
 type TopBarProps = {
-  mode: Mode;
-  viewMode: ViewMode;
   isFeedPaused: boolean;
   hasMainAgent: boolean;
-  onModeChange: (mode: Mode) => void;
-  onSetViewMode: (mode: ViewMode) => void;
+  activeProject: Project | null;
+  repoFullName?: string;
   onToggleFeedPause: () => void;
   onClearFeed: () => void;
+  onProjectChange: (project: Project) => void;
+  onAddProject: () => void;
 };
 
 export function TopBar({
-  mode,
-  viewMode,
   isFeedPaused,
-  onModeChange,
-  onSetViewMode,
+  activeProject,
+  repoFullName,
   onToggleFeedPause,
   onClearFeed,
+  onProjectChange,
+  onAddProject,
 }: TopBarProps) {
   const navigate = useNavigate();
 
   return (
     <header
-      className="flex items-center justify-between px-6 h-14"
+      className="flex items-center justify-between px-6 h-14 overflow-x-hidden"
       style={{
         backgroundColor: 'var(--bg)',
         borderBottom: `1px solid var(--border)`,
@@ -52,47 +104,25 @@ export function TopBar({
           style={{ backgroundColor: 'var(--accent-emerald)' }}
         />
         <span
-          className="text-base font-semibold"
+          className="text-base font-semibold whitespace-nowrap"
           style={{ color: 'var(--text-primary)' }}
         >
           Pi Orchestrator
         </span>
-        <span
-          className="text-sm font-mono font-medium"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          pi-dash
-        </span>
+        <div className="flex items-center gap-2">
+          <ProjectSwitcher
+            activeProject={activeProject}
+            onProjectChange={onProjectChange}
+            onAddProject={onAddProject}
+          />
+          {repoFullName && (
+            <span className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>
+              · {repoFullName}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Center-left: View Toggle */}
-      <nav
-        className="flex items-center gap-1 p-1 rounded-lg"
-        style={{ backgroundColor: 'var(--card)' }}
-      >
-        <button
-          onClick={() => onSetViewMode('dashboard')}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm transition-colors"
-          style={{
-            backgroundColor: viewMode === 'dashboard' ? 'var(--border)' : 'transparent',
-            color: viewMode === 'dashboard' ? 'var(--text-primary)' : 'var(--text-muted)',
-          }}
-        >
-          <LayoutDashboard size={14} />
-          Dashboard
-        </button>
-        <button
-          onClick={() => onSetViewMode('terminal')}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm transition-colors"
-          style={{
-            backgroundColor: viewMode === 'terminal' ? 'var(--border)' : 'transparent',
-            color: viewMode === 'terminal' ? 'var(--text-primary)' : 'var(--text-muted)',
-          }}
-        >
-          <Monitor size={14} />
-          Terminal
-        </button>
-      </nav>
 
       {/* Center: Worktrees */}
       <button
@@ -103,28 +133,9 @@ export function TopBar({
         Worktrees
       </button>
 
-      {/* Center-right: Mode Toggle */}
-      <nav
-        className="flex items-center gap-1 p-1 rounded-lg"
-        style={{ backgroundColor: 'var(--card)' }}
-      >
-        {(['auto', 'supervised', 'manual'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => onModeChange(m)}
-            className="px-3 py-1 rounded-md text-sm transition-colors"
-            style={{
-              backgroundColor: mode === m ? 'var(--border)' : 'transparent',
-              color: mode === m ? 'var(--text-primary)' : 'var(--text-muted)',
-            }}
-          >
-            {m}
-          </button>
-        ))}
-      </nav>
 
       {/* Right: Nav + Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => navigate('/settings/github')}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"

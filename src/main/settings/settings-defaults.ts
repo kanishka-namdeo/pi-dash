@@ -41,8 +41,6 @@ export function getDefaultSettings(): SettingsSchema {
         previousAgent: 'Ctrl+Shift+[',
       },
       navigation: {
-        dashboardView: 'Ctrl+1',
-        terminalView: 'Ctrl+2',
         toggleSidebar: 'Ctrl+B',
         openCommandPalette: 'Ctrl+K',
       },
