@@ -148,14 +148,6 @@ No new IPC handlers needed. We use existing:
    └─────────────────────────────────────┘
 4. User clicks "Continue"
 5. AgentScopeDialog appears (for the 2 new agents):
-   ┌─────────────────────────────────────┐
-   │ Add Agents to Config                │
-   ├─────────────────────────────────────┤
-   │ These agents are not in your        │
-   │ global config.                      │
-   │                                     │
-   │ • Aider (/usr/bin/aider)            │
-   │ • Roo Code (/usr/bin/roo)           │
    │                                     │
    │ ○ Add to global config              │
    │ ○ Use for this project only         │
@@ -205,10 +197,12 @@ From ConfigureAgentsDialog, user can promote a project-scoped agent to global.
 └─────────────────────────────────────┘
 
 User clicks "Promote to Global" on Aider:
-→ Aider moved from project.projectAgents to global agents.json
-→ project.projectAgents no longer includes Aider
+→ saveAgents([...globalAgents, aider]) // add to global
+→ updateProject(path, { projectAgents: remaining }) // remove from project
 → Toast: "Aider added to global config"
 ```
+
+**Note:** Promote is two IPC calls, not truly atomic. If the second call fails, the agent exists in both global and project config. This is not catastrophic — the user can manually remove it from the project. Future work could add a `promoteAgent` IPC handler for true atomicity.
 
 **Flow 4: Copy Agents from Project (6d)**
 
@@ -216,9 +210,12 @@ From Dashboard, user can copy agent config from one project to another.
 
 ```
 TopBar → ProjectSwitcher → "Copy agents from..." → Select source project
-→ Copies selectedAgents + projectAgents from source to active project
+→ Copies selectedAgents from source to active project
+→ For projectAgents: copies AgentConfig objects with NEW IDs (crypto.randomUUID())
 → Toast: "Agents copied from Project A"
 ```
+
+**Note:** When copying project-scoped agents, we generate new IDs to avoid collisions if both projects retain the agents. Global agents (referenced by ID) are copied by reference, not duplicated.
 
 ## Data Model Changes
 
@@ -308,6 +305,10 @@ export interface ProjectSetupState {
 
 **Dependencies:**
 - None. Uses existing IPC surface.
+
+**ID generation:**
+- Project-scoped agents use `crypto.randomUUID()` for IDs (consistent with newer pattern in `AgentsSettings.tsx`)
+- When copying project-scoped agents between projects, generate new IDs to avoid collisions
 
 **Migration:**
 - None. Additive changes only. Existing projects default to `projectAgents: []`.
