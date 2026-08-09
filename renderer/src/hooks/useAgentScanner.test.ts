@@ -278,6 +278,154 @@ describe('useAgentScanner', () => {
       expect(result.current.result?.validations?.[0].status).toBe('moved');
       expect(result.current.result?.validations?.[0].newPath).toBe('/new/path/omp');
     });
+
+    it('handles empty existingAgents array', async () => {
+      const existingAgents: AgentConfig[] = [];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [],
+        warnings: [],
+        locationsScanned: 0,
+        duration: 50,
+      });
+      window.api.validateAgent = vi.fn();
+      window.api.findAgentInPath = vi.fn();
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'revalidate', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.validations).toHaveLength(0);
+      expect(window.api.validateAgent).not.toHaveBeenCalled();
+      expect(window.api.findAgentInPath).not.toHaveBeenCalled();
+    });
+
+    it('returns undefined validations when existingAgents is not provided', async () => {
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [{ id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' }],
+        warnings: [],
+        locationsScanned: 1,
+        duration: 50,
+      });
+      window.api.validateAgent = vi.fn();
+      window.api.findAgentInPath = vi.fn();
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'revalidate' })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.validations).toBeUndefined();
+      expect(window.api.validateAgent).not.toHaveBeenCalled();
+      expect(window.api.findAgentInPath).not.toHaveBeenCalled();
+    });
+
+    it('handles all valid agents', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', cwd: '/', source: 'detected' },
+        { id: 'claude', name: 'Claude', path: '/usr/bin/claude', icon: 'claude', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [],
+        warnings: [],
+        locationsScanned: 0,
+        duration: 50,
+      });
+      window.api.validateAgent = vi.fn().mockResolvedValue({
+        valid: true,
+        executable: true,
+        isDirectory: false,
+      });
+      window.api.findAgentInPath = vi.fn();
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'revalidate', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.validations).toHaveLength(3);
+      expect(result.current.result?.validations?.every(v => v.status === 'valid')).toBe(true);
+      expect(window.api.findAgentInPath).not.toHaveBeenCalled();
+    });
+
+    it('handles all missing agents', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/deleted/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'aider', name: 'Aider', path: '/deleted/aider', icon: 'aider', cwd: '/', source: 'detected' },
+        { id: 'claude', name: 'Claude', path: '/deleted/claude', icon: 'claude', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [],
+        warnings: [],
+        locationsScanned: 0,
+        duration: 50,
+      });
+      window.api.validateAgent = vi.fn().mockResolvedValue({
+        valid: false,
+        executable: false,
+        isDirectory: false,
+      });
+      window.api.findAgentInPath = vi.fn().mockResolvedValue({
+        found: false,
+      });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'revalidate', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.validations).toHaveLength(3);
+      expect(result.current.result?.validations?.every(v => v.status === 'missing')).toBe(true);
+    });
+
+    it('handles mixed valid, moved, and missing agents', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'aider', name: 'Aider', path: '/old/aider', icon: 'aider', cwd: '/', source: 'detected' },
+        { id: 'claude', name: 'Claude', path: '/deleted/claude', icon: 'claude', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [],
+        warnings: [],
+        locationsScanned: 0,
+        duration: 50,
+      });
+      window.api.validateAgent = vi.fn()
+        .mockResolvedValueOnce({ valid: true, executable: true, isDirectory: false })
+        .mockResolvedValueOnce({ valid: false, executable: false, isDirectory: false })
+        .mockResolvedValueOnce({ valid: false, executable: false, isDirectory: false });
+      window.api.findAgentInPath = vi.fn()
+        .mockResolvedValueOnce({ found: true, path: '/new/aider' })
+        .mockResolvedValueOnce({ found: false });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'revalidate', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.validations).toHaveLength(3);
+      expect(result.current.result?.validations?.[0].status).toBe('valid');
+      expect(result.current.result?.validations?.[1].status).toBe('moved');
+      expect(result.current.result?.validations?.[1].newPath).toBe('/new/aider');
+      expect(result.current.result?.validations?.[2].status).toBe('missing');
+    });
+
   });
 
   describe('background mode', () => {
