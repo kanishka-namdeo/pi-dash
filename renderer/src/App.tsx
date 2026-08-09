@@ -20,6 +20,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { useAgents } from './hooks/useAgents';
 import { useAgentScanner } from './hooks/useAgentScanner';
 import { AlertCircle } from 'lucide-react';
+import { DriftModal } from './components/dashboard/DriftModal';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -80,6 +81,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [projectCount, setProjectCount] = useState<number | null>(null);
+  const [showDriftModal, setShowDriftModal] = useState(false);
   const { agents, loading: agentsLoading } = useAgents();
 
   const { result: driftResult, scan: scanForDrift } = useAgentScanner({
@@ -124,10 +126,7 @@ function App() {
         toast(`${total} agent(s) need attention`, {
           action: {
             label: 'Review',
-            onClick: () => {
-              // DriftModal will be wired in Task 12
-              console.log('Open drift modal', driftResult.drift);
-            },
+            onClick: () => setShowDriftModal(true),
           },
         });
       }
@@ -175,6 +174,13 @@ function App() {
         </SessionProvider>
       </ErrorBoundary>
       <Toaster />
+      {driftResult?.drift && (
+        <DriftModal
+          open={showDriftModal}
+          onOpenChange={setShowDriftModal}
+          drift={driftResult.drift}
+        />
+      )}
     </>
   );
 }
