@@ -57,7 +57,7 @@ export type KnownAgent = {
 export type ScreenName = 'welcome' | 'scanning' | 'results' | 'manual-add' | 'ready' | 'no-agents' | 'scan-error';
 
 
-export type SessionState = 'idle' | 'running' | 'exited';
+export type SessionState = 'idle' | 'running' | 'working' | 'waiting' | 'paused' | 'exited';
 
 export type SessionInfo = {
   agentId: string;
@@ -71,3 +71,24 @@ export type SpawnParams = {
   agentId: string;
   cwd: string;
 };
+
+export type AgentValidationStatus = 'valid' | 'moved' | 'missing';
+
+export interface AgentValidation {
+  agent: AgentConfig;
+  status: AgentValidationStatus;
+  newPath?: string;
+}
+
+export interface DriftReport {
+  newAgents: AgentConfig[];
+  missingAgents: AgentConfig[];
+  movedAgents: AgentValidation[];
+}
+
+export interface IgnoredDrift {
+  agentId: string;
+  type: 'missing' | 'moved';
+  fingerprint: string;
+  ignoredAt: string;
+}
