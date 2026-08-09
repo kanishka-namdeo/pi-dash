@@ -151,6 +151,74 @@ describe('useAgentScanner', () => {
 
       expect(result.current.result?.newAgents).toHaveLength(0);
     });
+
+    it('returns undefined newAgents when existingAgents is not provided', async () => {
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'incremental' })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.newAgents).toBeUndefined();
+    });
+
+    it('returns all scanned agents as new when existingAgents is empty', async () => {
+      const scannedAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+        { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: scannedAgents,
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'incremental', existingAgents: [] })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.newAgents).toHaveLength(2);
+      expect(result.current.result?.newAgents?.map(a => a.id)).toEqual(['omp', 'aider']);
+    });
+
+    it('returns empty newAgents when scan finds no agents', async () => {
+      const existingAgents: AgentConfig[] = [
+        { id: 'omp', name: 'OMP', path: '/usr/bin/omp', icon: 'omp', cwd: '/', source: 'detected' },
+      ];
+      window.api.scanAgents = vi.fn().mockResolvedValue({
+        agents: [],
+        warnings: [],
+        locationsScanned: 5,
+        duration: 100,
+      });
+
+      const { result } = renderHook(() =>
+        useAgentScanner({ mode: 'incremental', existingAgents })
+      );
+
+      await act(async () => {
+        await result.current.scan();
+      });
+
+      expect(result.current.result?.newAgents).toHaveLength(0);
+    });
   });
 
   describe('revalidate mode', () => {
