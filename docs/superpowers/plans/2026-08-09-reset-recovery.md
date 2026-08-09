@@ -170,8 +170,18 @@ ipcMain.handle('import-config', async () => {
   if (result.canceled || result.filePaths.length === 0) return { success: false };
 
   const content = await fs.readFile(result.filePaths[0], 'utf-8');
-  const config = JSON.parse(content) as ExportedConfig;
+  let config: ExportedConfig;
+  try {
+    config = JSON.parse(content) as ExportedConfig;
+  } catch {
+    throw new Error('INVALID_JSON');
+  }
+
+  // Validate structure
   if (config.version !== 1) throw new Error('INCOMPATIBLE_VERSION');
+  if (!config.agents || !Array.isArray(config.agents.agents)) throw new Error('INVALID_AGENTS');
+  if (!Array.isArray(config.projects)) throw new Error('INVALID_PROJECTS');
+  if (typeof config.agents.onboardingCompleted !== 'boolean') throw new Error('INVALID_ONBOARDING');
 
   await saveAgents(config.agents.agents);
   const projectsPath = path.join(app.getPath('userData'), 'projects.json');
@@ -459,8 +469,22 @@ export function ResetRecoverySettings() {
         toast.success('Configuration imported. Please restart the app.');
       }
     } catch (err) {
-      if (err instanceof Error && err.message === 'INCOMPATIBLE_VERSION') {
-        toast.error('Incompatible backup file format.');
+      if (err instanceof Error) {
+        switch (err.message) {
+          case 'INCOMPATIBLE_VERSION':
+            toast.error('Incompatible backup file format.');
+            break;
+          case 'INVALID_JSON':
+            toast.error('Invalid JSON in backup file.');
+            break;
+          case 'INVALID_AGENTS':
+          case 'INVALID_PROJECTS':
+          case 'INVALID_ONBOARDING':
+            toast.error('Backup file is corrupted or incomplete.');
+            break;
+          default:
+            toast.error('Failed to import configuration. Check disk space.');
+        }
       } else {
         toast.error('Failed to import configuration. Check disk space.');
       }

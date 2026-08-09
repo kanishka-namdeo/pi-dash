@@ -206,7 +206,7 @@ Expected: FAIL with "useAgentScanner is not a function" or similar
 Create `renderer/src/hooks/useAgentScanner.ts`:
 
 ```typescript
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { AgentConfig, AgentValidation, DriftReport } from '../../../src/shared/types';
 
 export interface UseAgentScannerOptions {
@@ -230,13 +230,36 @@ export function useAgentScanner(options: UseAgentScannerOptions) {
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const scan = useCallback(async () => {
+    // Cancel any existing scan
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsScanning(true);
     setError(null);
 
     try {
       const scanResponse = await window.api.scanAgents();
+      
+      // Check if scan was cancelled
+      if (controller.signal.aborted) {
+        return;
+      }
+      
       const agents = scanResponse.agents;
 
       let newAgents: AgentConfig[] | undefined;
@@ -262,8 +285,8 @@ export function useAgentScanner(options: UseAgentScannerOptions) {
             return { agent, status: 'missing' as const };
           })
         );
-      }
 
+      if (controller.signal.aborted) return;
       if (options.mode === 'background' && options.existingAgents) {
         const existingIds = new Set(options.existingAgents.map(a => a.id));
         const scannedIds = new Set(agents.map(a => a.id));
@@ -289,6 +312,8 @@ export function useAgentScanner(options: UseAgentScannerOptions) {
           movedAgents,
         };
       }
+
+      if (controller.signal.aborted) return;
 
       const scanResult: ScanResult = {
         agents,
@@ -542,7 +567,7 @@ export function QuickScanModal({ open, onOpenChange }: QuickScanModalProps) {
   const [existingAgents, setExistingAgents] = useState<AgentConfig[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const { scan, isScanning, result } = useAgentScanner({
+  const { scan, isScanning, result, error } = useAgentScanner({
     mode: 'incremental',
     existingAgents,
   });
@@ -580,7 +605,12 @@ export function QuickScanModal({ open, onOpenChange }: QuickScanModalProps) {
           <DialogTitle>Scan for Agents</DialogTitle>
         </DialogHeader>
 
-        {isScanning ? (
+        {error ? (
+          <div className="py-8 text-center space-y-2">
+            <p className="text-destructive">Scan failed: {error.message}</p>
+            <Button variant="outline" size="sm" onClick={() => scan()}>Retry</Button>
+          </div>
+        ) : isScanning ? (
           <div className="flex flex-col items-center gap-4 py-8">
             <Spinner size={40} />
             <p>Scanning for agents...</p>
