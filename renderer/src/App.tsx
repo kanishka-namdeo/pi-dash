@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, Component, type ReactNode, type ErrorInfo } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { AgentDetailView } from './components/views/AgentDetailView';
 import { WorktreeView } from './components/views/WorktreeView';
@@ -16,6 +17,8 @@ import { SessionProvider } from './context/SessionContext';
 import { OverlayManager } from './components/pip/OverlayManager';
 import { Toaster } from './components/ui/sonner';
 import { CommandPalette } from './components/CommandPalette';
+import { useAgents } from './hooks/useAgents';
+import { useAgentScanner } from './hooks/useAgentScanner';
 import { AlertCircle } from 'lucide-react';
 
 interface ErrorBoundaryProps {
@@ -77,6 +80,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [projectCount, setProjectCount] = useState<number | null>(null);
+  const { agents, loading: agentsLoading } = useAgents();
+
+  const { result: driftResult, scan: scanForDrift } = useAgentScanner({
+    mode: 'background',
+    existingAgents: agents,
+  });
 
   const refreshProjectCount = useCallback(async () => {
     const projects = await window.api.getProjects();
@@ -98,6 +107,32 @@ function App() {
     }
     return () => { ignored = true; };
   }, [refreshProjectCount]);
+
+  // Trigger background scan when agents are loaded
+  useEffect(() => {
+    if (!agentsLoading && window.api) {
+      scanForDrift();
+    }
+  }, [agentsLoading, scanForDrift]);
+
+  // Show toast when drift is detected
+  useEffect(() => {
+    if (driftResult?.drift) {
+      const { newAgents, missingAgents, movedAgents } = driftResult.drift;
+      const total = newAgents.length + missingAgents.length + movedAgents.length;
+      if (total > 0) {
+        toast(`${total} agent(s) need attention`, {
+          action: {
+            label: 'Review',
+            onClick: () => {
+              // DriftModal will be wired in Task 12
+              console.log('Open drift modal', driftResult.drift);
+            },
+          },
+        });
+      }
+    }
+  }, [driftResult]);
 
   const handleOnboardingComplete = useCallback(() => {
     setOnboardingCompleted(true);
