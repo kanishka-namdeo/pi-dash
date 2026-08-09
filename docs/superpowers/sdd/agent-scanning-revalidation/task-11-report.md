@@ -36,3 +36,27 @@ Created a `DriftModal` component that displays agent configuration drift detecte
 
 ## Concerns
 None. Implementation follows the plan spec exactly. Pre-existing test failures in unrelated files (agent-git-bridge, worktree-service, auth-service, etc.) are not caused by this change.
+
+---
+
+## Fix: Data-Loss Prevention in Action Handlers
+
+**Commit:** `409a1574`
+
+**Issue:** The original Remove button called `window.api.saveAgents([])` which would wipe ALL agents — a critical data-loss bug. The Update Path and Add buttons had no handlers at all.
+
+**Fix applied:**
+- **Remove**: Fetches current agents via `getAgents()`, filters out the removed agent, saves the filtered list
+- **Update Path**: Fetches current agents, maps the moved agent to its new path, saves the updated list
+- **Add**: Fetches current agents, appends the new agent (with duplicate guard), saves the merged list
+
+**Tests added (4 new, 9 total):**
+
+| Test | Description |
+|------|-------------|
+| Remove button filters out the agent | Verifies only the target agent is removed, others preserved |
+| Update Path button updates path | Verifies path is updated in-place, other agents untouched |
+| Add button adds new agent | Verifies new agent appended to existing list |
+| Add button deduplicates | Verifies no save occurs if agent already exists |
+
+All 9 tests pass.
