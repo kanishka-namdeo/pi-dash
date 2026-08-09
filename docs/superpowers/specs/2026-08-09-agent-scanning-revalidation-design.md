@@ -65,18 +65,15 @@ interface ScanResult {
 
 interface AgentValidation {
   agent: AgentConfig;
-  status: 'valid' | 'moved' | 'missing' | 'version-changed';
+  status: 'valid' | 'moved' | 'missing';
   newPath?: string; // detected new path if moved
-  newFingerprint?: string; // detected new fingerprint if version changed
 }
 
 interface DriftReport {
   newAgents: AgentConfig[]; // detected but not in config
   missingAgents: AgentConfig[]; // in config but not found
   movedAgents: AgentValidation[]; // path changed
-  versionChanges: AgentValidation[]; // fingerprint changed
 }
-
 interface UseAgentScannerReturn {
   scan: () => Promise<void>;
   isScanning: boolean;
@@ -97,13 +94,11 @@ function useAgentScanner(options: UseAgentScannerOptions): UseAgentScannerReturn
 | `background` | `existingAgents` | `drift` (summary report) | Startup scan |
 
 **Validation logic (revalidate mode):**
-- `valid` — path exists, fingerprint matches
-- `moved` — path doesn't exist, but agent binary found elsewhere (search PATH)
+- `valid` — path exists, file is executable
+- `moved` — path doesn't exist, but agent binary found elsewhere (search PATH via `findInPath`)
 - `missing` — path doesn't exist, agent not found anywhere
-- `version-changed` — path exists, but fingerprint differs (agent updated)
 
-## Dashboard Integration
-
+**Note:** The current `fingerprintAgent` function hashes the path string, not binary content. Version change detection is not implemented. Future work could add content hashing (SHA-256) for version tracking.
 **Startup drift check:**
 ```
 App mounts
@@ -206,16 +201,13 @@ FleetPanel already has "Add Agent" (manual path input). Add "Scan for Agents" ne
 **Status indicators:**
 | Icon | Meaning | Action |
 |---|---|---|
-| 🟢 | Valid | None |
-| 🟡 | Moved / Version changed | Inline "Update Path" or "Ignore" |
-| 🔴 | Missing | Inline "Remove" or "Ignore" |
+| 🟡 | Moved | Inline "Update Path" or "Ignore" |
 
 **Re-validate flow:**
 1. User clicks "Re-validate All"
 2. Hook runs in `revalidate` mode
-3. Each agent gets a status (valid/moved/missing/version-changed)
+3. Each agent gets a status (valid/moved/missing)
 4. UI updates inline — no modal, no navigation
-5. Invalid agents show action buttons directly in the list
 
 **Scan for Agents flow (from settings):**
 1. User clicks "Scan for Agents"
@@ -264,8 +256,8 @@ interface Settings {
 
 interface IgnoredDrift {
   agentId: string;
-  type: 'missing' | 'moved' | 'version-changed';
-  fingerprint: string; // agent fingerprint at time of ignore
+  type: 'missing' | 'moved';
+  fingerprint: string; // agent path hash at time of ignore
   ignoredAt: string; // ISO timestamp
 }
 ```
@@ -275,7 +267,7 @@ interface IgnoredDrift {
 - Store `{ agentId, type, fingerprint, ignoredAt }` in settings
 - Next startup scan:
   - If same `agentId` + same `fingerprint` → skip (still ignored)
-  - If same `agentId` + different `fingerprint` → show drift again (agent updated since ignore)
+  - If same `agentId` + different `fingerprint` → show drift again (agent path changed since ignore)
   - If `agentId` no longer in config → remove from ignored list (cleanup)
 
 **Drift modal actions:**
@@ -284,8 +276,8 @@ interface IgnoredDrift {
 |---|---|---|
 | Missing | Remove, Ignore | Remove deletes from agents.json; Ignore stores in settings |
 | Moved | Update Path, Ignore | Update writes new path to agents.json; Ignore stores in settings |
-| Version changed | Ignore | Ignore stores in settings (no auto-update, user can manually edit) |
 | New agent | Add, Ignore | Add writes to agents.json; Ignore stores in settings |
+
 
 **Cleanup:**
 - On app start, after drift check, prune ignored drifts for agents no longer in config
@@ -298,31 +290,26 @@ interface IgnoredDrift {
 ```ts
 // src/shared/types.ts — add to existing types
 
-export type AgentValidationStatus = 'valid' | 'moved' | 'missing' | 'version-changed';
+export type AgentValidationStatus = 'valid' | 'moved' | 'missing';
 
 export interface AgentValidation {
   agent: AgentConfig;
   status: AgentValidationStatus;
   newPath?: string;
-  newFingerprint?: string;
 }
 
 export interface DriftReport {
   newAgents: AgentConfig[];
   missingAgents: AgentConfig[];
   movedAgents: AgentValidation[];
-  versionChanges: AgentValidation[];
 }
 
 export interface IgnoredDrift {
   agentId: string;
-  type: 'missing' | 'moved' | 'version-changed';
+  type: 'missing' | 'moved';
   fingerprint: string;
   ignoredAt: string;
 }
-```
-
-**Settings type extension:**
 
 ```ts
 // In settings type definition
@@ -353,15 +340,10 @@ export interface AppSettings {
 |---|---|
 | Path doesn't exist | `status: 'missing'`, show inline "Remove" / "Ignore" |
 | Path exists but binary not found | `status: 'missing'`, same as above |
-| Path exists, binary found, fingerprint differs | `status: 'version-changed'`, show inline "Ignore" |
 | Path doesn't exist, but binary found elsewhere | `status: 'moved'`, show inline "Update Path" / "Ignore" |
 | Auto-fix fails (path update write error) | Toast: "Failed to update path. Try manually." |
 
 **Background scan failures:**
-- Silent — no toast, no modal
-- Log to console for debugging
-- Next app restart will retry
-
 **User-facing error principles:**
 1. **Never block the dashboard** — errors are informational, not modal
 2. **Always offer a path forward** — every error has a retry or manual action
@@ -376,11 +358,10 @@ export interface AppSettings {
 | `initial` mode returns all scanned agents | Hook calls `scanAgents()`, returns full list |
 | `incremental` mode computes correct diff | New agents = scanned − existing (by id) |
 | `revalidate` mode checks each agent | Mock `validateAgent` per agent, verify status mapping |
-| `background` mode produces drift report | Compare scanned vs existing, categorize into new/missing/moved/version-changed |
 | Ignored drifts are filtered | Pass `ignoredDrifts` from settings, verify they're excluded from toast |
 | Scan timeout triggers `onError` | Mock slow `scanAgents()`, verify error callback |
 | Moved agent detection | Mock path not found + `findInPath` succeeds, verify `status: 'moved'` + `newPath` |
-
+| `background` mode produces drift report | Compare scanned vs existing, categorize into new/missing/moved |
 **Integration tests:**
 
 | Test | What it verifies |
