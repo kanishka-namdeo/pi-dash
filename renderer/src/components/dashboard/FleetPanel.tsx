@@ -1,8 +1,11 @@
-import { UserPlus, Plus, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { useState } from 'react';
+import { UserPlus, Plus, PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react';
 import type { SessionInfo } from '@/context/SessionContext';
 import type { AgentConfig } from '@/types/session';
 import { AgentCard } from './AgentCard';
 import { EmptyStatePanel } from '../ui/EmptyStatePanel';
+import { Button } from '../ui/button';
+import { QuickScanModal } from './QuickScanModal';
 
 type FleetPanelProps = {
   runningSessions: SessionInfo[];
@@ -27,6 +30,8 @@ export function FleetPanel({
   isCollapsed = false,
   onToggleCollapse,
 }: FleetPanelProps) {
+  const [showQuickScan, setShowQuickScan] = useState(false);
+
   if (isCollapsed) {
     return (
       <aside
@@ -215,11 +220,15 @@ export function FleetPanel({
           />
         ))}
       </div>
-      {/* Toggle collapse button */}
+      {/* Footer: scan button + toggle collapse */}
       <div
-        className="flex items-center justify-end px-3 py-2"
+        className="flex items-center justify-between px-3 py-2"
         style={{ borderTop: `1px solid var(--border)` }}
       >
+        <Button onClick={() => setShowQuickScan(true)} variant="outline" size="sm">
+          <Search size={14} />
+          Scan for Agents
+        </Button>
         <button
           onClick={onToggleCollapse}
           className="flex items-center gap-1.5 text-xs cursor-pointer hover:opacity-80 transition-opacity"
@@ -229,6 +238,7 @@ export function FleetPanel({
           <PanelLeftClose size={14} />
         </button>
       </div>
+      <QuickScanModal open={showQuickScan} onOpenChange={setShowQuickScan} />
     </aside>
   );
 }
