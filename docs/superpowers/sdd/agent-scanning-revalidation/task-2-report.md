@@ -5,7 +5,7 @@
 
 ## Commits Created
 - `1dedae46` — feat: add find-agent-in-path IPC handler
-- `064a4405` — fix: restore getOnboardingStatus alongside findAgentInPath
+- `77089618` — fix: restore getOnboardingStatus alongside findAgentInPath
 
 ## Changes Made
 
@@ -40,7 +40,7 @@
 None. Implementation is straightforward IPC plumbing with no edge cases.
 
 ## Fix Applied
-**Commit:** `064a4405` — fix: restore getOnboardingStatus alongside findAgentInPath
+**Commit:** `77089618` — fix: restore getOnboardingStatus alongside findAgentInPath
 
 **Issue:** Initial implementation accidentally replaced `getOnboardingStatus` with `findAgentInPath` in both `src/preload.ts` and `renderer/src/types/global.d.ts`, breaking the app startup which calls `window.api.getOnboardingStatus()`.
 
