@@ -1,4 +1,4 @@
-import { Settings, Bot, Github, Bell, Keyboard, Info, Terminal, GitBranch, Wrench, ShieldAlert } from 'lucide-react';
+import { Settings, Bot, GitHub, Bell, Keyboard, Info, Terminal, GitBranch, Wrench, ShieldAlert } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface SettingsSidebarProps {

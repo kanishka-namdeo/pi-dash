@@ -1,4 +1,4 @@
-import { BookOpen, CircleAlert, ExternalLink, Github, Globe, RefreshCw } from 'lucide-react';
+import { BookOpen, CircleAlert, ExternalLink, GitHub, Globe, RefreshCw } from 'lucide-react';
 import { RowSeparator } from './SettingsRow';
 import { SectionCard } from './SectionCard';
 
