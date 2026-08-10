@@ -15,6 +15,10 @@
   --accent-amber: #f59e0b;
   --accent-indigo: #4f46e5;
   --accent-rose: #f43f5e;
+  --status-conflict: #ef4444;
+  --status-untracked: #22c55e;
+  --status-staged: #22c55e;
+  --status-modified: #f59e0b;
   --launch-btn: #0066cc;
 
   /* States */
