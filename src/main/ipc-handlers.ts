@@ -97,6 +97,13 @@ export function registerIpcHandlers(): void {
     if (typeof config.agents.onboardingCompleted !== 'boolean') throw new Error('INVALID_ONBOARDING');
 
     await saveAgents(config.agents.agents);
+
+    // Restore onboarding state
+    if (config.agents.onboardingCompleted) {
+      await completeOnboarding();
+    } else {
+      await resetOnboarding();
+    }
     const projectsPath = path.join(app.getPath('userData'), 'projects.json');
     await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: config.projects }, null, 2));
     return { success: true, config };
