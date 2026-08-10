@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import type { ScreenName, ProjectSetupState } from '../types/project-setup';
+import type { ScreenName, ProjectSetupState, Project } from '../types/project-setup';
+import type { AgentConfig } from '../../../src/shared/types';
 
 function basename(filePath: string): string {
   const normalized = filePath.replace(/\\/g, '/');
@@ -66,11 +67,53 @@ export function useProjectSetupState(flowMode: 'full' | 'condensed' = 'full') {
     }
   }, [state, navigate]);
 
+  const setPendingAgents = useCallback((agents: AgentConfig[]) => {
+    setState(prev => ({ ...prev, pendingAgents: agents }));
+  }, []);
+
+  const setAgentScopeChoice = useCallback((choice: 'global' | 'project' | null) => {
+    setState(prev => ({ ...prev, agentScopeChoice: choice }));
+  }, []);
+
+  const completeWithScopedAgents = useCallback(async (onComplete?: () => void) => {
+    const projectAgents = state.agentScopeChoice === 'project' ? state.pendingAgents : [];
+    const globalAgents = state.agentScopeChoice === 'global' ? state.pendingAgents : [];
+
+    if (globalAgents.length > 0) {
+      const existing: AgentConfig[] = await window.api.getAgents();
+      await window.api.saveAgents([...existing, ...globalAgents]);
+    }
+
+    const project: Project = {
+      path: state.projectPath!,
+      name: state.projectName || basename(state.projectPath!),
+      addedAt: new Date().toISOString(),
+      lastOpenedAt: new Date().toISOString(),
+      selectedAgents: state.selectedAgents,
+      projectAgents,
+      isGitRepo: await window.api.isGitRepo(state.projectPath!),
+    };
+
+    try {
+      await window.api.addProject(project);
+      onComplete?.();
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'PROJECT_ALREADY_EXISTS') {
+        navigate('project-already-added');
+      } else {
+        throw err;
+      }
+    }
+  }, [state, navigate]);
+
   return {
     ...state,
     navigate,
     updateProject,
     updateSelectedAgents,
     complete,
+    setPendingAgents,
+    setAgentScopeChoice,
+    completeWithScopedAgents,
   };
 }

@@ -9,6 +9,8 @@ describe('useProjectSetupState', () => {
       value: {
         addProject: vi.fn().mockResolvedValue(undefined),
         isGitRepo: vi.fn().mockResolvedValue(true),
+        getAgents: vi.fn().mockResolvedValue([]),
+        saveAgents: vi.fn().mockResolvedValue(undefined),
       },
       writable: true,
     });
@@ -113,6 +115,80 @@ describe('useProjectSetupState', () => {
       });
 
       expect(window.api.isGitRepo).toHaveBeenCalledWith('/some/other/path');
+    });
+  });
+
+  describe('completeWithScopedAgents()', () => {
+    it('saves project agents separately when scope is project', async () => {
+      const { result } = renderHook(() => useProjectSetupState('full'));
+
+      act(() => {
+        result.current.updateProject('/path/to/project');
+        result.current.setPendingAgents([
+          { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' },
+        ]);
+        result.current.setAgentScopeChoice('project');
+      });
+
+      const onComplete = vi.fn();
+      await act(async () => {
+        await result.current.completeWithScopedAgents(onComplete);
+      });
+
+      expect(window.api.addProject).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectAgents: expect.arrayContaining([
+            expect.objectContaining({ id: 'aider' }),
+          ]),
+        })
+      );
+      expect(window.api.saveAgents).not.toHaveBeenCalled();
+      expect(onComplete).toHaveBeenCalled();
+    });
+
+    it('saves global agents via saveAgents when scope is global', async () => {
+      const { result } = renderHook(() => useProjectSetupState('full'));
+
+      act(() => {
+        result.current.updateProject('/path/to/project');
+        result.current.setPendingAgents([
+          { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' },
+        ]);
+        result.current.setAgentScopeChoice('global');
+      });
+
+      await act(async () => {
+        await result.current.completeWithScopedAgents();
+      });
+
+      expect(window.api.saveAgents).toHaveBeenCalledWith([
+        expect.objectContaining({ id: 'aider' }),
+      ]);
+      expect(window.api.addProject).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectAgents: [],
+        })
+      );
+    });
+
+    it('navigates to project-already-added on duplicate error', async () => {
+      window.api.addProject = vi.fn().mockRejectedValue(new Error('PROJECT_ALREADY_EXISTS'));
+
+      const { result } = renderHook(() => useProjectSetupState('full'));
+
+      act(() => {
+        result.current.updateProject('/path/to/project');
+        result.current.setPendingAgents([]);
+        result.current.setAgentScopeChoice('project');
+      });
+
+      const onComplete = vi.fn();
+      await act(async () => {
+        await result.current.completeWithScopedAgents(onComplete);
+      });
+
+      expect(result.current.currentScreen).toBe('project-already-added');
+      expect(onComplete).not.toHaveBeenCalled();
     });
   });
 });
