@@ -75,9 +75,13 @@ export function useProjectSetupState(flowMode: 'full' | 'condensed' = 'full') {
     setState(prev => ({ ...prev, agentScopeChoice: choice }));
   }, []);
 
-  const completeWithScopedAgents = useCallback(async (onComplete?: () => void) => {
-    const projectAgents = state.agentScopeChoice === 'project' ? state.pendingAgents : [];
-    const globalAgents = state.agentScopeChoice === 'global' ? state.pendingAgents : [];
+  const completeWithScopedAgents = useCallback(async (
+    scopeChoice: 'global' | 'project',
+    agents: AgentConfig[],
+    onComplete?: () => void
+  ) => {
+    const projectAgents = scopeChoice === 'project' ? agents : [];
+    const globalAgents = scopeChoice === 'global' ? agents : [];
 
     if (globalAgents.length > 0) {
       const existing: AgentConfig[] = await window.api.getAgents();

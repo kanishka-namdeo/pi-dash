@@ -45,15 +45,13 @@ export function SelectAgentsScreen({ selectedAgents, updateSelectedAgents, navig
   };
 
   const handleAddToGlobal = (agentsToAdd: AgentConfig[]) => {
-    setAgentScopeChoice('global');
     setShowScopeDialog(false);
-    completeWithScopedAgents(onComplete);
+    completeWithScopedAgents('global', agentsToAdd, onComplete);
   };
 
   const handleAddToProject = (agentsToAdd: AgentConfig[]) => {
-    setAgentScopeChoice('project');
     setShowScopeDialog(false);
-    completeWithScopedAgents(onComplete);
+    completeWithScopedAgents('project', agentsToAdd, onComplete);
   };
 
   return (

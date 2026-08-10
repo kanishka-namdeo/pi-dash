@@ -124,15 +124,14 @@ describe('useProjectSetupState', () => {
 
       act(() => {
         result.current.updateProject('/path/to/project');
-        result.current.setPendingAgents([
-          { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' },
-        ]);
-        result.current.setAgentScopeChoice('project');
       });
 
+      const agents = [
+        { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' as const },
+      ];
       const onComplete = vi.fn();
       await act(async () => {
-        await result.current.completeWithScopedAgents(onComplete);
+        await result.current.completeWithScopedAgents('project', agents, onComplete);
       });
 
       expect(window.api.addProject).toHaveBeenCalledWith(
@@ -151,14 +150,13 @@ describe('useProjectSetupState', () => {
 
       act(() => {
         result.current.updateProject('/path/to/project');
-        result.current.setPendingAgents([
-          { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' },
-        ]);
-        result.current.setAgentScopeChoice('global');
       });
 
+      const agents = [
+        { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' as const },
+      ];
       await act(async () => {
-        await result.current.completeWithScopedAgents();
+        await result.current.completeWithScopedAgents('global', agents);
       });
 
       expect(window.api.saveAgents).toHaveBeenCalledWith([
@@ -170,7 +168,6 @@ describe('useProjectSetupState', () => {
         })
       );
     });
-
     it('navigates to project-already-added on duplicate error', async () => {
       window.api.addProject = vi.fn().mockRejectedValue(new Error('PROJECT_ALREADY_EXISTS'));
 
@@ -178,13 +175,14 @@ describe('useProjectSetupState', () => {
 
       act(() => {
         result.current.updateProject('/path/to/project');
-        result.current.setPendingAgents([]);
-        result.current.setAgentScopeChoice('project');
       });
 
+      const agents = [
+        { id: 'aider', name: 'Aider', path: '/usr/bin/aider', icon: 'aider', source: 'detected' as const },
+      ];
       const onComplete = vi.fn();
       await act(async () => {
-        await result.current.completeWithScopedAgents(onComplete);
+        await result.current.completeWithScopedAgents('project', agents, onComplete);
       });
 
       expect(result.current.currentScreen).toBe('project-already-added');
