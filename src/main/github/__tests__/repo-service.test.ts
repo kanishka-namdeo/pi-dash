@@ -4,7 +4,7 @@ import { GitHubService } from '../github-service';
 import type { Octokit } from '@octokit/rest';
 
 const mocks = vi.hoisted(() => ({
-  storeData: { repoConfig: { repos: [], activeRepoId: null } }
+  storeData: { repoConfig: { repos: [], activeRepoId: null } } as Record<string, any>
 }));
 
 vi.mock('electron-store', () => {

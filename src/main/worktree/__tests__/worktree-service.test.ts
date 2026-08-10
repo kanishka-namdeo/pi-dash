@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { WorktreeService } from '../worktree-service';
+import type { Worktree } from '../../../shared/github-types';
 
 const mocks = vi.hoisted(() => ({
-  storeData: { worktrees: [] },
+  storeData: { worktrees: [] as Worktree[] },
   git: {
     raw: vi.fn(),
     status: vi.fn(),
@@ -13,10 +14,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock('electron-store', () => {
   class MockStore {
     get(key: string) {
-      return mocks.storeData[key];
+      return (mocks.storeData as Record<string, unknown>)[key];
     }
     set(key: string, value: unknown) {
-      mocks.storeData[key] = value;
+      (mocks.storeData as Record<string, unknown>)[key] = value;
     }
   }
   
@@ -103,7 +104,9 @@ describe('WorktreeService', () => {
           baseBranch: 'main',
           status: 'active',
           createdAt: Date.now(),
-          uncommittedChanges: false
+          uncommittedChanges: false,
+          aheadOfRemote: 0,
+          behindRemote: 0
         },
         {
           id: '2',
@@ -113,7 +116,9 @@ describe('WorktreeService', () => {
           baseBranch: 'main',
           status: 'active',
           createdAt: Date.now(),
-          uncommittedChanges: false
+          uncommittedChanges: false,
+          aheadOfRemote: 0,
+          behindRemote: 0
         }
       ];
 
@@ -144,7 +149,9 @@ describe('WorktreeService', () => {
           baseBranch: 'main',
           status: 'active',
           createdAt: Date.now(),
-          uncommittedChanges: false
+          uncommittedChanges: false,
+          aheadOfRemote: 0,
+          behindRemote: 0
         }
       ];
 

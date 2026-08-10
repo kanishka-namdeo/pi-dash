@@ -124,6 +124,7 @@ When the user requests a durable behavior change, record it here or in the relev
 ## Child DOX Index
 
 - [src/AGENTS.md](http://src/AGENTS.md) — Electron main process (lifecycle, window management, preload bridge)
+- [src/main/github/AGENTS.md](http://src/main/github/AGENTS.md) — GitHub integration (auth, repos, issues, PRs, branches)
 - [renderer/src/AGENTS.md](http://renderer/src/AGENTS.md) — React renderer (UI, hooks, components, types, data)
 
 Root-owned files: [`README.md`](http://README.md), `LICENSE`, `banner.jpg`, `video-thumbnail.jpg`, `package.json`, `vite.config.ts`, `tsconfig.json`, and root-level project documentation.

@@ -29,8 +29,8 @@ describe('registerSearchHandlers', () => {
   it('getRecent returns empty array when no data', () => {
     mockSettingsService.get.mockReturnValue(undefined);
     registerSearchHandlers(mockSettingsService as any);
-    const getRecentHandler = ipcMain.handle.mock.calls.find((c: any[]) => c[0] === 'search:getRecent')[1];
-    const result = getRecentHandler();
+    const getRecentHandler = vi.mocked(ipcMain.handle).mock.calls.find((c) => c[0] === 'search:getRecent')?.[1] as Function;
+    const result = getRecentHandler({} as any);
     expect(result).toEqual([]);
   });
 
@@ -38,8 +38,8 @@ describe('registerSearchHandlers', () => {
     const existing = Array.from({ length: 10 }, (_, i) => ({ term: `term${i}`, timestamp: i }));
     mockSettingsService.get.mockReturnValue(existing);
     registerSearchHandlers(mockSettingsService as any);
-    const addRecentHandler = ipcMain.handle.mock.calls.find((c: any[]) => c[0] === 'search:addRecent')[1];
-    addRecentHandler(null, 'newTerm');
+    const addRecentHandler = vi.mocked(ipcMain.handle).mock.calls.find((c) => c[0] === 'search:addRecent')?.[1] as Function;
+    addRecentHandler({} as any, 'newTerm');
     expect(mockSettingsService.set).toHaveBeenCalled();
     const saved = mockSettingsService.set.mock.calls[0][1];
     expect(saved[0].term).toBe('newTerm');

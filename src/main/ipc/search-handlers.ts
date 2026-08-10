@@ -1,8 +1,6 @@
 import { ipcMain } from 'electron';
 import type { SettingsService } from '../settings/settings-service';
-import { createLogger } from '../logger';
-
-const log = createLogger('search');
+import log from '../logger';
 
 type RecentSearch = { term: string; timestamp: number };
 

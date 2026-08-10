@@ -161,7 +161,7 @@ describe('AuthService - OAuth', () => {
 
     // Mock crypto.randomUUID so state matches between auth URL and callback
     const generatedState = 'generated_csrf_state';
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue(generatedState);
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(generatedState as `${string}-${string}-${string}-${string}-${string}`);
     oauthServerMock.waitForCode.mockResolvedValue({
       code: 'test_code',
       state: generatedState
@@ -191,7 +191,7 @@ describe('AuthService - OAuth', () => {
     process.env.GITHUB_OAUTH_CLIENT_ID = 'test_client_id';
     process.env.GITHUB_OAUTH_CLIENT_SECRET = 'test_client_secret';
 
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue('expected_state');
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue('expected_state' as `${string}-${string}-${string}-${string}-${string}`);
     oauthServerMock.waitForCode.mockResolvedValue({
       code: 'test_code',
       state: 'wrong_state'
@@ -210,7 +210,7 @@ describe('AuthService - OAuth', () => {
     process.env.GITHUB_OAUTH_CLIENT_SECRET = 'test_client_secret';
 
     const generatedState = 'test_state';
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue(generatedState);
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(generatedState as `${string}-${string}-${string}-${string}-${string}`);
     oauthServerMock.waitForCode.mockResolvedValue({
       code: 'test_code',
       state: generatedState
@@ -235,7 +235,7 @@ describe('AuthService - OAuth', () => {
     process.env.GITHUB_OAUTH_CLIENT_SECRET = 'test_client_secret';
 
     const generatedState = 'test_state';
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue(generatedState);
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(generatedState as `${string}-${string}-${string}-${string}-${string}`);
     oauthServerMock.waitForCode.mockResolvedValue({
       code: 'test_code',
       state: generatedState

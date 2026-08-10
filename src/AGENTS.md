@@ -26,4 +26,4 @@ Electron main process entry point and preload script. Owns the application lifec
 
 ## Child DOX Index
 
-- No child `AGENTS.md` files are needed.
+- [main/github/AGENTS.md](http://main/github/AGENTS.md) — GitHub integration (auth, repos, issues, PRs, branches). All other `main/` subdirectories are owned by this doc.

@@ -1,7 +1,7 @@
 import { globalShortcut, BrowserWindow, app } from 'electron';
 import type { SettingsService } from '../settings/settings-service';
 import type { SettingsSchema } from '../settings/settings-types';
-import { createLogger } from '../logger';
+import log from '../logger';
 
 // Extend App type to include isQuiting flag
 declare global {
@@ -12,7 +12,6 @@ declare global {
   }
 }
 
-const log = createLogger('keyboard');
 
 type KeyboardSettings = SettingsSchema['keyboard'];
 
