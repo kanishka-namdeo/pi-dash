@@ -10,6 +10,8 @@
   // Check reduced motion preference
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   
+  let tickerCallback: ((time: number) => void) | null = null;
+  
   if (!prefersReducedMotion) {
     gsap.registerPlugin(ScrollTrigger);
     
@@ -21,19 +23,28 @@
     
     // Sync Lenis with GSAP
     lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    tickerCallback = (time) => lenis.raf(time * 1000);
+    gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0); // Canonical sync, no lag
     
     // Expose for cleanup in other components
     window.__lenisInstance = lenis;
   }
   
-  // Cleanup on Astro view transition
-  document.addEventListener('astro:after-swap', () => {
-    if (window.__lenisInstance) {
-      window.__lenisInstance.destroy();
-      window.__lenisInstance = null;
+  // Cleanup on Astro view transition (once: true prevents accumulation)
+  const cleanup = () => {
+    if (!prefersReducedMotion) {
+      if (window.__lenisInstance) {
+        window.__lenisInstance.destroy();
+        window.__lenisInstance = null;
+      }
+      if (tickerCallback) {
+        gsap.ticker.remove(tickerCallback);
+        tickerCallback = null;
+      }
+      ScrollTrigger.getAll().forEach(t => t.kill());
     }
-    ScrollTrigger.getAll().forEach(t => t.kill());
-  });
+  };
+  
+  document.addEventListener('astro:after-swap', cleanup, { once: true });
 </script>
