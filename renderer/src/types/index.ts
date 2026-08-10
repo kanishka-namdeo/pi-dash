@@ -11,4 +11,5 @@ export type {
   IdentificationResult,
   KnownAgent,
   ScreenName,
+  ExportedConfig,
 } from '../../../src/shared/types';

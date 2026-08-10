@@ -1,6 +1,6 @@
 // TypeScript declarations for Electron preload API exposed via contextBridge
 
-import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult } from './index';
+import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult, ExportedConfig } from './index';
 import type { SessionAPI } from './session';
 import type { Repo, GitHubIssue, GitHubPR, Worktree, PollingState } from '../../../src/shared/github-types';
 import type { SettingsSchema } from '../../../src/main/settings/settings-types';
@@ -91,6 +91,11 @@ declare global {
       findAgentInPath: (binary: string) => Promise<{ found: boolean; path?: string }>;
       openExternal: (url: string) => void;
       openDirectory: () => Promise<string | null>;
+      exportConfig: () => Promise<{ success: boolean }>;
+      importConfig: () => Promise<{ success: boolean; config?: ExportedConfig }>;
+      resetAgents: () => Promise<{ success: boolean }>;
+      resetProjects: () => Promise<{ success: boolean }>;
+      fullReset: () => Promise<{ success: boolean }>;
       getProjects(): Promise<Project[]>;
       addProject(project: Project): Promise<void>;
       updateProject(path: string, updates: Partial<Project>): Promise<void>;

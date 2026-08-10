@@ -1,9 +1,11 @@
-import { ipcMain } from 'electron';
+import { ipcMain, dialog, app } from 'electron';
+import path from 'path';
+import fs from 'fs/promises';
 import { scanSystem, validateAgent, identifyAgent, findInPath } from './agent-scanner';
-import { loadAgents, saveAgents, completeOnboarding } from './agent-store';
+import { loadAgents, saveAgents, completeOnboarding, resetOnboarding } from './agent-store';
 import { getProjects, addProject, updateProject, removeProject, getRecentProjects } from './project-manager';
 import { isGitRepo, cloneRepository } from './git-operations';
-import type { AgentConfig } from '../shared/types';
+import type { AgentConfig, ExportedConfig } from '../shared/types';
 
 export function registerIpcHandlers(): void {
   ipcMain.handle('scan-agents', async () => {
@@ -50,6 +52,76 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('find-agent-in-path', async (_event, binary: string) => {
     const foundPath = await findInPath(binary);
     return { found: foundPath !== null, path: foundPath || undefined };
+  });
+
+  // Export config with native save dialog
+  ipcMain.handle('export-config', async () => {
+    const result = await dialog.showSaveDialog({
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      defaultPath: `pi-dash-backup-${Date.now()}.json`,
+    });
+    if (result.canceled || !result.filePath) return { success: false };
+
+    const agents = await loadAgents();
+    const projects = await getProjects();
+    const config: ExportedConfig = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      agents,
+      projects,
+    };
+    await fs.writeFile(result.filePath, JSON.stringify(config, null, 2));
+    return { success: true };
+  });
+
+  // Import config with native open dialog
+  ipcMain.handle('import-config', async () => {
+    const result = await dialog.showOpenDialog({
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      properties: ['openFile'],
+    });
+    if (result.canceled || result.filePaths.length === 0) return { success: false };
+
+    const content = await fs.readFile(result.filePaths[0], 'utf-8');
+    let config: ExportedConfig;
+    try {
+      config = JSON.parse(content) as ExportedConfig;
+    } catch {
+      throw new Error('INVALID_JSON');
+    }
+
+    // Validate structure
+    if (config.version !== 1) throw new Error('INCOMPATIBLE_VERSION');
+    if (!config.agents || !Array.isArray(config.agents.agents)) throw new Error('INVALID_AGENTS');
+    if (!Array.isArray(config.projects)) throw new Error('INVALID_PROJECTS');
+    if (typeof config.agents.onboardingCompleted !== 'boolean') throw new Error('INVALID_ONBOARDING');
+
+    await saveAgents(config.agents.agents);
+    const projectsPath = path.join(app.getPath('userData'), 'projects.json');
+    await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: config.projects }, null, 2));
+    return { success: true, config };
+  });
+
+  // Reset agents
+  ipcMain.handle('reset-agents', async () => {
+    await saveAgents([]);
+    return { success: true };
+  });
+
+  // Reset projects
+  ipcMain.handle('reset-projects', async () => {
+    const projectsPath = path.join(app.getPath('userData'), 'projects.json');
+    await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: [] }, null, 2));
+    return { success: true };
+  });
+
+  // Full reset
+  ipcMain.handle('full-reset', async () => {
+    await saveAgents([]);
+    const projectsPath = path.join(app.getPath('userData'), 'projects.json');
+    await fs.writeFile(projectsPath, JSON.stringify({ version: 1, projects: [] }, null, 2));
+    await resetOnboarding();
+    return { success: true };
   });
 }
 

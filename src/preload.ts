@@ -75,6 +75,13 @@ contextBridge.exposeInMainWorld('api', {
   // Dialog
   openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
 
+  // Reset & Recovery
+  exportConfig: () => ipcRenderer.invoke('export-config'),
+  importConfig: () => ipcRenderer.invoke('import-config'),
+  resetAgents: () => ipcRenderer.invoke('reset-agents'),
+  resetProjects: () => ipcRenderer.invoke('reset-projects'),
+  fullReset: () => ipcRenderer.invoke('full-reset'),
+
   // GitHub integration
   github: {
     // New nested API (Tasks 6-7 channels)
