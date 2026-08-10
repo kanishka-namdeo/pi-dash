@@ -1,0 +1,47 @@
+---
+// landing/src/components/FAQ.astro
+const faqs = [
+  {
+    q: "What AI agents does PiDash support?",
+    a: "PiDash auto-detects Cursor, OMP, Claude Code, Codex, and more. You can also add custom agents by path."
+  },
+  {
+    q: "Is PiDash free?",
+    a: "PiDash is open source and free to use. We may add premium features in the future, but the core dashboard will always be free."
+  },
+  {
+    q: "Does PiDash send my data to the cloud?",
+    a: "No. PiDash runs locally on your machine. Your agent data, terminal output, and configuration stay on your computer."
+  },
+  {
+    q: "Can I use PiDash with my team?",
+    a: "Yes. PiDash supports team collaboration features like shared agent configurations and centralized monitoring (coming soon)."
+  },
+  {
+    q: "What platforms are supported?",
+    a: "Windows, macOS, and Linux. PiDash is built with Electron for cross-platform compatibility."
+  }
+];
+---
+
+<section class="px-6 py-24">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-12 text-center">
+      Frequently asked questions
+    </h2>
+    
+    <div class="space-y-6">
+      {faqs.map((faq) => (
+        <details class="group bg-white/5 border border-white/10 rounded-lg">
+          <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold list-none">
+            {faq.q}
+            <svg class="w-5 h-5 text-[#00d9ff] transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <p class="px-6 pb-6 text-[#e5e5e5]/70">{faq.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
