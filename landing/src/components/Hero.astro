@@ -1,0 +1,45 @@
+---
+// landing/src/components/Hero.astro
+---
+
+<section class="min-h-[100dvh] flex items-center justify-center px-6 py-24">
+  <div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <!-- Left: Content -->
+    <div class="space-y-8">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-none">
+        Monitor all your AI coding agents in one place
+      </h1>
+      
+      <p class="text-lg md:text-xl text-[#e5e5e5]/80 max-w-[65ch] leading-relaxed">
+        PiDash gives you a unified dashboard to track, manage, and control your entire fleet of AI coding agents.
+      </p>
+      
+      <!-- Waitlist form -->
+      <form 
+        action="https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse" 
+        method="POST"
+        target="_blank"
+        class="flex flex-col sm:flex-row gap-4"
+      >
+        <input 
+          type="email" 
+          name="entry.EMAIL_ENTRY_ID" 
+          placeholder="Enter your email"
+          required
+          class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#00d9ff]"
+        />
+        <button 
+          type="submit"
+          class="px-8 py-3 bg-[#00d9ff] text-[#0a0a0a] font-semibold rounded-lg hover:bg-[#00d9ff]/90 transition-colors whitespace-nowrap"
+        >
+          Join the waitlist
+        </button>
+      </form>
+    </div>
+    
+    <!-- Right: Visual placeholder -->
+    <div class="aspect-video bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">
+      <p class="text-white/40 text-sm">Dashboard screenshot placeholder</p>
+    </div>
+  </div>
+</section>
