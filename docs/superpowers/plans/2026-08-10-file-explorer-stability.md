@@ -1643,3 +1643,49 @@ git commit -m "feat: UI polish — use Spinner component and add toast notificat
 - Consistent UI polish (spinners, toasts)
 
 All changes are backwards compatible. No breaking changes to IPC APIs or component interfaces.
+
+---
+
+## Implementation Notes
+
+### Known Edge Case: New Subdirectories on Linux
+
+The FileWatcherService implementation in Task 4 watches existing directories on Linux but doesn't automatically watch newly created subdirectories. This is because Linux's `fs.watch` doesn't support native recursive watching.
+
+**Fix during implementation:** In the `watchRecursive` method, detect when a new directory is created (eventType === 'rename' and the path is a directory) and start watching it:
+
+```ts
+const watcher = fs.watch(dir, (eventType, filename) => {
+  this.handleChange(projectPath, filename);
+  
+  // Detect new directories and start watching them
+  if (process.platform === 'linux' && eventType === 'rename' && filename) {
+    const fullPath = path.join(dir, filename);
+    try {
+      const stats = fs.statSync(fullPath);
+      if (stats.isDirectory() && !filename.startsWith('.') && filename !== 'node_modules') {
+        this.watchRecursive(fullPath, watchers, projectPath);
+      }
+    } catch {
+      // File/directory might have been deleted already
+    }
+  }
+});
+```
+
+On Windows/macOS with `{ recursive: true }`, the native watcher handles new subdirectories automatically, so this is only needed for Linux.
+
+### Technical Verification (Web Search Results)
+
+All technical details in this plan have been verified via web search (2026-08-10):
+
+✅ **react-window FixedSizeList API** — Props `height`, `itemCount`, `itemSize`, `width` are correct. Render function as children is the standard pattern.
+
+✅ **Radix context-menu API** — Components `ContextMenu.Root`, `ContextMenu.Trigger`, `ContextMenu.Content`, `ContextMenu.Item`, `ContextMenu.Portal`, `ContextMenu.Separator` are correct.
+
+✅ **fs.watch recursive support** — Windows/macOS: native support. Linux: no native support, requires manual recursive watching or fallback to polling. Plan correctly handles this.
+
+✅ **AbortController in React** — Pattern of creating controller per request, aborting on cleanup, and ignoring AbortError is correct and follows best practices.
+
+✅ **Electron IPC push events** — Pattern of `webContents.send(channel, args)` from main and `ipcRenderer.on(channel, handler)` in renderer is correct.
+
