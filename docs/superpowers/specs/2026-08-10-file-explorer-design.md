@@ -8,6 +8,11 @@
 
 A VS Code-style file tree sidebar for PiDash, providing read-only browsing of the active project's filesystem with full git-aware status colours and diff-stat badges. The file tree toggles with the FleetPanel in the existing left panel slot via a segmented control. Clicking a file opens a read-only preview in the center panel alongside the TerminalPanel.
 
+### Scope Boundaries
+
+- **In scope (v1):** Read-only browsing, git status colours, diff-stat badges, file preview, context menu actions, active files tracking
+- **Out of scope (v1):** File editing, file creation/deletion, drag-and-drop, search/filter within tree, breadcrumbs, multi-file tabs, virtualization for 10k+ file trees
+
 ## Design Decisions
 
 | Decision | Choice | Rationale |
@@ -34,14 +39,17 @@ The file tree lives in the existing left panel slot, replacing FleetPanel when t
 
 1. **Renderer** — `FileTreePanel` component manages tree state (expanded dirs, selected file). On directory expand, fires IPC `filetree:listDir` with the directory path. On mount, fires `filetree:getGitStatus` for the project root.
 
-2. **Main process** — New IPC handlers in `src/main/ipc/`:
+2. **Main process** — New IPC handlers in `src/main/ipc/filetree-handlers.ts`:
    - `filetree:listDir({ path })` → returns `FileEntry[]` (name, type, path, children lazy)
-   - `filetree:getGitStatus({ repoPath })` → returns `Map<relativePath, GitStatus>` (status + diff stats)
-   - `filetree:getFileContent({ path })` → returns file text for preview
+   - `filetree:getGitStatus({ repoPath })` → returns `Record<string, GitStatusEntry>` (status + diff stats)
+   - `filetree:getFileContent({ path })` → returns `{ content, size, isBinary }`
+   - `filetree:openInTerminal({ path })` → opens OS terminal at path via `shell.openPath()`
+   - `filetree:revealInFileManager({ path })` → reveals file in OS file manager via `shell.showItemInFolder()` (Windows) or `shell.openPath()` (macOS/Linux)
+   - `filetree:copyPath({ path, relative })` → copies path to clipboard via `clipboard.writeText()`
 
 3. **Git integration** — Extends `src/main/git-operations.ts` with `getGitStatus()` and `getDiffStats()` using the existing `simple-git` dependency.
 
-4. **Active Files** — A separate section at the top of the tree. Shows files modified in the last 30 seconds across all running agent sessions' CWDs. Polled every 5 seconds via `fs.stat()` on the active project path.
+4. **Active Files** — A separate section at the top of the tree. Shows files modified in the last 30 seconds across all running agent sessions' CWDs. Polled every 5 seconds via `fs.stat()` on the active project path. If no files are active, the section is hidden entirely.
 
 ### Center Panel
 
@@ -49,12 +57,24 @@ Tab bar with "Terminal" and "File: <name>" tabs. Clicking a file in the tree ope
 
 ### Context Menu
 
-Four actions, all via Electron `shell` APIs:
+Four actions, all via Electron `shell` APIs. Context menu is positioned at cursor location, clamped to viewport bounds.
 
-- Copy Path
-- Copy Relative Path
-- Reveal in File Manager
-- Open in Terminal
+- **Copy Path** — copies absolute path to clipboard
+- **Copy Relative Path** — copies path relative to project root
+- **Reveal in File Manager** — opens OS file manager at file location (`shell.showItemInFolder` on Windows, `shell.openPath` on macOS/Linux)
+- **Open in Terminal** — opens OS default terminal at the file's parent directory via `shell.openPath()` (does NOT open a PiDash terminal tab)
+
+### File Tree Root
+
+The tree is rooted at the **active project's path** (from `activeProject.path`). All running agents inherit this as their CWD unless explicitly overridden. If no project is active, the tree shows an empty state: "Select a project to browse files".
+
+### File Sorting
+
+Files and directories are sorted alphabetically, with directories listed before files. Within each group, sorting is case-insensitive A–Z.
+
+### Hidden Files
+
+Dotfiles (files/directories starting with `.`) are **hidden by default**. A toggle button in the tree header ("Show Hidden") reveals them. The preference is remembered per-project in local state (not persisted across sessions in v1).
 
 ---
 
@@ -68,15 +88,23 @@ Replaces FleetPanel in the left panel slot when "Files" tab is active.
 
 **Structure:**
 
-- **Header:** Segmented control ("Fleet" / "Files"), refresh button, collapse button
-- **Active Files section** (top): Flat list of recently-modified files with file icon, path, and relative time ("2m ago"). Clicking opens the file in the center preview.
-- **Filter tabs** (below Active Files): All / Changed / Staged / Unstaged. Only visible when the project is a git repo.
+- **Header:** Segmented control ("Fleet" / "Files"), refresh button, show-hidden toggle, collapse button
+- **Active Files section** (top): Flat list of recently-modified files with file icon, path, and relative time ("2m ago"). Clicking opens the file in the center preview. Hidden when no files are active.
+- **Filter tabs** (below Active Files): All / Changed / Staged / Unstaged. Only visible when the project is a git repo. Switching filters re-queries git status (does not cache filtered results).
 - **Directory tree** (main area): Lazy-loaded on expand. Each row shows:
   - Chevron (rotated when expanded)
-  - Folder/file icon (git-status tinted)
+  - Folder/file icon (git-status tinted, or neutral if not a git repo)
   - Name
   - Diff-stat badge (`+12 -4 *1`) for changed files/directories
 - **Context menu** on right-click: Copy Path, Copy Relative Path, Reveal in File Manager, Open in Terminal
+
+**Keyboard navigation:**
+
+- `↑` / `↓` — navigate tree rows
+- `Enter` — open selected file in preview
+- `→` — expand selected directory
+- `←` — collapse selected directory
+- `Escape` — close context menu if open
 
 ### `FilePreview` (new)
 
@@ -86,18 +114,22 @@ Lives in the center panel as a tab alongside TerminalPanel.
 
 **Structure:**
 
-- **Header:** File path, file size, "Expand" button (opens fullscreen modal)
+- **Header:** File path (truncated if too long), file size, "Expand" button (opens fullscreen modal), close button (×)
 - **Content:** Syntax-highlighted text with line numbers
 - **Supports:**
-  - Text files (syntax highlighted)
-  - Markdown (rendered/source toggle)
-  - Images (zoomable)
-  - Binary/oversize (fallback card with "too large" message)
+  - **Text files** — syntax highlighted using `prismjs` (already available via existing dependencies). Language detected from file extension.
+  - **Markdown** — toggle button in header switches between "Rendered" (HTML preview) and "Source" (syntax-highlighted raw text). Default: Rendered.
+  - **Images** — zoomable with toolbar: Zoom Out, Fit to View, Zoom In, 100%. Zoom range: 25%–500% in 25% increments. Mouse wheel pinch-zoom supported.
+  - **Binary/oversize** — fallback card with message and action buttons
 - Read-only — no save button
+
+**Expand modal:** Opens file preview in a fullscreen overlay with a darkened backdrop. Escape closes the modal.
 
 ### Tab Bar (modification to TerminalPanel area)
 
-When a file is selected, the center panel shows a tab bar: "Terminal" | "File: filename.ts". Clicking "Terminal" returns to the terminal view. Multiple file tabs not supported in v1 (single file preview slot).
+When a file is selected, the center panel shows a tab bar: "Terminal" | "File: filename.ts". Clicking "Terminal" returns to the terminal view. The file tab shows a close button (×) that returns to the terminal view.
+
+Multiple file tabs not supported in v1 (single file preview slot). Opening a new file replaces the current file preview tab.
 
 ### State Management
 
@@ -143,6 +175,7 @@ A directory's badge aggregates the stats of everything changed beneath it. A bad
 
 - If a directory has >256 entries, show truncated listing with inline row: "`<N>+ more entries`"
 - No recursive expansion of truncated dirs
+- **Performance note:** For projects with >5000 files, consider adding virtualized list rendering in v2. V1 renders all visible rows directly (no windowing).
 
 ### File read errors
 
@@ -168,6 +201,7 @@ A directory's badge aggregates the stats of everything changed beneath it. A bad
 
 - Silently fall back to no git status (neutral icons)
 - No error banner — git is optional
+- **Timeout:** Git status queries timeout after 10 seconds. If timeout occurs, fall back to neutral icons and log warning to main process console.
 
 ### Lazy load failure
 
@@ -177,7 +211,8 @@ A directory's badge aggregates the stats of everything changed beneath it. A bad
 ### Network/remote paths
 
 - `fs.readdir` works normally; no special handling needed
-- Git status may be slow; no timeout in v1
+- Git status may be slow; timeout applies (10 seconds)
+- **Windows note:** `simple-git` works on Windows, but path separators in diff stats use forward slashes (`/`) regardless of OS for consistency
 
 ---
 
@@ -237,9 +272,9 @@ A directory's badge aggregates the stats of everything changed beneath it. A bad
 
 ### Dependencies
 
-- No new dependencies required
-- `simple-git` already available for git operations
-- Syntax highlighting: use existing approach or lightweight `prismjs` if not already present
+- **`prismjs`** — syntax highlighting for file preview. Check `package.json` for existing version. If not present, add `prismjs` and `@types/prismjs`.
+- **`simple-git`** — already available for git operations
+- No other new dependencies required
 
 ### IPC API (new)
 
@@ -248,6 +283,9 @@ A directory's badge aggregates the stats of everything changed beneath it. A bad
 filetree:listDir({ path: string }) → { entries: FileEntry[] }
 filetree:getGitStatus({ repoPath: string }) → { status: Record<string, GitStatusEntry> }
 filetree:getFileContent({ path: string }) → { content: string; size: number; isBinary: boolean }
+filetree:copyPath({ path: string; relative: boolean }) → { success: boolean }
+filetree:revealInFileManager({ path: string }) → { success: boolean }
+filetree:openInTerminal({ path: string }) → { success: boolean }
 
 // Types
 interface FileEntry {
@@ -264,3 +302,9 @@ interface GitStatusEntry {
   untrackedCount?: number;
 }
 ```
+
+### IPC Error Handling
+
+- All IPC handlers wrap results in `{ success: boolean; error?: string }` for void operations
+- Data-returning handlers throw on error; renderer catches and shows inline error state
+- IPC timeout: 10 seconds for all filetree operations. Timeout returns `{ error: 'Operation timed out' }`
