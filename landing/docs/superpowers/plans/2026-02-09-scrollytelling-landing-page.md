@@ -935,3 +935,265 @@ git commit -m "feat: complete scrollytelling landing page implementation"
 - [ ] Cross-browser compatibility
 - [ ] Lighthouse scores > 90
 - [ ] Resize behavior works
+
+---
+
+### Task 2: Set Up Design Tokens from Pencil Design
+
+**Files:**
+- Modify: `tailwind.config.js` or create `src/styles/design-tokens.css`
+- Modify: `src/layouts/Layout.astro`
+
+**Interfaces:**
+- Consumes: Design tokens from Pencil design file (vyE17)
+- Produces: CSS custom properties and Tailwind utilities matching the design system
+
+**Design Token Reference (from Pencil):**
+- Colors: bg `#0a0a0a`, card `#1a1a1a`, border `#2a2a2a`
+- Text: primary `#e5e5e5`, secondary `#a3a3a3`, muted `#737373`
+- Accents: blue `#3b82f6`, emerald `#10b981`, amber `#f59e0b`, indigo `#4f46e5`, rose `#f43f5e`
+- Fonts: Geist (UI), Geist Mono (monospace)
+- Spacing: 4px scale (4, 8, 12, 16, 20, 24, 32, 40)
+- Radius: sm 4px, md 6px, lg 8px, xl 12px, full 999px
+
+- [ ] **Step 1: Create design tokens CSS file**
+
+Create `src/styles/design-tokens.css`:
+
+```css
+:root {
+  /* Background colors */
+  --bg: #0a0a0a;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+  
+  /* Text colors */
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  
+  /* Accent colors */
+  --accent-blue: #3b82f6;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-indigo: #4f46e5;
+  --accent-rose: #f43f5e;
+  
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 999px;
+  
+  /* Font families */
+  --font-ui: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+```
+
+- [ ] **Step 2: Import design tokens in Layout.astro**
+
+Add to `src/layouts/Layout.astro` in the `<head>`:
+
+```astro
+<link rel="stylesheet" href="/src/styles/design-tokens.css" />
+```
+
+- [ ] **Step 3: Update Tailwind config to use design tokens**
+
+Modify `tailwind.config.js` (or create if using Tailwind v4 CSS config):
+
+```js
+export default {
+  theme: {
+    extend: {
+      colors: {
+        bg: 'var(--bg)',
+        card: 'var(--card)',
+        border: 'var(--border)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        'text-muted': 'var(--text-muted)',
+        'accent-blue': 'var(--accent-blue)',
+        'accent-emerald': 'var(--accent-emerald)',
+        'accent-amber': 'var(--accent-amber)',
+        'accent-indigo': 'var(--accent-indigo)',
+        'accent-rose': 'var(--accent-rose)',
+      },
+      fontFamily: {
+        ui: ['Geist', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono', 'monospace'],
+      },
+      borderRadius: {
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        full: 'var(--radius-full)',
+      },
+      spacing: {
+        '1': 'var(--space-1)',
+        '2': 'var(--space-2)',
+        '3': 'var(--space-3)',
+        '4': 'var(--space-4)',
+        '5': 'var(--space-5)',
+        '6': 'var(--space-6)',
+        '8': 'var(--space-8)',
+        '10': 'var(--space-10)',
+      },
+    },
+  },
+}
+```
+
+- [ ] **Step 4: Install Geist fonts**
+
+Run:
+```bash
+npm install @fontsource/geist @fontsource/geist-mono
+```
+
+- [ ] **Step 5: Import fonts in Layout.astro**
+
+Add to `src/layouts/Layout.astro`:
+
+```astro
+---
+import '@fontsource/geist/400.css';
+import '@fontsource/geist/500.css';
+import '@fontsource/geist/600.css';
+import '@fontsource/geist/700.css';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
+---
+```
+
+- [ ] **Step 6: Verify design tokens work**
+
+Run:
+```bash
+npm run dev
+```
+
+Open browser and verify:
+- Background color is `#0a0a0a`
+- Text uses Geist font
+- Spacing and radius utilities work
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add src/styles/design-tokens.css src/layouts/Layout.astro tailwind.config.js package.json package-lock.json
+git commit -m "feat: set up design tokens from Pencil design system"
+```
+
+---
+
+## Design System Integration Summary
+
+### Pencil Design Analysis (Node vyE17)
+
+The PiDash Landing Page design (vyE17) contains the following key sections that map to our implementation:
+
+1. **Header/Navigation** - Logo, nav links (Features, How It Works, Pricing, FAQ), Sign Up/Download buttons
+2. **Hero Section** - Headline, subtext, CTAs, dashboard mockup
+3. **Features Section** - Feature cards with icons (to be converted to horizontal scroll)
+4. **How It Works Section** - 3-step process (to be converted to sticky-stack)
+5. **Pricing Section** - Three pricing tiers
+6. **FAQ Section** - Accordion-style FAQ
+7. **Footer** - Links and copyright
+
+### Design Token Mapping
+
+**Colors (Pencil → Tailwind):**
+- `$bg` (#0a0a0a) → `bg-bg`
+- `$card` (#1a1a1a) → `bg-card`
+- `$border` (#2a2a2a) → `border-border`
+- `$text-primary` (#e5e5e5) → `text-text-primary`
+- `$text-secondary` (#a3a3a3) → `text-text-secondary`
+- `$text-muted` (#737373) → `text-text-muted`
+- `$accent-blue` (#3b82f6) → `text-accent-blue`, `bg-accent-blue`
+- `$accent-emerald` (#10b981) → `text-accent-emerald`
+- `$accent-amber` (#f59e0b) → `text-accent-amber`
+- `$accent-indigo` (#4f46e5) → `text-accent-indigo`
+- `$accent-rose` (#f43f5e) → `text-accent-rose`
+
+**Typography:**
+- `$font-ui` (Geist) → `font-ui`
+- `$font-mono` (Geist Mono) → `font-mono`
+- Size scale: text-xs (10px) → text-3xl (30px)
+
+**Spacing:**
+- `$space-1` (4px) → `space-1` or `p-1`, `m-1`, `gap-1`
+- `$space-2` (8px) → `space-2` or `p-2`, `m-2`, `gap-2`
+- And so on...
+
+**Border Radius:**
+- `$radius-sm` (4px) → `rounded-sm`
+- `$radius-md` (6px) → `rounded-md`
+- `$radius-lg` (8px) → `rounded-lg`
+- `$radius-xl` (12px) → `rounded-xl`
+- `$radius-full` (999px) → `rounded-full`
+
+### Component Updates Required
+
+All component tasks (Tasks 3-9 after renumbering) should use the design tokens:
+
+**Hero Section:**
+- Background: `bg-bg`
+- Headline: `text-text-primary`, `font-ui`, `text-4xl md:text-5xl lg:text-6xl`
+- Subtext: `text-text-secondary`, `font-ui`, `text-lg md:text-xl`
+- CTA buttons: `bg-accent-indigo`, `text-white`, `rounded-lg`
+- Dashboard mockup border: `border-border`, `rounded-xl`
+
+**Features Section (Horizontal Scroll):**
+- Feature cards: `bg-card`, `border-border`, `rounded-lg`
+- Icon boxes: `bg-accent-blue/10`, `rounded-lg`
+- Icons: Use Lucide icons (search, zap, activity) with `text-accent-blue`, `text-accent-emerald`, `text-accent-indigo`
+- Feature titles: `text-text-primary`, `font-ui`, `text-xl`
+- Feature descriptions: `text-text-secondary`, `font-ui`, `text-base`
+
+**HowItWorks Section (Sticky-Stack):**
+- Step numbers: `bg-accent-indigo/10`, `text-accent-indigo`, `rounded-full`
+- Step titles: `text-text-primary`, `font-ui`, `text-3xl md:text-4xl`
+- Step descriptions: `text-text-secondary`, `font-ui`, `text-xl`
+- Screenshots: `border-border`, `rounded-lg`
+
+**Scroll-Reveal Sections:**
+- All sections use `bg-bg` or `bg-card` for alternating backgrounds
+- Headings: `text-text-primary`, `font-ui`
+- Body text: `text-text-secondary`, `font-ui`
+- Borders: `border-border`
+
+### Reusable Components from Pencil
+
+The Pencil design file contains 50+ reusable components. Key ones for the landing page:
+
+1. **Button (QWbIi)** - Use for all CTAs
+2. **Card (JZIrh)** - Use for feature cards
+3. **Input (r1QdNb)** - Use for email input in hero
+4. **Spinner (JduYX)** - Use for loading states
+5. **Badge (mZlD0)** - Use for status indicators
+6. **Avatar (eKa29)** - Use for agent avatars if needed
+
+These components can be referenced in the implementation, but since we're building in Astro (not Pencil), we'll recreate them using the design tokens.
+
+### Next Steps
+
+1. Complete Task 2 (Design Tokens Setup)
+2. Renumber remaining tasks (Task 3 → Task 4, etc.)
+3. Update all component code examples to use design tokens
+4. Test in browser to ensure design consistency
+5. Commit after each task
+
