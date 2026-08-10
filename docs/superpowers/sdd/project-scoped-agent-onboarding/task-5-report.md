@@ -27,3 +27,19 @@ DONE
 
 ## Concerns
 None.
+
+
+## Fix Applied
+**Issue:** Both `handleAddToGlobal` and `handleAddToProject` called `complete(onComplete)`, which hardcodes `projectAgents: []`. This meant project-scoped agents were silently lost.
+
+**Fix:** Replaced `complete(onComplete)` with `completeWithScopedAgents(onComplete)` in both handlers. Removed manual global-save logic from `handleAddToGlobal` since `completeWithScopedAgents` already handles it.
+
+**Commit:** c110b146
+
+**Updated handlers:**
+- `handleAddToGlobal`: Sets scope to 'global', closes dialog, calls `completeWithScopedAgents`
+- `handleAddToProject`: Sets scope to 'project', closes dialog, calls `completeWithScopedAgents`
+
+**Verification:**
+- TypeScript compilation: no errors
+- agentScope utility tests: all pass (4/4)
