@@ -10,12 +10,13 @@ interface ScreenProps {
   updateSelectedAgents: (agents: string[]) => void;
   navigate: (screen: ScreenName) => void;
   complete: (onComplete?: () => void) => void;
+  completeWithScopedAgents: (onComplete?: () => void) => void;
   setPendingAgents: (agents: AgentConfig[]) => void;
   setAgentScopeChoice: (choice: 'global' | 'project' | null) => void;
   onComplete?: () => void;
 }
 
-export function SelectAgentsScreen({ selectedAgents, updateSelectedAgents, navigate, complete, setPendingAgents, setAgentScopeChoice, onComplete }: ScreenProps) {
+export function SelectAgentsScreen({ selectedAgents, updateSelectedAgents, navigate, complete, completeWithScopedAgents, setPendingAgents, setAgentScopeChoice, onComplete }: ScreenProps) {
   const { agents } = useAgents();
   const [globalAgents, setGlobalAgents] = useState<AgentConfig[]>([]);
   const [showScopeDialog, setShowScopeDialog] = useState(false);
@@ -43,18 +44,16 @@ export function SelectAgentsScreen({ selectedAgents, updateSelectedAgents, navig
     }
   };
 
-  const handleAddToGlobal = async (agentsToAdd: AgentConfig[]) => {
-    const existing = await window.api.getAgents();
-    await window.api.saveAgents([...existing, ...agentsToAdd]);
+  const handleAddToGlobal = (agentsToAdd: AgentConfig[]) => {
     setAgentScopeChoice('global');
     setShowScopeDialog(false);
-    complete(onComplete);
+    completeWithScopedAgents(onComplete);
   };
 
   const handleAddToProject = (agentsToAdd: AgentConfig[]) => {
     setAgentScopeChoice('project');
     setShowScopeDialog(false);
-    complete(onComplete);
+    completeWithScopedAgents(onComplete);
   };
 
   return (
