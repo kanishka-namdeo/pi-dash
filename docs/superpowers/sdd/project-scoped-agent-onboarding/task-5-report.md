@@ -59,3 +59,13 @@ None.
 **Verification:**
 - TypeScript compilation: no errors
 - agentScope utility tests: all pass (4/4)
+
+## Fix 3: ScreenProps Type Annotation
+**Issue:** The `ScreenProps` interface had a stale type annotation for `completeWithScopedAgents` that didn't match the updated function signature.
+
+**Fix:** Updated the type annotation to `(scopeChoice: 'global' | 'project', agents: AgentConfig[], onComplete?: () => void) => void`.
+
+**Commit:** 3a1402eb
+
+**Verification:**
+- TypeScript compilation: no errors
