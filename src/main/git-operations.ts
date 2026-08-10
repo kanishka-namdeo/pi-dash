@@ -3,6 +3,7 @@ import path from 'path';
 import simpleGit from 'simple-git';
 import log from './logger';
 import type { CloneError } from '../shared/project-setup-types';
+import type { GitStatus, GitStatusEntry } from '../shared/filetree-types';
 
 export async function isGitRepo(repoPath: string): Promise<boolean> {
   try {
@@ -55,5 +56,110 @@ export async function cloneRepository(
     }
 
     return { success: false, error: { type: 'unknown', message } };
+  }
+}
+
+export async function getGitStatus(repoPath: string): Promise<Record<string, GitStatusEntry>> {
+  try {
+    const git = simpleGit(repoPath);
+    
+    const isRepo = await isGitRepo(repoPath);
+    if (!isRepo) return {};
+
+    const status = await git.status();
+    const result: Record<string, GitStatusEntry> = {};
+
+    for (const file of status.files) {
+      let gitStatus: GitStatus;
+
+      if (file.index === 'C' || (file.index === 'D' && file.working_dir === 'A')) {
+        gitStatus = 'conflict';
+      } else if (file.index === 'A' || file.index === 'M' || file.index === 'D') {
+        gitStatus = 'staged';
+      } else if (file.working_dir === '?') {
+        gitStatus = 'untracked';
+      } else {
+        gitStatus = 'modified';
+      }
+
+      result[file.path.replace(/\\/g, '/')] = {
+        status: gitStatus,
+        additions: 0,
+        deletions: 0
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error('getGitStatus error:', error);
+    return {};
+  }
+}
+
+export async function getDiffStats(repoPath: string): Promise<Record<string, GitStatusEntry>> {
+  try {
+    const git = simpleGit(repoPath);
+    const isRepo = await isGitRepo(repoPath);
+    if (!isRepo) return {};
+
+    const result: Record<string, GitStatusEntry> = {};
+
+    // Get diff stats for staged changes
+    try {
+      const stagedDiff = await git.diffSummary(['--cached']);
+      for (const file of stagedDiff.files) {
+        if ('insertions' in file && 'deletions' in file) {
+          const filePath = file.file.replace(/\\/g, '/');
+          if (!result[filePath]) {
+            result[filePath] = { status: 'staged', additions: 0, deletions: 0 };
+          }
+          result[filePath].additions += file.insertions;
+          result[filePath].deletions += file.deletions;
+          result[filePath].status = 'staged';
+        }
+      }
+    } catch {
+      // No staged changes
+    }
+
+    // Get diff stats for unstaged changes
+    try {
+      const workingDiff = await git.diffSummary();
+      for (const file of workingDiff.files) {
+        if ('insertions' in file && 'deletions' in file) {
+          const filePath = file.file.replace(/\\/g, '/');
+          if (!result[filePath]) {
+            result[filePath] = { status: 'modified', additions: 0, deletions: 0 };
+          }
+          result[filePath].additions += file.insertions;
+          result[filePath].deletions += file.deletions;
+          result[filePath].status = 'modified';
+        }
+      }
+    } catch {
+      // No unstaged changes
+    }
+
+    // Get untracked files
+    try {
+      const status = await git.status();
+      for (const file of status.files) {
+        if (file.working_dir === '?') {
+          const filePath = file.path.replace(/\\/g, '/');
+          if (!result[filePath]) {
+            result[filePath] = { status: 'untracked', additions: 0, deletions: 0, untrackedCount: 1 };
+          } else {
+            result[filePath].untrackedCount = (result[filePath].untrackedCount || 0) + 1;
+          }
+        }
+      }
+    } catch {
+      // No untracked files
+    }
+
+    return result;
+  } catch (error) {
+    console.error('getDiffStats error:', error);
+    return {};
   }
 }
