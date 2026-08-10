@@ -5,7 +5,7 @@ import { SectionCard } from './SectionCard';
 const LINKS = [
   { label: 'Website', icon: Globe, url: 'https://pidash.dev' },
   { label: 'Documentation', icon: BookOpen, url: 'https://docs.pidash.dev' },
-  { label: 'Source Code', icon: Github, url: 'https://github.com/pidash/pidash' },
+  { label: 'Source Code', icon: GitHub, url: 'https://github.com/pidash/pidash' },
   { label: 'Report Issue', icon: CircleAlert, url: 'https://github.com/pidash/pidash/issues' },
 ] as const;
 
