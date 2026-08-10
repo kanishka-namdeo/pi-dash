@@ -1,4 +1,4 @@
-import { Settings, Bot, Github, Bell, Keyboard, Info, Terminal, GitBranch, Wrench } from 'lucide-react';
+import { Settings, Bot, Github, Bell, Keyboard, Info, Terminal, GitBranch, Wrench, ShieldAlert } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface SettingsSidebarProps {
@@ -16,6 +16,7 @@ const navItems = [
   { id: 'terminal', label: 'Terminal', icon: Terminal },
   { id: 'worktrees', label: 'Worktrees', icon: GitBranch },
   { id: 'advanced', label: 'Advanced', icon: Wrench },
+  { id: 'reset', label: 'Reset & Recovery', icon: ShieldAlert },
 ];
 
 export function SettingsSidebar({ activeTab, onTabChange }: SettingsSidebarProps) {

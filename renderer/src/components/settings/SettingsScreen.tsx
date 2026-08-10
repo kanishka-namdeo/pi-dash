@@ -9,6 +9,7 @@ import { TerminalSettings } from './TerminalSettings';
 import { WorktreesSettings } from './WorktreesSettings';
 import { AdvancedSettings } from './AdvancedSettings';
 import { AboutSettings } from './AboutSettings';
+import { ResetRecoverySettings } from './ResetRecoverySettings';
 import { X } from 'lucide-react';
 
 export function SettingsScreen() {
@@ -44,6 +45,7 @@ export function SettingsScreen() {
           <Route path="/worktrees" element={<WorktreesSettings />} />
           <Route path="/advanced" element={<AdvancedSettings />} />
           <Route path="/about" element={<AboutSettings />} />
+          <Route path="/reset" element={<ResetRecoverySettings />} />
         </Routes>
       </div>
     </div>
