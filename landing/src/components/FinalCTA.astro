@@ -1,0 +1,35 @@
+---
+// landing/src/components/FinalCTA.astro
+---
+
+<section class="px-6 py-24 bg-white/[0.02]">
+  <div class="max-w-3xl mx-auto text-center space-y-8">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight">
+      Ready to take control of your AI agent fleet?
+    </h2>
+    <p class="text-lg text-[#e5e5e5]/70">
+      Join the waitlist and be the first to try PiDash.
+    </p>
+    
+    <form 
+      action="https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse" 
+      method="POST"
+      target="_blank"
+      class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+    >
+      <input 
+        type="email" 
+        name="entry.EMAIL_ENTRY_ID" 
+        placeholder="Enter your email"
+        required
+        class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#00d9ff]"
+      />
+      <button 
+        type="submit"
+        class="px-8 py-3 bg-[#00d9ff] text-[#0a0a0a] font-semibold rounded-lg hover:bg-[#00d9ff]/90 transition-colors whitespace-nowrap"
+      >
+        Join the waitlist
+      </button>
+    </form>
+  </div>
+</section>
