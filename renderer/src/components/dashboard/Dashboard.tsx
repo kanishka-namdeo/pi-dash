@@ -248,6 +248,12 @@ export function Dashboard() {
         onClearFeed={clear}
         onProjectChange={handleProjectChange}
         onAddProject={handleAddProject}
+        onProjectUpdated={async () => {
+          const projects = await window.api.getProjects();
+          const updated = projects.find(p => p.path === activeProject?.path);
+          if (updated) setActiveProject(updated);
+          refreshAgents();
+        }}
       />
 
 

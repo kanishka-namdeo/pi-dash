@@ -78,8 +78,8 @@ type TopBarProps = {
   onClearFeed: () => void;
   onProjectChange: (project: Project) => void;
   onAddProject: () => void;
+  onProjectUpdated?: () => void;
 };
-
 export function TopBar({
   isFeedPaused,
   activeProject,
@@ -88,6 +88,7 @@ export function TopBar({
   onClearFeed,
   onProjectChange,
   onAddProject,
+  onProjectUpdated,
 }: TopBarProps) {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -97,21 +98,26 @@ export function TopBar({
   }, []);
 
   const handleCopyAgents = async (sourcePath: string) => {
-    const allProjects = await window.api.getProjects();
-    const source = allProjects.find(p => p.path === sourcePath);
-    if (!source || !activeProject) return;
+    try {
+      const allProjects = await window.api.getProjects();
+      const source = allProjects.find(p => p.path === sourcePath);
+      if (!source || !activeProject) return;
 
-    const copiedProjectAgents = (source.projectAgents || []).map(a => ({
-      ...a,
-      id: crypto.randomUUID(),
-    }));
+      const copiedProjectAgents = (source.projectAgents || []).map(a => ({
+        ...a,
+        id: crypto.randomUUID(),
+      }));
 
-    await window.api.updateProject(activeProject.path, {
-      selectedAgents: source.selectedAgents || [],
-      projectAgents: copiedProjectAgents,
-    });
+      await window.api.updateProject(activeProject.path, {
+        selectedAgents: source.selectedAgents || [],
+        projectAgents: copiedProjectAgents,
+      });
 
-    toast.success(`Agents copied from ${source.name}`);
+      onProjectUpdated?.();
+      toast.success(`Agents copied from ${source.name}`);
+    } catch {
+      toast.error('Failed to copy agents. Try again.');
+    }
   };
 
   return (
