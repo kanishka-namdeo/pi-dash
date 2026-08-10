@@ -2,45 +2,88 @@
 // landing/src/components/HowItWorks.astro
 ---
 
-<section class="px-6 py-24 bg-white/[0.02]">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-16 text-center">
-      Get started in 3 steps
-    </h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- Step 1 -->
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 bg-[#00d9ff]/10 rounded-full flex items-center justify-center mx-auto">
-          <span class="text-2xl font-bold text-[#00d9ff]">1</span>
-        </div>
-        <h3 class="text-xl font-semibold">Install PiDash</h3>
-        <p class="text-[#e5e5e5]/70">
-          Download for Windows, Mac, or Linux. One-time setup, no cloud account required.
-        </p>
+<section id="how-it-works" class="relative">
+  <!-- Step 1 -->
+  <div class="how-step min-h-[100dvh] flex items-center justify-center px-6 sticky top-0">
+    <div class="max-w-4xl text-center space-y-8">
+      <div class="w-20 h-20 mx-auto rounded-full bg-[#00d9ff]/10 flex items-center justify-center">
+        <span class="text-3xl font-bold text-[#00d9ff]">1</span>
       </div>
-      
-      <!-- Step 2 -->
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 bg-[#00d9ff]/10 rounded-full flex items-center justify-center mx-auto">
-          <span class="text-2xl font-bold text-[#00d9ff]">2</span>
-        </div>
-        <h3 class="text-xl font-semibold">Add Your Agents</h3>
-        <p class="text-[#e5e5e5]/70">
-          PiDash auto-scans your system for installed AI agents, or add them manually. Supports Cursor, OMP, Claude Code, and more.
-        </p>
+      <h3 class="text-3xl md:text-4xl font-bold">Install PiDash</h3>
+      <p class="text-xl text-[#e5e5e5]/70 max-w-2xl mx-auto">
+        Download for Windows, Mac, or Linux. One-time setup, no cloud account required.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Step 2 -->
+  <div class="how-step min-h-[100dvh] flex items-center justify-center px-6 sticky top-0">
+    <div class="max-w-4xl text-center space-y-8">
+      <div class="w-20 h-20 mx-auto rounded-full bg-[#00d9ff]/10 flex items-center justify-center">
+        <span class="text-3xl font-bold text-[#00d9ff]">2</span>
       </div>
-      
-      <!-- Step 3 -->
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 bg-[#00d9ff]/10 rounded-full flex items-center justify-center mx-auto">
-          <span class="text-2xl font-bold text-[#00d9ff]">3</span>
-        </div>
-        <h3 class="text-xl font-semibold">Monitor & Control</h3>
-        <p class="text-[#e5e5e5]/70">
-          Open the dashboard and see all your agents in action. Switch between agents, view terminal output, and manage tasks.
-        </p>
+      <h3 class="text-3xl md:text-4xl font-bold">Add Your Agents</h3>
+      <p class="text-xl text-[#e5e5e5]/70 max-w-2xl mx-auto">
+        PiDash auto-scans your system for installed AI agents, or add them manually.
+      </p>
+      <div class="relative aspect-video max-w-3xl mx-auto rounded-lg overflow-hidden border border-white/10">
+        <img src="/screenshots/results.webp" alt="Agent detection results" loading="lazy" />
       </div>
     </div>
   </div>
+  
+  <!-- Step 3 -->
+  <div class="how-step min-h-[100dvh] flex items-center justify-center px-6">
+    <div class="max-w-4xl text-center space-y-8">
+      <div class="w-20 h-20 mx-auto rounded-full bg-[#00d9ff]/10 flex items-center justify-center">
+        <span class="text-3xl font-bold text-[#00d9ff]">3</span>
+      </div>
+      <h3 class="text-3xl md:text-4xl font-bold">Monitor & Control</h3>
+      <p class="text-xl text-[#e5e5e5]/70 max-w-2xl mx-auto">
+        Open the dashboard and see all your agents in action. Switch between agents, view terminal output, and manage tasks.
+      </p>
+    </div>
+  </div>
 </section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      const steps = gsap.utils.toArray('.how-step');
+      
+      steps.forEach((step, i) => {
+        if (i === steps.length - 1) return; // Last step doesn't pin
+        
+        ScrollTrigger.create({
+          trigger: step,
+          start: 'top top',
+          endTrigger: steps[steps.length - 1],
+          end: 'top top',
+          pin: true,
+          pinSpacing: false,
+        });
+        
+        gsap.to(step, {
+          scale: 0.92,
+          opacity: 0.55,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: steps[i + 1],
+            start: 'top bottom',
+            end: 'top top',
+            scrub: true,
+          }
+        });
+      });
+    }, '#how-it-works');
+    
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
+  }
+</script>
