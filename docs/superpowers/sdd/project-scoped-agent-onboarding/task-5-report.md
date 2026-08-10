@@ -43,3 +43,19 @@ None.
 **Verification:**
 - TypeScript compilation: no errors
 - agentScope utility tests: all pass (4/4)
+
+## Fix 2: React State Batching
+**Issue:** React batches state updates, so calling `setAgentScopeChoice()` then immediately `completeWithScopedAgents()` in the same synchronous execution meant `completeWithScopedAgents` read stale `agentScopeChoice` from its closure.
+
+**Fix:** Modified `completeWithScopedAgents` in `useProjectSetupState.ts` to accept `scopeChoice` and `agents` as parameters instead of reading from state. Updated handlers in `SelectAgentsScreen.tsx` to pass these directly.
+
+**Commit:** 4b75fe51
+
+**Files modified:**
+- `renderer/src/hooks/useProjectSetupState.ts` — updated `completeWithScopedAgents` signature
+- `renderer/src/components/project-setup/screens/SelectAgentsScreen.tsx` — updated handlers
+- `renderer/src/hooks/__tests__/useProjectSetupState.test.ts` — updated tests
+
+**Verification:**
+- TypeScript compilation: no errors
+- agentScope utility tests: all pass (4/4)
