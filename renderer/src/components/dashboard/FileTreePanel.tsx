@@ -45,7 +45,7 @@ export function FileTreePanel({
   const [gitStatus, setGitStatus] = useState<Record<string, GitStatusEntry>>({});
   const [gitStatusLoaded, setGitStatusLoaded] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
-  const [filter, setFilter] = useState<FiletreeFilter>('all');
+  const [filter, setFilter] = useState<FiletreeFilter>('all' as const);
   const [activeFiles, setActiveFiles] = useState<ActiveFile[]>([]);
   const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; path: string } | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
@@ -197,7 +197,10 @@ export function FileTreePanel({
       const relPath = getRelativePath(entry.path);
       const status = gitStatus[relPath];
 
-      if (!status) return filter === 'all';
+      if (!status) {
+        const f = filter as FiletreeFilter;
+        return f === 'all';
+      }
       if (filter === 'changed') return status.status === 'modified' || status.status === 'conflict';
       if (filter === 'staged') return status.status === 'staged';
       if (filter === 'unstaged') return status.status === 'untracked' || status.status === 'modified';
