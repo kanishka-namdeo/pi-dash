@@ -10,10 +10,12 @@ import {
   HelpCircle,
   Plus,
   ChevronDown,
+  Copy,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { Project } from '@/types/project-setup';
 
 function ProjectSwitcher({
@@ -88,6 +90,29 @@ export function TopBar({
   onAddProject,
 }: TopBarProps) {
   const navigate = useNavigate();
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    window.api.getProjects().then(setProjects);
+  }, []);
+
+  const handleCopyAgents = async (sourcePath: string) => {
+    const allProjects = await window.api.getProjects();
+    const source = allProjects.find(p => p.path === sourcePath);
+    if (!source || !activeProject) return;
+
+    const copiedProjectAgents = (source.projectAgents || []).map(a => ({
+      ...a,
+      id: crypto.randomUUID(),
+    }));
+
+    await window.api.updateProject(activeProject.path, {
+      selectedAgents: source.selectedAgents || [],
+      projectAgents: copiedProjectAgents,
+    });
+
+    toast.success(`Agents copied from ${source.name}`);
+  };
 
   return (
     <header
@@ -164,6 +189,29 @@ export function TopBar({
         >
           <HelpCircle size={16} />
         </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+              style={{ backgroundColor: 'var(--card)', color: 'var(--text-secondary)' }}
+              title="Copy agents from another project"
+            >
+              <Copy size={16} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {projects
+              .filter(p => p.path !== activeProject?.path)
+              .map(p => (
+                <DropdownMenuItem key={p.path} onClick={() => handleCopyAgents(p.path)}>
+                  {p.name}
+                </DropdownMenuItem>
+              ))}
+            {projects.filter(p => p.path !== activeProject?.path).length === 0 && (
+              <DropdownMenuItem disabled>No other projects</DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <div className="w-px h-6 mx-2" style={{ backgroundColor: 'var(--border)' }} />
 
