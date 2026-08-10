@@ -7,6 +7,7 @@ import '@fontsource/geist/600.css';
 import '@fontsource/geist/700.css';
 import '@fontsource/geist-mono/400.css';
 import '@fontsource/geist-mono/500.css';
+import ScrollSetup from '../components/ScrollSetup.astro';
 
 interface Props {
   title: string;
@@ -32,6 +33,7 @@ const ogImage = '/og-image.png';
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
   </head>
   <body class="bg-bg text-text-primary font-ui antialiased">
+    <ScrollSetup />
     <slot />
   </body>
 </html>

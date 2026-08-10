@@ -1,0 +1,39 @@
+---
+// landing/src/components/ScrollSetup.astro
+---
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import Lenis from 'lenis';
+
+  // Check reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Initialize Lenis smooth scrolling
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+    
+    // Sync Lenis with GSAP
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0); // Canonical sync, no lag
+    
+    // Expose for cleanup in other components
+    window.__lenisInstance = lenis;
+  }
+  
+  // Cleanup on Astro view transition
+  document.addEventListener('astro:after-swap', () => {
+    if (window.__lenisInstance) {
+      window.__lenisInstance.destroy();
+      window.__lenisInstance = null;
+    }
+    ScrollTrigger.getAll().forEach(t => t.kill());
+  });
+</script>
