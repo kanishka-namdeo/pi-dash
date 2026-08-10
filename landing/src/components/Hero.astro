@@ -97,6 +97,6 @@
       }, 0);
     }, '#hero');
 
-    document.addEventListener('astro:after-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
   }
 </script>
