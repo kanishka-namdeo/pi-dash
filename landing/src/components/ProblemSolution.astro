@@ -2,10 +2,10 @@
 // landing/src/components/ProblemSolution.astro
 ---
 
-<section class="px-6 py-24 bg-white/[0.02]">
+<section id="problem-solution" class="px-6 py-24 bg-white/[0.02]">
   <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
     <!-- Problem -->
-    <div class="space-y-6">
+    <div class="space-y-6 reveal-item">
       <h2 class="text-3xl md:text-4xl font-bold tracking-tight">
         The problem
       </h2>
@@ -17,7 +17,7 @@
     </div>
     
     <!-- Solution -->
-    <div class="space-y-6">
+    <div class="space-y-6 reveal-item">
       <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-[#00d9ff]">
         The solution
       </h2>
@@ -27,3 +27,32 @@
     </div>
   </div>
 </section>
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray('#problem-solution .reveal-item');
+      
+      gsap.from(items, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#problem-solution',
+          start: 'top 70%',
+          toggleActions: 'play none none none',
+        }
+      });
+    }, '#problem-solution');
+    
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
+  }
+</script>

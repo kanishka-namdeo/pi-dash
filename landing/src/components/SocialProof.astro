@@ -2,10 +2,10 @@
 // landing/src/components/SocialProof.astro
 ---
 
-<section class="px-6 py-24 bg-white/[0.02]">
+<section id="social-proof" class="px-6 py-24 bg-white/[0.02]">
   <div class="max-w-7xl mx-auto space-y-16">
     <!-- Testimonial -->
-    <blockquote class="max-w-3xl mx-auto text-center">
+    <blockquote class="max-w-3xl mx-auto text-center reveal-item">
       <p class="text-xl md:text-2xl italic text-[#e5e5e5]/90 leading-relaxed">
         "PiDash saved me hours of context-switching. I can finally see what all my agents are doing without losing my flow."
       </p>
@@ -13,7 +13,7 @@
     </blockquote>
     
     <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto text-center">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto text-center reveal-item">
       <div>
         <p class="text-3xl font-bold text-[#00d9ff]">3+</p>
         <p class="text-[#e5e5e5]/70 mt-1">AI agents managed per developer</p>
@@ -25,7 +25,7 @@
     </div>
     
     <!-- Trust signals -->
-    <div class="flex flex-wrap justify-center gap-6 text-sm text-[#e5e5e5]/50">
+    <div class="flex flex-wrap justify-center gap-6 text-sm text-[#e5e5e5]/50 reveal-item">
       <span>Open source</span>
       <span>•</span>
       <span>Privacy-first</span>
@@ -34,3 +34,32 @@
     </div>
   </div>
 </section>
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray('#social-proof .reveal-item');
+      
+      gsap.from(items, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#social-proof',
+          start: 'top 70%',
+          toggleActions: 'play none none none',
+        }
+      });
+    }, '#social-proof');
+    
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
+  }
+</script>

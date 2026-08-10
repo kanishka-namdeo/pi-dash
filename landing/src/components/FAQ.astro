@@ -24,15 +24,15 @@ const faqs = [
 ];
 ---
 
-<section class="px-6 py-24">
+<section id="faq" class="px-6 py-24">
   <div class="max-w-3xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-12 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-12 text-center reveal-item">
       Frequently asked questions
     </h2>
     
     <div class="space-y-6">
       {faqs.map((faq) => (
-        <details class="group bg-white/5 border border-white/10 rounded-lg">
+        <details class="group bg-white/5 border border-white/10 rounded-lg reveal-item">
           <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold list-none">
             {faq.q}
             <svg class="w-5 h-5 text-[#00d9ff] transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,3 +45,32 @@ const faqs = [
     </div>
   </div>
 </section>
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray('#faq .reveal-item');
+      
+      gsap.from(items, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#faq',
+          start: 'top 70%',
+          toggleActions: 'play none none none',
+        }
+      });
+    }, '#faq');
+    
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
+  }
+</script>

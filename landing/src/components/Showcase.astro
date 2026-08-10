@@ -2,15 +2,44 @@
 // landing/src/components/Showcase.astro
 ---
 
-<section class="px-6 py-24">
+<section id="showcase" class="px-6 py-24">
   <div class="max-w-7xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-12 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-12 text-center reveal-item">
       See PiDash in action
     </h2>
     
-    <!-- Dashboard screenshot placeholder -->
-    <div class="aspect-video bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">
-      <p class="text-white/60 text-sm">Dashboard screenshot (create in Pencil or capture from app)</p>
+    <!-- Dashboard screenshot with GitHub integration -->
+    <div class="relative aspect-video rounded-lg overflow-hidden border border-white/10 shadow-2xl shadow-[#00d9ff]/10 reveal-item">
+      <img src="/screenshots/dashboard-github.webp" alt="PiDash dashboard with GitHub integration showing pull requests and branch tracking" class="w-full h-full object-cover" loading="lazy" />
     </div>
   </div>
 </section>
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray('#showcase .reveal-item');
+      
+      gsap.from(items, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#showcase',
+          start: 'top 70%',
+          toggleActions: 'play none none none',
+        }
+      });
+    }, '#showcase');
+    
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
+  }
+</script>

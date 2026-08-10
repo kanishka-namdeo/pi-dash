@@ -2,12 +2,12 @@
 // landing/src/components/FinalCTA.astro
 ---
 
-<section class="px-6 py-24 bg-white/[0.02]">
+<section id="final-cta" class="px-6 py-24 bg-white/[0.02]">
   <div class="max-w-3xl mx-auto text-center space-y-8">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight reveal-item">
       Ready to take control of your AI agent fleet?
     </h2>
-    <p class="text-lg text-[#e5e5e5]/70">
+    <p class="text-lg text-[#e5e5e5]/70 reveal-item">
       Join the waitlist and be the first to try PiDash.
     </p>
     
@@ -32,10 +32,39 @@
       />
       <button 
         type="submit"
-        class="px-8 py-3 bg-[#00d9ff] text-[#0a0a0a] font-semibold rounded-lg hover:bg-[#00d9ff]/90 transition-colors whitespace-nowrap"
+        class="px-8 py-3 bg-[#00d9ff] text-[#0a0a0a] font-semibold rounded-lg hover:bg-[#00d9ff]/90 transition-colors whitespace-nowrap reveal-item"
       >
         Join the waitlist
       </button>
     </form>
   </div>
 </section>
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray('#final-cta .reveal-item');
+      
+      gsap.from(items, {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#final-cta',
+          start: 'top 70%',
+          toggleActions: 'play none none none',
+        }
+      });
+    }, '#final-cta');
+    
+    document.addEventListener('astro:after-swap', () => ctx.revert(), { once: true });
+  }
+</script>
