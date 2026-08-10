@@ -205,12 +205,18 @@ const { title, description = 'Monitor all your AI coding agents in one place' } 
     <meta name="description" content={description} />
     <title>{title}</title>
     
-    <!-- Geist font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <!-- Geist font via Fontsource CDN (Geist is NOT on Google Fonts) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2" />
+    <style>
+      @font-face {
+        font-family: 'Geist';
+        src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2') format('woff2');
+        font-weight: 100 900;
+        font-display: swap;
+      }
+    </style>
   </head>
-  <body class="bg-[#0a0a0a] text-[#e5e5e5] font-geist antialiased">
+  <body class="bg-[#0a0a0a] text-[#e5e5e5] font-['Geist',sans-serif] antialiased">
     <slot />
   </body>
 </html>
