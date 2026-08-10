@@ -14,6 +14,7 @@ export function TerminalView({ agentId: propAgentId }: TerminalViewProps = {}) {
   const { agentId: paramAgentId } = useParams<{ agentId: string }>();
   const [searchParams] = useSearchParams();
   const cwd = searchParams.get('cwd') || '';
+  const agentId = propAgentId || paramAgentId;
   const { spawn, write, resize, destroy } = useSession(agentId || '');
 
   const terminalRef = useRef<HTMLDivElement>(null);
