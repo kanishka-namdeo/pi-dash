@@ -3,6 +3,15 @@ import { getProjects, addProject, updateProject, removeProject, getRecentProject
 import type { Project } from '../../shared/project-setup-types';
 import fs from 'fs';
 import path from 'path';
+vi.mock('../logger', () => ({
+  default: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 vi.mock('electron', () => ({
   app: {
     getPath: () => '/tmp/test-user-data',
@@ -37,6 +46,7 @@ describe('Project Manager', () => {
       lastOpenedAt: '2026-08-08T10:00:00Z',
       selectedAgents: ['omp'],
       isGitRepo: true,
+      projectAgents: [],
     };
 
     await addProject(project, TEST_PROJECTS_FILE);
@@ -53,6 +63,7 @@ describe('Project Manager', () => {
       addedAt: '2026-08-08T10:00:00Z',
       lastOpenedAt: '2026-08-08T10:00:00Z',
       selectedAgents: ['omp'],
+      projectAgents: [],
       isGitRepo: true,
     };
 
@@ -69,6 +80,7 @@ describe('Project Manager', () => {
       lastOpenedAt: '2026-08-08T10:00:00Z',
       selectedAgents: ['omp'],
       isGitRepo: true,
+      projectAgents: [],
     };
 
     await addProject(project, TEST_PROJECTS_FILE);
@@ -86,6 +98,7 @@ describe('Project Manager', () => {
       lastOpenedAt: '2026-08-08T10:00:00Z',
       selectedAgents: ['omp'],
       isGitRepo: true,
+      projectAgents: [],
     };
 
     await addProject(project, TEST_PROJECTS_FILE);
@@ -103,6 +116,7 @@ describe('Project Manager', () => {
       lastOpenedAt: '2026-08-07T10:00:00Z',
       selectedAgents: ['omp'],
       isGitRepo: true,
+      projectAgents: [],
     };
 
     const project2: Project = {
@@ -112,6 +126,7 @@ describe('Project Manager', () => {
       lastOpenedAt: '2026-08-08T14:30:00Z',
       selectedAgents: ['claude-code'],
       isGitRepo: false,
+      projectAgents: [],
     };
 
     await addProject(project1, TEST_PROJECTS_FILE);
@@ -120,5 +135,29 @@ describe('Project Manager', () => {
     const recent = await getRecentProjects(10, TEST_PROJECTS_FILE);
     expect(recent[0].path).toBe('/test/project2');
     expect(recent[1].path).toBe('/test/project1');
+  });
+
+  it('adds projectAgents: [] to legacy projects without the field', async () => {
+    // Write a legacy project (without projectAgents) directly to the file
+    const legacyData = {
+      version: 1,
+      projects: [
+        {
+          path: '/legacy/project',
+          name: 'legacy',
+          addedAt: '2026-08-08T10:00:00Z',
+          lastOpenedAt: '2026-08-08T10:00:00Z',
+          selectedAgents: ['omp'],
+          isGitRepo: true,
+        },
+      ],
+    };
+    fs.writeFileSync(TEST_PROJECTS_FILE, JSON.stringify(legacyData, null, 2));
+
+    const projects = await getProjects(TEST_PROJECTS_FILE);
+
+    expect(projects).toHaveLength(1);
+    expect(projects[0].path).toBe('/legacy/project');
+    expect(projects[0].projectAgents).toEqual([]);
   });
 });

@@ -33,6 +33,7 @@ describe('Project Setup Types', () => {
       lastOpenedAt: '2026-08-08T14:30:00Z',
       selectedAgents: ['omp', 'claude-code'],
       isGitRepo: true,
+      projectAgents: [],
     };
     expect(project.path).toBe('/test/project');
   });

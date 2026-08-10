@@ -17,7 +17,13 @@ async function readProjectsFile(filePath: string = DEFAULT_PROJECTS_FILE): Promi
       return { version: 1, projects: [] };
     }
     const content = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(content);
+    const data = JSON.parse(content);
+    // Backward compat: existing projects lack projectAgents
+    data.projects = (data.projects ?? []).map((p: any) => ({
+      ...p,
+      projectAgents: p.projectAgents ?? [],
+    }));
+    return data;
   } catch (error) {
     log.error('project-manager', 'Failed to read projects.json', error);
     return { version: 1, projects: [] };

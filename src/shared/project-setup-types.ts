@@ -1,3 +1,5 @@
+import type { AgentConfig } from './types';
+
 export type ProjectSetupScreenName =
   | 'project-selection'
   | 'project-selection-github-connected'
@@ -25,6 +27,7 @@ export interface Project {
   selectedAgents: string[];
   githubUrl?: string;
   isGitRepo: boolean;
+  projectAgents: AgentConfig[];
 }
 
 export interface ProjectSetupState {

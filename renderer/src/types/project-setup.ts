@@ -1,3 +1,5 @@
+import type { AgentConfig } from '../../../src/shared/types';
+
 export type ScreenName =
   | 'project-selection'
   | 'project-selection-github-connected'
@@ -25,6 +27,7 @@ export interface Project {
   selectedAgents: string[];
   githubUrl?: string;
   isGitRepo: boolean;
+  projectAgents: AgentConfig[];
 }
 
 export interface ProjectSetupState {
@@ -41,6 +44,8 @@ export interface ProjectSetupState {
   selectedAgents: string[];
   validationErrors: Record<string, string>;
   flowMode: 'full' | 'condensed';
+  pendingAgents: AgentConfig[];
+  agentScopeChoice: 'global' | 'project' | null;
 }
 
 export type CloneError =

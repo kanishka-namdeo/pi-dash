@@ -22,6 +22,8 @@ function getInitialState(flowMode: 'full' | 'condensed'): ProjectSetupState {
     cloneDestinationExists: false,
     selectedAgents: [],
     validationErrors: {},
+    pendingAgents: [],
+    agentScopeChoice: null,
   };
 }
 
@@ -54,6 +56,7 @@ export function useProjectSetupState(flowMode: 'full' | 'condensed' = 'full') {
         selectedAgents: state.selectedAgents,
         githubUrl: state.githubRepoUrl || undefined,
         isGitRepo: state.projectPath ? await window.api.isGitRepo(state.projectPath) : false,
+        projectAgents: [],
       });
       onComplete?.();
     } catch (error) {
