@@ -1,4 +1,5 @@
 // Shared types for PiDash onboarding flow
+import type { Project } from './project-setup-types';
 
 export type AgentConfig = {
   id: string;
@@ -91,4 +92,11 @@ export interface IgnoredDrift {
   type: 'missing' | 'moved';
   fingerprint: string;
   ignoredAt: string;
+}
+
+export interface ExportedConfig {
+  version: 1;
+  exportedAt: string;
+  agents: AgentsStore;
+  projects: Project[];
 }
