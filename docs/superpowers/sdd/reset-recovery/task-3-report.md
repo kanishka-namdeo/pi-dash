@@ -25,3 +25,21 @@ DONE
 - TypeScript compiles cleanly for modified files (pre-existing errors in unrelated test files remain)
 - No circular dependency issues — type-only imports are erased at compile time
 - Follows existing patterns in ipc-handlers.ts and preload.ts
+
+---
+
+## P1 Fix: Restore onboardingCompleted flag during import
+
+**Commit:** `4af62b10` — fix: restore onboardingCompleted flag during import
+
+**Issue:** The import handler validated `config.agents.onboardingCompleted` but never applied it to the store. The `saveAgents()` function only updates the agents array and lastScan timestamp, preserving the current store's onboardingCompleted value.
+
+**Fix:** After calling `saveAgents()`, check if `config.agents.onboardingCompleted` is true and call `completeOnboarding()` if so. If it's false, call `resetOnboarding()`.
+
+**File Modified:**
+- `src/main/ipc-handlers.ts` — added onboarding state restoration logic in import-config handler
+
+**Verification:**
+- TypeScript compiles cleanly
+- All 5 agent-store tests pass
+- Uses statically imported `completeOnboarding` and `resetOnboarding` functions (no dynamic imports)
