@@ -1,10 +1,10 @@
 // TypeScript declarations for Electron preload API exposed via contextBridge
 
 import type { AgentConfig, ScanResult, ValidationResult, IdentificationResult, ExportedConfig } from './index';
-import type { SessionAPI } from './session';
-import type { Repo, GitHubIssue, GitHubPR, Worktree, PollingState } from '../../../src/shared/github-types';
+import type { Repo, GitHubIssue, GitHubPR, Worktree } from '../../../src/shared/github-types';
 import type { SettingsSchema } from '../../../src/main/settings/settings-types';
 import type { Project, CloneError } from './project-setup';
+import type { SessionAPI } from '../../../src/preload';
 
 
 interface GitHubUser {
@@ -108,6 +108,15 @@ declare global {
       github: GitHubAPI;
       worktree: WorktreeAPI;
       agentGitHub: AgentGitHubAPI;
+      filetree: {
+        listDir: (path: string) => Promise<{ entries: import('../../../src/shared/filetree-types').FileEntry[] }>;
+        getGitStatus: (repoPath: string) => Promise<{ status: Record<string, import('../../../src/shared/filetree-types').GitStatusEntry> }>;
+        getFileContent: (path: string) => Promise<import('../../../src/shared/filetree-types').FileContentResult>;
+        copyPath: (path: string, relative?: boolean) => Promise<{ success: boolean }>;
+        revealInFileManager: (path: string) => Promise<{ success: boolean }>;
+        openInTerminal: (path: string) => Promise<{ success: boolean }>;
+        getActiveFiles: (projectPath: string, agentCwds: string[]) => Promise<{ files: Array<{ path: string; relativePath: string; modifiedAt: number }> }>;
+      };
       settings: {
         getAll: () => Promise<SettingsSchema>;
         set: (path: string, value: unknown) => Promise<{ success: true }>;
@@ -124,5 +133,3 @@ declare global {
     };
   }
 }
-
-export {};

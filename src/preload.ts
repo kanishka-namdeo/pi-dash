@@ -170,6 +170,17 @@ contextBridge.exposeInMainWorld('api', {
     return () => ipcRenderer.removeListener('shortcut', handler);
   },
 
+  // File tree management
+  filetree: {
+    listDir: (path: string) => ipcRenderer.invoke('filetree:listDir', { path }),
+    getGitStatus: (repoPath: string) => ipcRenderer.invoke('filetree:getGitStatus', { repoPath }),
+    getFileContent: (path: string) => ipcRenderer.invoke('filetree:getFileContent', { path }),
+    copyPath: (path: string, relative?: boolean) => ipcRenderer.invoke('filetree:copyPath', { path, relative }),
+    revealInFileManager: (path: string) => ipcRenderer.invoke('filetree:revealInFileManager', { path }),
+    openInTerminal: (path: string) => ipcRenderer.invoke('filetree:openInTerminal', { path }),
+    getActiveFiles: (projectPath: string, agentCwds: string[]) => ipcRenderer.invoke('filetree:getActiveFiles', { projectPath, agentCwds }),
+  },
+
   // Search
   search: {
     getRecent: () => ipcRenderer.invoke('search:getRecent'),

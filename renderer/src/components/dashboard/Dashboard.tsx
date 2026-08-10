@@ -12,6 +12,7 @@ import type { Agent } from '@/types/dashboard';
 import type { Project } from '@/types/project-setup';
 import { TopBar } from './Topbar';
 import { FleetPanel } from './FleetPanel';
+import { FileTreePanel } from './FileTreePanel';
 import { TerminalPanel } from './TerminalPanel';
 import { ActivityFeed } from './ActivityFeed';
 import { BottomBar } from './BottomBar';
@@ -40,6 +41,8 @@ export function Dashboard() {
   const [showProjectSetup, setShowProjectSetup] = useState(false);
   const { layout } = useResponsiveLayout();
   const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [leftPanelView, setLeftPanelView] = useState<'fleet' | 'files'>('fleet');
+  const [previewFile, setPreviewFile] = useState<{ path: string; name: string } | null>(null);
 
   // Load active project on mount
   useEffect(() => {
@@ -177,6 +180,11 @@ export function Dashboard() {
     return () => unsub?.();
   }, [availableAgents, runningSessions, handleLaunch, activeProject]);
 
+  const handleFileSelect = useCallback((filePath: string) => {
+    const fileName = filePath.split(/[\\/]/).pop() || 'Untitled';
+    setPreviewFile({ path: filePath, name: fileName });
+  }, []);
+
   const handleReconnect = () => {
     if (!activeProject) {
       toast.error('Select a project before reconnecting agents');
@@ -258,25 +266,66 @@ export function Dashboard() {
 
 
       <div className="flex-1 flex overflow-hidden">
-        <FleetPanel
-          runningSessions={runningSessions}
-          availableAgents={availableAgents}
-          hasActiveProject={activeProject !== null}
-          onFocus={handleAgentClick}
-          onLaunch={handleLaunch}
-          onRestart={handleLaunch}
-          onOpenAsOverlay={handleOpenAsOverlay}
-          onAddAgent={() => setAddAgentOpen(true)}
-          onConfigureAgents={activeProject ? () => setConfigureAgentsOpen(true) : undefined}
-          selectedAgentIds={activeProject?.selectedAgents}
-          isCollapsed={collapsedPanels.has('fleet')}
-          onToggleCollapse={() => toggleCollapse('fleet')}
-        />
+        <div className="flex flex-col border-r" style={{ borderColor: 'var(--border)' }}>
+          <div
+            className="flex items-center px-2 py-1.5"
+            style={{
+              backgroundColor: 'var(--card)',
+              borderBottom: '1px solid var(--border)',
+            }}
+          >
+            <button
+              onClick={() => setLeftPanelView('fleet')}
+              className={`px-3 py-1 text-xs rounded.transition-opacity ${leftPanelView === 'fleet' ? 'opacity-100' : 'opacity-60 hover:opacity-80'}`}
+              style={{
+                backgroundColor: leftPanelView === 'fleet' ? 'var(--accent-indigo)' : 'transparent',
+                color: leftPanelView === 'fleet' ? 'var(--text-primary)' : 'var(--text-muted)',
+              }}
+            >
+              Fleet
+            </button>
+            <button
+              onClick={() => setLeftPanelView('files')}
+              className={`px-3 py-1 text-xs rounded ml-1.transition-opacity ${leftPanelView === 'files' ? 'opacity-100' : 'opacity-60 hover:opacity-80'}`}
+              style={{
+                backgroundColor: leftPanelView === 'files' ? 'var(--accent-indigo)' : 'transparent',
+                color: leftPanelView === 'files' ? 'var(--text-primary)' : 'var(--text-muted)',
+              }}
+            >
+              Files
+            </button>
+          </div>
+          {leftPanelView === 'fleet' ? (
+            <FleetPanel
+              runningSessions={runningSessions}
+              availableAgents={availableAgents}
+              hasActiveProject={activeProject !== null}
+              onFocus={handleAgentClick}
+              onLaunch={handleLaunch}
+              onRestart={handleLaunch}
+              onOpenAsOverlay={handleOpenAsOverlay}
+              onAddAgent={() => setAddAgentOpen(true)}
+              onConfigureAgents={activeProject ? () => setConfigureAgentsOpen(true) : undefined}
+              selectedAgentIds={activeProject?.selectedAgents}
+              isCollapsed={collapsedPanels.has('fleet')}
+              onToggleCollapse={() => toggleCollapse('fleet')}
+            />
+          ) : (
+            <FileTreePanel
+              activeProject={activeProject}
+              onFileSelect={handleFileSelect}
+              isCollapsed={collapsedPanels.has('fleet')}
+              onToggleCollapse={() => toggleCollapse('fleet')}
+            />
+          )}
+        </div>
 
         <TerminalPanel
           agentId={selectedAgentId}
           agentName={selectedAgent?.name}
           onClose={() => setSelectedAgentId(null)}
+          previewFile={previewFile}
+          onPreviewClose={() => setPreviewFile(null)}
         />
 
         <ActivityFeed

@@ -5,6 +5,7 @@ import { scanSystem, validateAgent, identifyAgent, findInPath } from './agent-sc
 import { loadAgents, saveAgents, completeOnboarding, resetOnboarding } from './agent-store';
 import { getProjects, addProject, updateProject, removeProject, getRecentProjects } from './project-manager';
 import { isGitRepo, cloneRepository } from './git-operations';
+import { registerFiletreeHandlers } from './ipc/filetree-handlers';
 import type { AgentConfig, ExportedConfig } from '../shared/types';
 
 export function registerIpcHandlers(): void {
@@ -130,6 +131,8 @@ export function registerIpcHandlers(): void {
     await resetOnboarding();
     return { success: true };
   });
+
+  registerFiletreeHandlers();
 }
 
 export function registerProjectHandlers(): void {
