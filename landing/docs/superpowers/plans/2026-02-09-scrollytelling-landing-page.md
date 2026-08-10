@@ -97,7 +97,19 @@ Create `src/components/ScrollSetup.astro`:
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0); // Canonical sync, no lag
+    
+    // Expose for cleanup in other components
+    window.__lenisInstance = lenis;
   }
+  
+  // Cleanup on Astro view transition
+  document.addEventListener('astro:after-swap', () => {
+    if (window.__lenisInstance) {
+      window.__lenisInstance.destroy();
+      window.__lenisInstance = null;
+    }
+    ScrollTrigger.getAll().forEach(t => t.kill());
+  });
 </script>
 ```
 
@@ -222,7 +234,6 @@ Add `<script>` tag at the end of `Hero.astro`:
       }, 0);
       
       // Subtext: fade out
-      tl.to('#hero-subtext', {
         opacity: 0,
         ease: 'none',
       }, 0);
@@ -234,7 +245,7 @@ Add `<script>` tag at the end of `Hero.astro`:
       }, 0);
     }, '#hero');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -406,7 +417,7 @@ Replace entire `src/components/Features.astro` with:
       });
     }, '#features');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -538,7 +549,7 @@ Replace entire `src/components/HowItWorks.astro` with:
       });
     }, '#how-it-works');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -615,7 +626,7 @@ Read `src/components/ProblemSolution.astro` and add `.reveal-item` class to anim
       });
     }, '#problem-solution');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -651,7 +662,7 @@ Read `src/components/Showcase.astro` and add `.reveal-item` class to animatable 
       });
     }, '#showcase');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -687,7 +698,7 @@ Read `src/components/SocialProof.astro` and add `.reveal-item` class to animatab
       });
     }, '#social-proof');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -723,7 +734,7 @@ Read `src/components/FAQ.astro` and add `.reveal-item` class to animatable eleme
       });
     }, '#faq');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
@@ -759,7 +770,7 @@ Read `src/components/FinalCTA.astro` and add `.reveal-item` class to animatable 
       });
     }, '#final-cta');
     
-    document.addEventListener('astro:before-swap', () => ctx.revert());
+    document.addEventListener('astro:after-swap', () => ctx.revert());
   }
 </script>
 ```
