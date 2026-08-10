@@ -1,6 +1,12 @@
 ---
 // landing/src/layouts/Layout.astro
 import '../styles/global.css';
+import '@fontsource/geist/400.css';
+import '@fontsource/geist/500.css';
+import '@fontsource/geist/600.css';
+import '@fontsource/geist/700.css';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
 
 interface Props {
   title: string;
@@ -24,19 +30,8 @@ const ogImage = '/og-image.png';
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    
-    <!-- Geist font via Fontsource CDN (Geist is NOT on Google Fonts) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2" />
-    <style>
-      @font-face {
-        font-family: 'Geist';
-        src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2') format('woff2');
-        font-weight: 100 900;
-        font-display: swap;
-      }
-    </style>
   </head>
-  <body class="bg-[#0a0a0a] text-[#e5e5e5] font-['Geist',sans-serif] antialiased">
+  <body class="bg-bg text-text-primary font-ui antialiased">
     <slot />
   </body>
 </html>

@@ -1,0 +1,41 @@
+/* Design tokens from Pencil design file (vyE17) */
+
+:root {
+  /* Background colors */
+  --bg: #0a0a0a;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+
+  /* Text colors */
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+
+  /* Accent colors */
+  --accent-blue: #3b82f6;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-indigo: #4f46e5;
+  --accent-rose: #f43f5e;
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 999px;
+
+  /* Font families */
+  --font-ui: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
