@@ -37,8 +37,8 @@ This ensures consistency and makes the patterns reusable for future features.
 
 A React hook that wraps IPC calls with AbortController. Key behaviors:
 
-- Each call gets a unique request ID tracked per IPC channel
-- If a new request fires for the same channel before the previous resolves, the previous is aborted (stale response dropped)
+- Each call is tracked by a dedup key: `channel + JSON.stringify(args)`. This means expanding dir A and dir B simultaneously both complete, but expanding dir A twice rapidly aborts the first.
+- If a new request fires with the same dedup key before the previous resolves, the previous is aborted (stale response dropped)
 - Returns `{ data, aborted }` so callers can ignore stale results
 - Cleans up on component unmount (aborts all in-flight requests)
 - Includes a 10-second timeout wrapper — aborts and throws if IPC hangs
@@ -51,7 +51,7 @@ if (result.aborted) return; // stale, ignore
 // use result.data
 ```
 
-Internally tracks a `Map<channel, AbortController>`. New call on same channel aborts previous.
+Internally tracks a `Map<string, AbortController>` keyed by `channel + JSON.stringify(args)`. New call with same dedup key aborts previous.
 
 ### 2. pathValidator (main process)
 
@@ -60,18 +60,20 @@ Internally tracks a `Map<channel, AbortController>`. New call on same channel ab
 Validates that a given path is within an allowed project root.
 
 ```ts
-export function validatePath(
+export async function validatePath(
   requestedPath: string,
   allowedRoots: string[]
-): { valid: true; resolved: string } | { valid: false; reason: string }
+): Promise<{ valid: true; resolved: string } | { valid: false; reason: string }>
 ```
 
-- Resolves symlinks via `fs.realpath` to prevent symlink escapes
+- Resolves symlinks via `fs.realpath.native` (async) to prevent symlink escapes
+- If `fs.realpath` throws (path doesn't exist), validates against the nearest existing ancestor directory
 - Rejects paths with `..` that escape the root after resolution
 - Uses `path.resolve()` to normalize, then checks result starts with project root
-- `allowedRoots` populated from project manager's active project list at handler registration time
+- Caches realpath results (LRU, max 1000 entries) to avoid latency on every call
+- `allowedRoots` populated from project manager's active project list. Refreshed when projects change: the project manager emits a `'projects-changed'` event, and the filetree handlers listen for it and update `allowedRoots`.
 
-**Known limitation:** When a project is removed, there's a brief window where its paths are still accessible until the next handler refresh cycle. This is acceptable risk — these are the user's own files.
+**Known limitation:** When a project is removed, there's a brief window (until the next event loop tick) where its paths are still accessible. This is acceptable risk — these are the user's own files.
 
 ### 3. FileWatcherService (main process)
 
@@ -79,10 +81,12 @@ export function validatePath(
 
 Replaces polling with event-driven updates using Node's `fs.watch`.
 
-- Recursive mode on Windows/macOS; fallback to shallow polling on Linux (where `fs.watch` recursive is unreliable)
+- Recursive mode on Windows/macOS via `fs.watch(path, { recursive: true })`
+- On Linux: manually watch each subdirectory by recursively calling `fs.watch` on each child directory. Clean up all watchers on `unwatch()`. If this fails (e.g., too many watchers), fall back to polling the top-level directory every 5s.
 - Emits debounced events: `'files-changed'` (200ms debounce) and `'git-changed'` (1s debounce — git operations are expensive)
-- Tracks watched paths per project; cleans up watchers when project changes
+- Tracks watched paths per project; cleans up watchers when project changes or when the watched directory is deleted
 - API: `watch(projectPath)`, `unwatch(projectPath)`, `on(event, callback)`
+- Does NOT emit an initial event on `watch()` — components still do their initial fetch on mount. The watcher only handles subsequent changes.
 
 **Fallback for silent watcher failures:** The renderer tracks a `lastEventTimestamp`. If no events arrive for 2 minutes, a slow 60s poll activates as a safety net (handles network drives, WSL mounts, etc.). If events resume, the poll deactivates.
 
@@ -91,6 +95,15 @@ Replaces polling with event-driven updates using Node's `fs.watch`.
 ```ts
 // Main → Renderer
 'filetree:watch-event': { type: 'git-changed' | 'files-changed', projectPath: string }
+```
+
+**Preload exposure:** `preload.ts` exposes `onWatchEvent` as:
+
+```ts
+onWatchEvent: (handler: (event: WatchEvent) => void) => {
+  ipcRenderer.on('filetree:watch-event', (_event, data) => handler(data));
+  return () => ipcRenderer.removeListener('filetree:watch-event', handler);
+}
 ```
 
 ---
@@ -102,11 +115,13 @@ Replaces polling with event-driven updates using Node's `fs.watch`.
 Every handler in `filetree-handlers.ts` that accepts a `path` parameter gets validated:
 
 ```ts
-const check = validatePath(dirPath, allowedRoots);
+const check = await validatePath(dirPath, allowedRoots);
 if (!check.valid) throw new Error(`Path not allowed: ${check.reason}`);
 ```
 
 **Affected handlers:** `listDir`, `getFileContent`, `copyPath`, `revealInFileManager`, `openInTerminal`, `getActiveFiles`, `getGitStatus`
+
+Note: `validatePath` is async (uses `fs.realpath`), so all handlers must await it.
 
 ### Improved Binary Detection
 
@@ -117,7 +132,9 @@ Current implementation checks for null bytes in first 8KB. This misidentifies UT
 1. Check for UTF-8 BOM (`EF BB BF`) → text
 2. Check for UTF-16 LE BOM (`FF FE`) or BE BOM (`FE FF`) → text
 3. Otherwise, scan for null bytes → if found, binary
-4. Check if bytes are valid UTF-8 (no orphan continuation bytes) → if invalid UTF-8 and no BOM, binary
+4. Validate UTF-8 using `new TextDecoder('utf-8', { fatal: true }).decode(buffer)` in a try/catch → if it throws, binary
+
+This correctly handles UTF-16 files that the current implementation would misidentify.
 
 ### Recursive Active Files
 
@@ -125,8 +142,8 @@ Current `getActiveFiles` only scans the top-level directory. The spec says it sh
 
 **New behavior:**
 
-- Recursively scan up to 3 levels deep from each agent CWD (or project root if no agent CWDs)
-- Skip noisy directories: `node_modules`, `.git`, `dist`, `build`, `coverage`, `.next`, `__pycache__`
+- Recursively scan up to 3 levels deep from each agent CWD (or project root if no agent CWDs). "3 levels" means: if agent CWD is `/project/src`, scan `/project/src` (level 0), `/project/src/*` (level 1), `/project/src/*/*` (level 2), `/project/src/*/*/*` (level 3).
+- Skip noisy directories: `node_modules`, `.git`, `dist`, `build`, `coverage`, `.next`, `__pycache__`, `.venv`, `venv`, `target`
 - Keep 30-second threshold and 10-file cap
 - Sort by modification time, most recent first
 
@@ -234,10 +251,11 @@ import { FixedSizeList } from 'react-window';
 </FixedSizeList>
 ```
 
-- `itemSize={24}` — current rows are ~24px (verify)
+- `itemSize={24}` — current rows are ~24px (verify during implementation)
 - `containerHeight` — measure with ref + `ResizeObserver`
 - Extract row rendering into `TreeRow` component
 - Keyboard navigation still works — `flatTree` index maps directly to list index
+- The "N+ more entries" truncation row gets the same fixed height
 
 ### Performance Optimization
 
@@ -251,7 +269,7 @@ import { FixedSizeList } from 'react-window';
 
 ### Error Boundary Around FilePreview
 
-Place in `TerminalPanel.tsx` where FilePreview is rendered:
+Place in `TerminalPanel.tsx` where FilePreview is rendered. Use a class component (no new dependency needed):
 
 ```tsx
 class FilePreviewErrorBoundary extends React.Component<
@@ -268,7 +286,7 @@ class FilePreviewErrorBoundary extends React.Component<
 }
 ```
 
-Fallback: "Could not render file preview" with Retry button.
+Fallback: "Could not render file preview" with Retry button (Retry resets `hasError` to false).
 
 ### Keyboard Navigation Stability
 
@@ -291,6 +309,7 @@ Replace custom context menu with Radix `context-menu` (already in dependencies):
 - Better accessibility (keyboard navigation, screen reader support)
 - Automatic viewport clamping (no manual positioning math)
 - Consistent with other Radix primitives in the app
+- Implementation: wrap the entire tree in a single `<ContextMenu>`. On right-click, store the target path in state. The `<ContextMenuContent>` renders items based on the stored path. This is simpler than per-row triggers and avoids mounting/unmounting triggers for each row.
 
 ### IPC Timeout Handling
 
@@ -319,8 +338,9 @@ Small dot/icon in tree header:
 
 ### 3. Improve Manual Refresh Button
 
-- Add spin animation on `RefreshCw` icon during refresh
+- Add spin animation on `RefreshCw` icon during refresh (set `isRefreshing` state, clear when both git status and tree reload complete)
 - Refresh both git status AND file tree (currently only refreshes git)
+- Preserve expansion state: re-fetch root directory entries, but keep all previously-expanded directories expanded (re-fetch their children too)
 - Debounce rapid clicks (500ms)
 
 ### 4. Add Toast Notifications for Errors
@@ -354,7 +374,7 @@ Track `lastEventTime` when file watcher fires. Display in tree header: "Updated 
 - Remove both `setInterval` calls
 - Subscribe to `filetree:watch-event`
 - Add watcher status indicator to header
-- Improve refresh button (loading state, refresh tree too)
+- Improve refresh button (loading state, refresh tree too, preserve expansion state)
 - Replace custom context menu with Radix
 - Use `useAbortableIPC` for all IPC calls
 - Add virtualization with `react-window`
@@ -371,7 +391,8 @@ Track `lastEventTime` when file watcher fires. Display in tree header: "Updated 
 ### Unit Tests — New Utilities
 
 **`abortableIPC.test.ts`:**
-- Aborts previous request when new request fires on same channel
+- Aborts previous request when new request fires with same dedup key
+- Does NOT abort concurrent requests with different dedup keys (e.g., different paths)
 - Returns `{ aborted: true }` for stale responses
 - Cleans up all controllers on unmount
 - Timeout triggers abort and throws error
@@ -380,13 +401,16 @@ Track `lastEventTime` when file watcher fires. Display in tree header: "Updated 
 - Accepts paths within allowed root
 - Rejects paths outside allowed root
 - Rejects symlink escapes
+- Handles non-existent paths (validates against nearest existing ancestor)
 - Handles Windows paths correctly
 - Normalizes `..` and `.` correctly
+- Realpath cache works (second call is fast)
 
 **`file-watcher.test.ts`:**
 - Emits `files-changed` event when file is created/modified/deleted
 - Debounces rapid events
 - Cleans up watchers on unwatch
+- Handles watched directory deletion gracefully
 - Falls back to polling on Linux if recursive watch fails
 
 ### Updated Tests
@@ -395,6 +419,7 @@ Track `lastEventTime` when file watcher fires. Display in tree header: "Updated 
 - Rapid expand/collapse doesn't cause stale state
 - Keyboard navigation clamps focus index when tree shrinks
 - Context menu uses Radix primitives
+- Manual refresh preserves expansion state
 
 **`FilePreview.test.tsx`:**
 - Clicking files rapidly shows correct file (no stale content)
@@ -408,7 +433,7 @@ Track `lastEventTime` when file watcher fires. Display in tree header: "Updated 
 
 ### Integration Tests
 
-- Open project with 1000+ files → tree renders without lag
+- Open project with 1000+ files → tree renders without lag, maintains 60fps during scroll
 - Modify file externally → active files updates within 1s
 - Run `git add` externally → git status updates within 2s
 
@@ -457,7 +482,7 @@ All changes are additive or internal. No IPC API changes, no prop changes, no br
 
 ### Performance Targets
 
-- Tree with 1000+ visible rows: no lag during scroll (virtualization)
+- Tree with 1000+ visible rows: maintains 60fps during scroll (virtualization)
 - Rapid directory expand/collapse: no stale state (AbortableIPC)
 - Rapid file clicks: correct content displayed (AbortableIPC)
 - External file modification: UI updates within 1s (FileWatcherService)
