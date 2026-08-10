@@ -1,4 +1,4 @@
-import { Settings, Bot, GitHub, Bell, Keyboard, Info, Terminal, GitBranch, Wrench, ShieldAlert } from 'lucide-react';
+import { Settings, Bot, GitBranch, Bell, Keyboard, Info, Terminal, Wrench, ShieldAlert } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface SettingsSidebarProps {
@@ -9,7 +9,7 @@ interface SettingsSidebarProps {
 const navItems = [
   { id: 'general', label: 'General', icon: Settings },
   { id: 'agents', label: 'Agents', icon: Bot },
-  { id: 'github', label: 'GitHub', icon: GitHub },
+  { id: 'github', label: 'GitHub', icon: GitBranch },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'keyboard', label: 'Keyboard Shortcuts', icon: Keyboard },
   { id: 'about', label: 'About', icon: Info },
