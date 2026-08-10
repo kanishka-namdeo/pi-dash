@@ -285,7 +285,9 @@ gsap.context(() => {
     <div class="min-w-[100vw] flex items-center justify-center px-6">
       <div class="max-w-4xl text-center space-y-8">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/10 flex items-center justify-center">
-          <svg>...</svg> <!-- Monitor icon -->
+          <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
         </div>
         <h2 class="text-4xl font-bold">AI Agent Monitoring</h2>
         <p class="text-xl text-gray-400 max-w-2xl mx-auto">
@@ -300,26 +302,64 @@ gsap.context(() => {
     
     <!-- Feature 2: Cross-Repo Visibility -->
     <div class="min-w-[100vw] flex items-center justify-center px-6">
-      <!-- Same structure, different content -->
+      <div class="max-w-4xl text-center space-y-8">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/10 flex items-center justify-center">
+          <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+          </svg>
+        </div>
+        <h2 class="text-4xl font-bold">Cross-Repo Visibility</h2>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+          See which branches each agent is working on, review PRs, and track commit history across all your repositories.
+        </p>
+        <div class="relative aspect-video max-w-3xl mx-auto">
+          <img src="/screenshots/github.webp" alt="Cross-Repo Visibility" loading="lazy" />
+        </div>
+      </div>
     </div>
     
     <!-- Feature 3: Smart Alerts -->
     <div class="min-w-[100vw] flex items-center justify-center px-6">
-      <!-- Same structure, different content -->
+      <div class="max-w-4xl text-center space-y-8">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/10 flex items-center justify-center">
+          <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </div>
+        <h2 class="text-4xl font-bold">Smart Alerts</h2>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+          Get notified when agents complete tasks, hit errors, or need your input. Never miss a critical moment.
+        </p>
+        <div class="relative aspect-video max-w-3xl mx-auto">
+          <img src="/screenshots/notifications.webp" alt="Smart Alerts" loading="lazy" />
+        </div>
+      </div>
     </div>
     
     <!-- Feature 4: Team Collaboration -->
     <div class="min-w-[100vw] flex items-center justify-center px-6">
-      <!-- Same structure, different content -->
+      <div class="max-w-4xl text-center space-y-8">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/10 flex items-center justify-center">
+          <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <h2 class="text-4xl font-bold">Team Collaboration</h2>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+          Share agent fleets with your team. Coordinate work, avoid conflicts, and build together.
+        </p>
+        <div class="relative aspect-video max-w-3xl mx-auto">
+          <img src="/screenshots/team.webp" alt="Team Collaboration" loading="lazy" />
+        </div>
+      </div>
     </div>
   </div>
-  
   <!-- Progress Indicator -->
   <div class="absolute bottom-8 left-0 right-0 flex justify-center gap-3">
-    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors"></div>
-    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors"></div>
-    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors"></div>
-    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors"></div>
+    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors active:bg-cyan-400"></div>
+    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors active:bg-cyan-400"></div>
+    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors active:bg-cyan-400"></div>
+    <div class="feature-dot w-3 h-3 rounded-full bg-gray-600 transition-colors active:bg-cyan-400"></div>
   </div>
 </section>
 ```
@@ -626,6 +666,73 @@ If reduced motion is enabled:
 - `min-h-[100dvh]` - Dynamic viewport height (iOS Safari fix)
 - `aspect-video` - Modern browsers only (fallback: explicit height)
 - `sticky` - All modern browsers
+
+### Mobile Fallbacks
+
+**Features section (viewport < 768px):**
+- Horizontal scroll hijack is disabled
+- Feature cards stack vertically in a single column
+- Each card is full-width, normal scroll behavior
+- Progress indicator is hidden (not needed for vertical stack)
+
+**HowItWorks section (viewport < 768px):**
+- Sticky-stack behavior is disabled
+- Steps stack vertically with normal scroll
+- Each step is full-height, one after another
+- No scale/fade transforms
+
+**Implementation:**
+```javascript
+// In Features.astro and HowItWorks.astro
+if (window.innerWidth < 768) {
+  // Skip ScrollTrigger initialization
+  return;
+}
+```
+
+### Accessibility Beyond Reduced Motion
+
+**Keyboard navigation:**
+- All CTAs (email form, buttons) are focusable and operable via keyboard
+- Tab order follows visual order: logo → headline → subtext → form → screenshot → next section
+- Focus states are visible (use `focus:ring-2 focus:ring-cyan-400` on interactive elements)
+
+**Screen reader support:**
+- All images have descriptive `alt` text (already in place)
+- Progress indicator dots are decorative (`aria-hidden="true"`)
+- Horizontal pan section: add `aria-label="Features carousel, scroll to navigate"` on the section
+- Sticky-stack section: add `aria-label="How it works, 3 steps"` on the section
+
+**Focus management:**
+- No focus trapping (user can tab through entire page)
+- Horizontal pan does not trap focus on current card (user can tab to next card even if it's off-screen)
+- This is acceptable because the content is still accessible via keyboard, just not visible
+
+**Color contrast:**
+- All text meets WCAG AA contrast ratios (4.5:1 for body, 3:1 for large text)
+- Cyan-400 on dark background: passes AA
+- Gray-400 on dark background: passes AA for large text (text-xl+)
+
+### Asset Requirements
+
+**Screenshots needed (WebP format):**
+- `/screenshots/dashboard.webp` - Hero screenshot (already exists)
+- `/features/monitoring.webp` - Feature 1: AI Agent Monitoring
+- `/screenshots/github.webp` - Feature 2: Cross-Repo Visibility (already exists)
+- `/screenshots/notifications.webp` - Feature 3: Smart Alerts
+- `/screenshots/team.webp` - Feature 4: Team Collaboration
+- `/screenshots/results.webp` - HowItWorks Step 2 (already exists)
+
+**Missing assets to create:**
+- `/features/monitoring.webp` - Screenshot of agent monitoring dashboard
+- `/screenshots/notifications.webp` - Screenshot of notification settings or alerts
+- `/screenshots/team.webp` - Screenshot of team collaboration features
+
+**Asset specifications:**
+- Format: WebP (for optimal compression)
+- Hero screenshot: 1600x900px (16:9 aspect ratio)
+- Feature screenshots: 1200x675px (16:9 aspect ratio)
+- HowItWorks screenshot: 1200x675px (16:9 aspect ratio)
 
 ### Testing Checklist
 
