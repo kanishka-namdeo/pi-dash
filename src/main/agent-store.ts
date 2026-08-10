@@ -51,3 +51,13 @@ export async function completeOnboarding(): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(storePath, JSON.stringify(store, null, 2));
 }
+
+export async function resetOnboarding(): Promise<void> {
+  const userDataPath = process.env.PI_DASH_USER_DATA || app.getPath('userData');
+  const storePath = path.join(userDataPath, STORE_FILE);
+  const store = await loadAgents();
+  store.onboardingCompleted = false;
+  const dir = path.dirname(storePath);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(storePath, JSON.stringify(store, null, 2));
+}

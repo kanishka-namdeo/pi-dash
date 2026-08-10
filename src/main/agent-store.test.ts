@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { loadAgents, saveAgents, completeOnboarding } from './agent-store';
+import { loadAgents, saveAgents, completeOnboarding, resetOnboarding } from './agent-store';
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
@@ -51,5 +51,15 @@ describe('agent-store', () => {
     await saveAgents([]);
     const exists = await fs.access(path.join(nestedDir, 'agents.json')).then(() => true).catch(() => false);
     expect(exists).toBe(true);
+  });
+
+  it('resets onboarding flag', async () => {
+    await completeOnboarding();
+    let store = await loadAgents();
+    expect(store.onboardingCompleted).toBe(true);
+
+    await resetOnboarding();
+    store = await loadAgents();
+    expect(store.onboardingCompleted).toBe(false);
   });
 });
