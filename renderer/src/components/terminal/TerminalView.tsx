@@ -13,7 +13,7 @@ type TerminalViewProps = {
 export function TerminalView({ agentId: propAgentId }: TerminalViewProps = {}) {
   const { agentId: paramAgentId } = useParams<{ agentId: string }>();
   const [searchParams] = useSearchParams();
-  const cwd = searchParams.get('cwd') || process.cwd();
+  const cwd = searchParams.get('cwd') || '';
   const agentId = propAgentId || paramAgentId;
 
   const terminalRef = useRef<HTMLDivElement>(null);
