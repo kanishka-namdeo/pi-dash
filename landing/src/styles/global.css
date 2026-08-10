@@ -1,0 +1,18 @@
+/* landing/src/styles/global.css */
+@import "tailwindcss";
+
+/* Custom theme variables */
+:root {
+  --color-bg: #0a0a0a;
+  --color-accent: #00d9ff;
+  --color-accent-secondary: #8b5cf6;
+  --color-text: #e5e5e5;
+  --color-muted: #6b6b6b;
+}
+
+/* Base styles */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Geist', sans-serif;
+}
