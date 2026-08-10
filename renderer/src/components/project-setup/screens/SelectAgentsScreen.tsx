@@ -10,7 +10,7 @@ interface ScreenProps {
   updateSelectedAgents: (agents: string[]) => void;
   navigate: (screen: ScreenName) => void;
   complete: (onComplete?: () => void) => void;
-  completeWithScopedAgents: (onComplete?: () => void) => void;
+  completeWithScopedAgents: (scopeChoice: 'global' | 'project', agents: AgentConfig[], onComplete?: () => void) => void;
   setPendingAgents: (agents: AgentConfig[]) => void;
   setAgentScopeChoice: (choice: 'global' | 'project' | null) => void;
   onComplete?: () => void;
