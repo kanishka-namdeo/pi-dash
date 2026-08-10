@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="16" fill="#0a0a0a"/>
+  <!-- Dashboard grid: 4 squares, top-left highlighted in cyan -->
+  <rect x="28" y="28" width="28" height="28" rx="4" fill="#00d9ff"/>
+  <rect x="64" y="28" width="28" height="28" rx="4" fill="#ffffff" fill-opacity="0.15"/>
+  <rect x="28" y="64" width="28" height="28" rx="4" fill="#ffffff" fill-opacity="0.15"/>
+  <rect x="64" y="64" width="28" height="28" rx="4" fill="#ffffff" fill-opacity="0.15"/>
+</svg>
