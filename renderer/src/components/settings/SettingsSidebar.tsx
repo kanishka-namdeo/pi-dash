@@ -9,7 +9,7 @@ interface SettingsSidebarProps {
 const navItems = [
   { id: 'general', label: 'General', icon: Settings },
   { id: 'agents', label: 'Agents', icon: Bot },
-  { id: 'github', label: 'GitHub', icon: Github },
+  { id: 'github', label: 'GitHub', icon: GitHub },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'keyboard', label: 'Keyboard Shortcuts', icon: Keyboard },
   { id: 'about', label: 'About', icon: Info },
