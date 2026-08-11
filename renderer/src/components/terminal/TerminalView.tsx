@@ -28,9 +28,12 @@ export function TerminalView({ agentId: propAgentId }: TerminalViewProps = {}) {
     const term = new Terminal({
       cursorBlink: true,
       fontSize: terminal?.fontSize ?? 14,
-      fontFamily: terminal?.fontFamily ?? 'Geist Mono, monospace',
+      fontFamily: '"Cascadia Mono", "Consolas", "Courier New", monospace',
       cursorStyle: terminal?.cursorStyle ?? 'block',
       scrollbackLines: terminal?.scrollbackLines ?? 10000,
+      letterSpacing: 0,
+      allowTransparency: false,
+      convertEol: true,
       theme: terminal?.theme === 'light'
         ? { background: '#ffffff', foreground: '#000000' }
         : { background: '#1e1e1e', foreground: '#e5e5e5' },

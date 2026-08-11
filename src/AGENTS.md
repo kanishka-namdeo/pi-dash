@@ -26,4 +26,11 @@ Electron main process entry point and preload script. Owns the application lifec
 
 ## Child DOX Index
 
-- [main/github/AGENTS.md](http://main/github/AGENTS.md) — GitHub integration (auth, repos, issues, PRs, branches). All other `main/` subdirectories are owned by this doc.
+- [main/github/AGENTS.md](http://main/github/AGENTS.md) — GitHub integration (auth, repos, issues, PRs, branches, polling, rate limiting, OAuth)
+- [main/session/AGENTS.md](http://main/session/AGENTS.md) — PTY session lifecycle, node-pty spawning, event forwarding
+- [main/settings/AGENTS.md](http://main/settings/AGENTS.md) — Settings schema, electron-store persistence, export/import
+- [main/worktree/AGENTS.md](http://main/worktree/AGENTS.md) — Git worktree CRUD, simple-git integration, linked PR lookup
+- [main/keyboard/AGENTS.md](http://main/keyboard/AGENTS.md) — Global shortcut registration, action routing to renderer
+- [main/notifications/AGENTS.md](http://main/notifications/AGENTS.md) — Desktop notifications, category settings, badge count
+- [main/agent/AGENTS.md](http://main/agent/AGENTS.md) — Agent-GitHub bridge: PR creation, issue comments, feedback polling
+- [shared/AGENTS.md](http://shared/AGENTS.md) — Shared type contracts between main and renderer processes

@@ -241,6 +241,28 @@
   background: #1e1e1e;
 }
 
+/* xterm.js fixes for Windows font rendering */
+.terminal-container .xterm {
+  letter-spacing: normal !important;
+}
+
+.terminal-container .xterm-rows {
+  letter-spacing: normal !important;
+}
+
+.terminal-container .xterm-row {
+  letter-spacing: normal !important;
+}
+
+.terminal-container .xterm-char {
+  letter-spacing: normal !important;
+}
+
+/* Force proper character spacing in xterm cells */
+.terminal-container .xterm-rows span {
+  letter-spacing: normal !important;
+}
+
 /* Agent Cards */
 .launch-button {
   padding: 0.5rem 1rem;
