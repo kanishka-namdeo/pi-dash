@@ -60,6 +60,27 @@ The UI is designed in [Pencil](https://pencil.design/) and exported as design sh
 
 </details>
 
+<details>
+<summary><strong>Settings Flow</strong> — Theme, terminal config, notifications, and preferences</summary>
+
+![Settings Flow](docs/screenshots/settings-flow.webp)
+
+</details>
+
+<details>
+<summary><strong>States Flow</strong> — Agent states, loading, empty, and error states</summary>
+
+![States Flow](docs/screenshots/states-flow.webp)
+
+</details>
+
+<details>
+<summary><strong>Auxiliary Flow</strong> — Dialogs, modals, and secondary interactions</summary>
+
+![Auxiliary Flow](docs/screenshots/auxiliary-flow.webp)
+
+</details>
+
 ## Tech Stack
 
 | Layer | Technology |
