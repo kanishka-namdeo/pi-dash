@@ -9,9 +9,13 @@
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://reactjs.org/)
 [![Electron](https://img.shields.io/badge/Electron-43-47848f.svg)](https://www.electronjs.org/)
 
-[Features](#features) • [Getting Started](#getting-started) • [Screenshots](#screenshots) • [Contributing](#contributing) • [License](#license)
+[Features](#features) • [Getting Started](#getting-started) • [Contributing](#contributing) • [License](#license)
 
 </div>
+
+<p align="center">
+  <img src="assets/screenshots/dashboard.webp" alt="PiDash Dashboard" width="720" />
+</p>
 
 ## Features
 
@@ -29,57 +33,51 @@
 - **Settings** — theme (dark/light/system), terminal config, notification preferences, worktree paths, and more
 - **Reset & recovery** — export/import your full config, or reset agents, projects, or everything
 
-## Screenshots
+## In Action
 
-| Dashboard | GitHub Integration |
-|-----------|-------------------|
-| ![Dashboard](landing/public/screenshots/dashboard.webp) | ![GitHub](landing/public/screenshots/dashboard-github.webp) |
+<p align="center">
+  <strong>Terminal Sessions</strong>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/terminal-session.webp" alt="Terminal Session" width="600" />
+</p>
+
+<p align="center">
+  <strong>GitHub Integration</strong>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/github-integration.webp" alt="GitHub Integration" width="600" />
+</p>
+
+<p align="center">
+  <strong>Command Palette</strong>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/command-palette.webp" alt="Command Palette" width="600" />
+</p>
+
+<p align="center">
+  <strong>Picture-in-Picture</strong>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/pip-overlay.webp" alt="Picture-in-Picture" width="600" />
+</p>
+
+<p align="center">
+  <strong>Settings</strong>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/settings.webp" alt="Settings" width="600" />
+</p>
 
 ## Design
 
-The UI is designed in [Pencil](https://pencil.design/) and exported as design sheets showing complete user flows:
-
-<details>
-<summary><strong>Main App Flow</strong> — Dashboard, agents, terminal sessions, and activity feed</summary>
-
-![Main App Flow](docs/screenshots/main-app-flow.webp)
-
-</details>
-
-<details>
-<summary><strong>GitHub Integration</strong> — Issues, PRs, branches, and authentication</summary>
-
-![GitHub Integration Flow](docs/screenshots/github-integration-flow.webp)
-
-</details>
-
-<details>
-<summary><strong>Onboarding Flow</strong> — Agent detection, project setup, and initial configuration</summary>
-
-![Onboarding Flow](docs/screenshots/onboarding-flow.webp)
-
-</details>
-
-<details>
-<summary><strong>Settings Flow</strong> — Theme, terminal config, notifications, and preferences</summary>
-
-![Settings Flow](docs/screenshots/settings-flow.webp)
-
-</details>
-
-<details>
-<summary><strong>States Flow</strong> — Agent states, loading, empty, and error states</summary>
-
-![States Flow](docs/screenshots/states-flow.webp)
-
-</details>
-
-<details>
-<summary><strong>Auxiliary Flow</strong> — Dialogs, modals, and secondary interactions</summary>
-
-![Auxiliary Flow](docs/screenshots/auxiliary-flow.webp)
-
-</details>
+The UI is designed in [Pencil](https://pencil.design/). See [docs/DESIGN.md](docs/DESIGN.md) for complete user flow diagrams.
 
 ## Tech Stack
 
